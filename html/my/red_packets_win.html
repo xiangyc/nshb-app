@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>个人资料</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+	<style>
+		html,body{
+			height: 100%;
+			width:100%;
+		}
+		#wrap{
+		    height: 100%;
+		    display: -webkit-box;
+		    display: -webkit-flex;
+		    display: flex;
+		    -webkit-box-orient: vertical;
+		    -webkit-flex-flow: column;
+		           flex-flow: column;
+		}
+		#header{
+		    text-align: center; 
+		   	background-color: #fff;
+			color: #fc531f;
+		    width: 100%;
+		    position:relative;
+		    padding-top: 22px;
+		}
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back3.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		}
+		.aui-bar-nav .aui-bar-btn {
+			min-height: 26px;
+			position: relative;
+			font-size: 14px;
+			display: table;
+			white-space: nowrap;
+			margin: 0 auto;
+			padding: 0;
+			border: none;
+			width: 100%;
+			margin-top: 9px;
+		}
+		.aui-bar-nav.aui-bar-light .aui-bar-btn-item {
+			display: table-cell;
+			width: 1%;
+			text-align: center;
+			vertical-align: middle;
+			position: relative;
+			border-width: 1px;
+			border-style: solid;
+			line-height: 26px;
+			border-color: #fc531f;
+		}
+		.aui-bar-btn-item:first-child {
+			border-left-width: 1px;
+			border-top-left-radius: 4px;
+			border-bottom-left-radius: 4px;
+		}
+		.aui-bar-btn-item:last-child {
+			border-top-right-radius: 0.2rem;
+			border-bottom-right-radius: 0.2rem;
+			border-left: 0px;
+		}
+		.aui-bar-nav.aui-bar-light .aui-bar-btn-item.aui-active {
+			background-color: #fc531f;
+			border-color: #fc531f;
+			color: #ffffff;
+		}
+		.aui-bar-nav.aui-bar-light {
+			background: none;
+			background-color: #ffffff;
+			border-bottom: 1px solid #ececec;
+			color: #fc531f;
+		}
+		.aui-bar {
+			position: relative;
+			top: 0;
+			right: 0;
+			left: 0;
+			z-index: 10;
+			width: 100%;
+			min-height: 45px;
+			font-size: 18px;
+			text-align: center;
+			display: table;
+		}
+		.aui-bar-nav.aui-bar-light .aui-title {
+			width: 170px;
+			margin: 0 auto;
+			right: 60px;
+			left: 60px;
+			min-height: 45px;
+			position: absolute;
+			text-align: center;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			z-index: 2;
+		}
+
+	</style>
+</head>
+<body>
+	<div id="wrap">
+		<div id="header" class="aui-bar aui-bar-nav aui-bar-light">
+			<a tapmode="" class="back-icon" onclick="api.closeWin();">返回</a>
+			<div class="aui-title">
+				<div class="aui-bar aui-bar-btn">
+					<div id="receiveDiv" class="aui-bar-btn-item aui-active" tapmode="" onclick="doRedPackets(1);" data-item-order="0">我收到的</div>
+					<div id="sendDiv" class="aui-bar-btn-item" tapmode="" onclick="doRedPackets(2);" data-item-order="1">我发出的</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+	    var header = $api.byId('header');
+	    if(header){
+	        $api.fixIos7Bar(header);
+	    }
+	    var pos = $api.offset(header);
+	    
+	    api.openFrame({
+	        name: 'red_packets_frame',
+	        url: 'red_packets_frame.html',
+	        rect:{
+	            x: 0,
+	            y: pos.h,
+	            w: 'auto',
+	            h: 'auto'
+	        },
+	        pageParam : api.pageParam,
+	        bounces: false,
+	        vScrollBarEnabled: false
+	    });
+	}
+	
+	/**
+	 *查看红包
+	 */
+	function doRedPackets(type){
+		if(type === 1){
+			$api.removeCls($api.byId('sendDiv'), 'aui-active');
+			$api.addCls($api.byId('receiveDiv'), 'aui-active');
+		}else{
+			$api.removeCls($api.byId('receiveDiv'), 'aui-active');
+			$api.addCls($api.byId('sendDiv'), 'aui-active');
+		}
+		
+		api.execScript({
+			frameName: 'red_packets_frame',
+		    script: 'loadRedPackets(' + type + ');'
+	    });
+	}
+</script>
+</html>

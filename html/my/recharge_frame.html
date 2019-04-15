@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>余额充值</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+</head>
+<body>
+<div class="aui-content">
+    <ul class="aui-list aui-form-list">
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+ 				<div class="aui-list-item-label aui-w13">金额</div>
+                <div class="aui-list-item-input"  style="height: 2.5rem; line-height: 2.5rem;"><input type="text" id="amount" maxlength="6" onkeyup="amountUp();" placeholder="每日最高充值50000元" style="height: 2.5rem; line-height: 2.5rem;"></div>
+            	<i tapmode onclick="clearText();" class="input-close" style="top: 0.38rem; "><img id="imgId" class="aui-hide" style="width:0.65rem; height: 0.65rem;" src="../../image/my/withdraw-icon-no.png"></i> 
+            </div>
+        </li>
+    </ul>
+
+    <ul class="aui-list aui-form-list">
+        <li class="aui-list-header">选择支付方式</li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-input pay-select-box">
+                    <label><input class="aui-radio" type="radio" name="payType" value="1" checked=""><img src="../../image/my/pay-alipay.png" class="pay-select-img">支付宝</label>
+                    <label><input class="aui-radio" type="radio" name="payType" value="2" > <img src="../../image/my/pay-weixin.png" class="pay-select-img">微信</label>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+    <div class="aui-btn-box">
+        <div id="confirmRechargeDivId" tapmode onclick="confirmRecharge();" class="aui-btn btn-gradient">确认</div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		
+	}
+	
+	/**
+	 *确认充值 
+	 */
+	function confirmRecharge(){
+		var amount = $api.val($api.byId('amount'));
+		var payType = $api.val($api.dom("input[name='payType']:checked"));
+		var tradeNo = '';
+		
+		if(amount.length < 1　|| amount == 0){
+			global.setToast('请输入充值金额');
+			return;
+		}
+		
+		if(amount > 50000){
+			global.setToast('每日最高充值50000元');
+			return;
+		}
+		
+		$api.removeAttr($api.byId('confirmRechargeDivId'), 'onclick');		 
+		$api.addCls($api.byId('confirmRechargeDivId'), 'aui-disabled');
+
+		if(payType == 1){
+			api.ajax({
+				method : 'post',
+				cache : false,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/pay/alipay-order-info',
+				headers : global.getRequestToken(),
+		        data : {
+					values : {
+						amount : amount,
+						payType : 1
+					}
+				}
+			}, function(ret, err) {
+				if(ret && ret.code === "403"){
+					api.sendEvent({
+		                name:'tokenExpiredEvent',
+		                extra:{
+		                	msg : ret.message
+		                }
+	                });
+	                
+	                return;
+				}
+				
+				if (ret && ret.success) {
+					//请求支付
+					var aliPayPlus = api.require('aliPayPlus');
+					aliPayPlus.payOrder({
+					    orderInfo: ret.message
+					}, function(ret, err) {
+						if(ret.code == 9000){
+							global.setToast('充值成功');
+							$api.val($api.byId('amount'),'');
+							
+						    api.sendEvent({
+						      name:'financeAccountRefresh'
+						    });
+					    }
+					});
+				}else{
+					global.setToast(ret.message);
+				}
+	
+				$api.removeCls($api.byId('confirmRechargeDivId'), 'aui-disabled');
+				$api.attr($api.byId('confirmRechargeDivId'), 'onclick', 'confirmRecharge();');
+			});
+		}else{
+			api.ajax({
+				method : 'post',
+				cache : false,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/pay/app-wx-order-info',
+				headers : global.getRequestToken(),
+		        data : {
+					values : {
+						amount : amount,
+						payType : 1
+					}
+				}
+			}, function(ret, err) {
+				if(ret && ret.code === "403"){
+					api.sendEvent({
+		                name:'tokenExpiredEvent',
+		                extra:{
+		                	msg : ret.message
+		                }
+	                });
+	                
+	                return;
+				}
+				
+				if (ret && ret.success) {
+					//请求支付					
+					var signInfo = ret.code.split('_');
+					var orderId = "";
+					var mechId = "";
+					var nonceStr = "";
+					var appId = "";
+					var randTime = "";
+					var appId = "";
+					if(signInfo && signInfo.length > 4){
+						mechId = signInfo[0];
+						orderId = signInfo[1];
+						nonceStr = signInfo[2];
+						randTime = signInfo[3];
+						appId = signInfo[4];
+					}
+	
+					var wxPay = api.require('wxPay');
+					wxPay.payOrder({
+						apiKey: appId,
+					    orderId: '' +　orderId,
+					    mchId: '' +　mechId,
+					    nonceStr: '' +　nonceStr,
+					    timeStamp: '' +　randTime,
+					    sign: '' +　ret.message
+					}, function(ret, err) {
+					    if (ret.status) {
+							global.setToast('充值成功');
+							$api.val($api.byId('amount'),'');
+							
+						    api.sendEvent({
+						      name:'financeAccountRefresh'
+						    });
+					    }
+					});
+				}else{
+					global.setToast(ret.message);
+				}
+	
+				$api.removeCls($api.byId('confirmRechargeDivId'), 'aui-disabled');
+				$api.attr($api.byId('confirmRechargeDivId'), 'onclick', 'confirmRecharge();');
+			});
+		}
+	}
+	
+	function amountUp(){
+	    var amount = $api.val($api.byId('amount'));
+        if (amount.length > 0) {     
+           $api.removeCls($api.byId('imgId'), 'aui-hide');        
+        }else{
+           $api.addCls($api.byId('imgId'), 'aui-hide');
+        }
+	}
+	
+	/**
+	 *清除
+	 */
+	function clearText(){
+		$api.val($api.byId('amount'), '');
+        $api.addCls($api.byId('imgId'), 'aui-hide');
+
+	}
+</script>
+</html>

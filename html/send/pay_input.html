@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>填写红包信息</title>
+		<link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/send.css" />
+	</head>
+	<body>
+		<div class="body-bg-f8" id="confimPassword">
+			<div class="fixed-title">
+				<i><img onclick="closeModal()" src="../../image/send/close-icon.png"/></i>输入密码
+			</div>
+			<div class="withdraw-password-tips password-tips">
+				<li class="aui-list-item">
+					<div id="virbox1" class="virbox">
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					<input id="realbox1" type="password" class="realbox" maxlength="6">
+				</li>
+				<em class="color-fc531f" onclick="openPayPassworWin()">忘记密码？</em>
+			</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/common/global.js"></script>
+	<script type="text/javascript" src="../../script/library/zepto.min.js"></script>
+	<script type="text/javascript">
+		var payPwd = '';
+		apiready = function() {
+			var softInput = api.require('softInputMgr');
+			document.getElementById("realbox1").focus();
+			softInput.toggleKeyboard();
+			
+			initEvent();
+		}
+		
+		/**
+		 *初始化事件 
+		 */
+		function initEvent(){
+			api.addEventListener({
+	            name:'payPasswordRefresh'
+            },function(ret,err){
+            	api.closeWin({
+            		name:'payPasswordWin'
+                });
+                
+                api.closeWin({
+            		name:'payPasswordNextWin'
+                });  
+                
+				api.closeWin({
+            		name:'payPasswordFinalWin'
+                }); 
+                
+				var softInput = api.require('softInputMgr');
+				document.getElementById("realbox1").focus();
+				$('#virbox1 span').css('background', '#FFFECF');
+				softInput.toggleKeyboard(); 
+            });
+		}
+		
+		/**
+		 *设置支付密码
+		 */
+		function openPayPassworWin() {
+			var params = {
+				"page" : "../my/pay_password_set",
+				"title" : "验证手机号码"
+			};
+			api.openWin({
+				name : 'payPasswordWin',
+				url : '../common/common_win.html',
+				pageParam : params
+			});
+		}
+
+		/**
+		 *关闭密码输入框
+		 */
+		function closeModal() {
+			api.sendEvent({
+	            name:'closePay'
+            });
+		}
+
+		$('#virbox1').click(function() {
+			$('#realbox1').focus();
+			$('#virbox1 span').css('background', '#FFFECF');
+		});
+		$('#realbox1').blur(function() {
+			$('#virbox1 span').css('background', '#ffffff');
+		});
+		$('#realbox1').keyup(function() {
+			$('#virbox1 span').html('');
+			var realboxLength = Number($('#realbox1').val().length);
+			for (var i = 0; i < realboxLength; i++) {
+				payPwd = $('#realbox1').val();
+				$('#virbox1 span').eq(i).html('·');
+				if (i == 5) {
+					api.sendEvent({
+	                    name:'inputPay',
+	                    extra: {
+	                    	payPwd : payPwd
+	                    }
+                    });
+				}
+			}
+		});
+	</script>
+</html>

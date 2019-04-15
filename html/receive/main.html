@@ -1,0 +1,854 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>找红包</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/receive.css" />
+    <style>
+		html, body {
+			border: 0px;
+			margin: 0px;
+			padding: 0px;
+			width: 100%;
+			height: 100%;
+/*			background: url(../../image/receive/main-img.jpg) no-repeat;*/
+			background-size: 100%;
+			position: relative;
+		}
+        .lqq-box{ position: absolute; top: 0.5rem; right: 0.75rem; width: 1.55rem; z-index: 9; }
+        .lqq-box .lqq-bt{ width: 1.55rem; height: 1.55rem; margin-bottom: 0.55rem; background-color: #f7f7f7; border: 0.05rem solid #cdcdcd; border-radius: 0.15rem;
+         box-shadow: 0rem 0.05rem 0.3rem rgba(0,0,0,0.15);
+        }
+        .lqq-box .lqq-bt:active{ background-color: #cdcdcd;}
+        .lqq-box .lqq-bt img{ width: 1.55rem; height: 1.55rem; }
+        .fdsx-box{ position: absolute; bottom:7.35rem; right: 0.75rem; width: 1.55rem; border: 0.05rem solid #cdcdcd; border-radius: 0.15rem; z-index: 9;
+            box-shadow: 0rem 0.05rem 0.3rem rgba(0,0,0,0.15);
+        }
+        .fdsx-box:before{ content: ''; position: absolute; width: 1.05rem; height: 0.05rem; background-color:#cdcdcd; top: 1.7rem; left: 0.215rem;  }
+        .fdsx-box .fdsx-bt{ width: 1.45rem; height: 1.7rem; background-color: #fff; }
+        .fdsx-box .fdsx-bt:active{ background-color: #cdcdcd; }
+        .fdsx-box:active:before{ background-color:transparent;}
+        .fdsx-box .fdsx-bt img{ width: 1.45rem; height: 1.7rem; }
+        .refresh-box{ position: absolute; bottom: 0.75rem; right: 0.75rem; width: 1.75rem; z-index: 9; }
+        .refresh-box .refresh-bt{ width: 1.75rem; height: 1.75rem; background-color: #f7f7f7; border-radius: 0.875rem;
+            box-shadow: 0rem 0.05rem 0.3rem rgba(0,0,0,0.15);
+        }
+        .refresh-box .refresh-bt:active{ background-color: #cdcdcd;}
+        .refresh-box .refresh-bt img{ width: 1.75rem; height: 1.75rem; }
+        .sd-box{ position: absolute; bottom: 0.75rem; left: 0.75rem; width: 1.55rem; z-index: 9; }
+        .sd-box .sd-bt{ width: 1.75rem; height: 1.75rem; background-color: #f7f7f7; border-radius: 0.875rem; margin-top:0.45rem ;
+            box-shadow: 0rem 0.05rem 0.3rem rgba(0,0,0,0.15);
+        }
+        .sd-box .sd-bt:active{ background-color: #cdcdcd;}
+        .sd-box .sd-bt img{ width: 1.75rem; height: 1.75rem; }
+    </style>
+</head>
+<body>
+<div class="aui-content">
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/library/linq.min.js"></script>
+<script type="text/javascript">
+	//地图对象
+	var aMap;
+	//图片浏览工具对象
+	var photoBrowser;
+	//经度
+	var longitude;
+	//纬度
+	var latitude;
+	//红包ID
+	var ids = [];
+	//红包标注
+	var annData = [];
+	//红包卷标注
+	var annCouponData = [];
+	//显示区域
+	var region = [];
+	//半径
+	var radius = 50;
+	//地市赞助商logo
+	var regionLogo;
+	//加载框
+	var uiloading;
+	//地市
+	var cityName;
+	//红包券定位区域
+	var regionName;
+	
+    apiready = function(){
+	    aMap = api.require('aMap');
+	    uiloading = api.require('UILoading');
+	    	
+		openMap();
+		//openFunctionButton();
+		initEvent();    			
+    };
+    
+    function openMap(){             
+    	aMap.open({
+		    rect: {
+		        x: 0,
+		        y: 0
+		    },
+		    showUserLocation: true,
+		    zoomLevel: 20,
+		    center: {
+		        lon: 116.4021310000,
+		        lat: 39.9994480000
+		    },
+		    fixedOn: api.frameName,
+		    fixed: true
+		}, function(ret, err) {
+			openFunctionButton();
+		
+			setLocation();
+		});
+    }
+
+	function setLocation(){
+		aMap.getLocation(function(ret, err) {
+		    if (ret.status) {				
+				longitude = ret.lon;
+				latitude = ret.lat;
+				
+				//设置地图显示范围
+				region = getScope(longitude, latitude, 5, true);
+	            aMap.setRegion({
+			        lbLon: region[0],
+			        lbLat: region[2],
+			        rtLon: region[1],
+			        rtLat: region[3],
+			        animation: true
+			    });
+	
+				if(api.systemType === 'ios'){
+					setTimeout(function(){
+					aMap.setZoomLevel({
+					    level: 20
+					});
+					},300);
+				}else{
+					aMap.setZoomLevel({
+					    level: 20
+					});
+				}
+				
+				global.setLocation({ lon : longitude, lat : latitude });
+				api.sendEvent({
+	                name:'getLocationEvent'
+	            });
+	
+				setTimeout('showOverlook()', 1000);
+				setCenterLocation(longitude, latitude);
+				loadRedPacketsData(longitude, latitude);
+				
+				aMap.getNameFromCoords({
+			    	lon: longitude,
+				    lat: latitude
+				}, function(ret, err) {
+				    if (ret.status) {
+				    	if(ret.city){
+				    		cityName = ret.city;
+				    	}else{
+				    		cityName = ret.state;
+				    	}
+				        getRegionLogo(cityName);
+				        
+				        regionName = ret.state + '|' + ret.city + '|' + ret.district;
+				        loadRedPacketsCoupon();
+				    }
+				});
+		    }
+		});
+	}
+	
+    /**
+     *显示府视角 
+     */
+    function showOverlook(){
+		aMap.setOverlook({
+		    degree: 55,
+		    animation: true,
+		    duration: 0.3
+		});
+    }
+    
+     /**
+     *打开功能按钮 
+     */
+    function openFunctionButton(){
+		var enlargeBtn = api.require('UIButton');
+		enlargeBtn.open({
+		    rect: {
+		        x: 10,
+		        y: 10,
+		        w: 40,
+		        h: 35
+		    },
+		    corner: 2,
+		    bg: {
+		        normal: 'widget://image/receive/m-enlarge-icon-1.png'
+		    },
+		    fixedOn: api.frameName,
+		    fixed: true,
+		    move: false
+		}, function(ret, err) {
+		    if (ret && ret.eventType == 'click') {
+				aMap.getZoomLevel(function(ret, err) {
+				    if (ret) {
+						aMap.setZoomLevel({
+						    level: ret.level + 1
+						});
+				    }
+				});
+		    }
+		});
+		
+		var narrowBtn = api.require('UIButton');
+		narrowBtn.open({
+		    rect: {
+		        x: 10,
+		        y: 45,
+		        w: 40,
+		        h: 35
+		    },
+		    corner: 2,
+		    bg: {
+		        normal: 'widget://image/receive/m-narrow-icon-1.png'
+		    },
+		    fixedOn: api.frameName,
+		    fixed: true,
+		    move: false
+		}, function(ret, err) {
+			if (ret && ret.eventType == 'click') {
+				aMap.getZoomLevel(function(ret, err) {
+				    if (ret) {
+						aMap.setZoomLevel({
+						    level: ret.level - 1
+						});
+				    }
+				});
+		    }
+		});
+		
+		var refreshBtn = api.require('UIButton');
+		refreshBtn.open({
+		    rect: {
+		        x: 10,
+		        y: api.frameHeight - 110,
+		        w: 40,
+		        h: 40
+		    },
+		    corner: 2,
+		    bg: {
+		        normal: 'widget://image/receive/m-refresh-icon-1.png'
+		    },
+		    fixedOn: api.frameName,
+		    fixed: true,
+		    move: false
+		}, function(ret, err) {
+			if (ret && ret.eventType == 'click') {
+				refreshRedPacketsData();
+		    }
+		});
+		
+		var advBtn = api.require('UIButton');
+		advBtn.open({
+		    rect: {
+		        x: api.frameWidth - 70,
+		        y: api.frameHeight - 83,
+		        w: 52,
+		        h: 52
+		    },
+		    corner: 2,
+		    bg: {
+		        normal: 'widget://image/redpacket/release-icon.png'
+		    },
+		    fixedOn: api.frameName,
+		    fixed: true,
+		    move: false
+		}, function(ret, err) {
+			if (ret && ret.eventType == 'click') {
+				api.sendEvent({
+	                name:'sendAdvEvent',
+	                extra:{
+	                 type:1
+	                }
+                });
+		    }
+		});
+		
+		var locationBtn = api.require('UIButton');
+		locationBtn.open({
+		    rect: {
+		        x: 10,
+		        y: api.frameHeight - 70,
+		        w: 40,
+		        h: 40
+		    },
+		    corner: 2,
+		    bg: {
+		        normal: 'widget://image/receive/m-position-icon-1.png'
+		    },
+		    fixedOn: api.frameName,
+		    fixed: true,
+		    move: false
+		}, function(ret, err) {
+			if (ret && ret.eventType == 'click') {
+				//aMap.removeAnnotations({
+			    	//ids: ids
+				//});
+
+				//ids = [];
+				//annData = [];
+				setLocation();
+		    }
+		});
+    }
+    
+    /**
+     *初始化事件 
+     */
+    function initEvent(){
+    	api.addEventListener({
+	        name:'messageReceiveEvent'
+        },function(ret,err){
+        	if(ret && ret.value){
+        		if(ret.mobile != global.getMobile()){
+        			api.openFrame({
+				        name: 'message_frame',
+				        url: 'message_frame.html',
+				        rect:{
+				            x: 0,
+				            y: api.pageParam.headerHeight,
+				            w: 'auto',
+				            h: '20'
+				        },
+				        pageParam : {
+				        	title : ret.value.title,
+				        	sendTime : ret.value.sendTime
+				        },
+				        bounces: false,
+				        vScrollBarEnabled: false
+				    });
+	    
+        			window.setTimeout("removeMessage();", 7000);
+        		}
+        	}
+        });
+        
+               
+        api.addEventListener({
+	        name:'dismantleEvent'
+        },function(ret,err){
+        	if(ret && ret.value){
+        		aMap.removeAnnotations({
+				    ids: [ret.value.id]
+				});
+				
+				var tempData = Enumerable.From(annData).Where("$.id !=" + ret.value.id).ToArray();
+				if (tempData && tempData.length > 0) {
+					annData = tempData;
+				}else{
+					annData = [];
+				}
+        	}
+        });
+        
+        window.setInterval("reLocation();", 8000);
+    }
+    
+    /**
+     *重新定位 
+     */
+    function reLocation(){
+		aMap.getLocation(function(ret, err) {
+	    	if (ret.status) {				
+				var lonTemp = ret.lon;
+				var latTemp = ret.lat;
+				
+				aMap.getDistance({
+				    start: {
+				        lon: longitude,
+				        lat: latitude
+				    },
+				    end: {
+				        lon: lonTemp,
+				        lat: latTemp
+				    }
+				}, function(ret, err) {
+				    if (ret.status) {
+				    	//判断是否超过200
+				        if(ret.distance >= 200){
+				        	longitude = lonTemp;
+				        	latitude = latTemp;
+				        	
+				        	aMap.removeAnnotations({
+								ids: ids
+							});
+				        	aMap.removeAnnotations({
+								ids: 1
+							});
+
+							ids = [];
+							annData = [];			
+							setLocation();
+				        }
+				   }
+		        });
+			}
+		});
+    }
+    
+    /**
+     *移除消息 
+     */
+    function removeMessage(){
+    	api.closeFrame({
+    		name : 'message_frame'
+        });
+    }
+    
+    /**
+	 *设置中心点 
+	 */
+	function setCenterLocation(lon, lat){
+	   aMap.setCenter({
+		    coords: {
+		        lon: lon,
+		        lat: lat
+		    }
+		});
+		
+		aMap.removeOverlay({
+		    ids: [1]
+		});
+		
+		aMap.addCircle({
+		    id: 1,
+		    center: {
+		        lon: lon,
+		        lat: lat
+		    },
+		    radius: radius,
+		    styles: {
+		        borderColor: '#FFA500',
+		        borderWidth: 1,
+		        lineDash: false,
+		        fillColor: 'rgba(250, 128, 10, 0.3)'
+		    }
+		});
+	}
+	
+	/**
+	 *加载红包数据 ，添加标注
+	 */
+	function loadRedPacketsData(lon, lat){
+		uiloading.keyFrame({
+			rect: {
+		        w: 80,
+		        h: 80
+		    },
+		    styles: {
+		        bg: 'rgba(0,0,0,0.5)',
+		        corner: 5,
+		        interval: 50,
+		        frame: {
+		            w: 80,
+		            h: 80
+		        }
+		    },
+		    content : global.loadImage()
+		}, function(ret) {
+		});
+        
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/redpackets/list?longitude=' + lon + '&latitude=' + lat,
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+		    uiloading.closeKeyFrame();
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				//annData = [];
+				//ids = [];
+				var tempData;
+				var businessName;
+				var businessLogo = ''
+				for(var i=0; i<ret.length; i++){
+					var annDataTemp = [];
+					if(ret[i].countKey){
+						var keyJson = JSON.parse(ret[i].countKey);
+						var regionTemp;
+						var itemCount = 0;
+						for(var pro in keyJson){
+							if(itemCount <= ret[i].showCount){
+								var tempData = Enumerable.From(annData).Where("$.id==" + pro).ToArray();
+								if (tempData && tempData.length > 0) {
+									continue;
+								}
+								
+								itemCount = itemCount + 1;
+								regionTemp = getScope(longitude, latitude, Math.floor(Math.random()*ret[i].radius)/1000, false);
+								
+								tempData = { objId : '1' + ret[i].id, id : pro, lon : regionTemp[0], lat : regionTemp[1], name: ret[i].businessName, logo : ret[i].businessLogo };
+								annData.push(tempData);
+								annDataTemp.push(tempData);
+								ids.push(pro);
+							}else{
+								break;
+							}
+						}
+					}
+					
+					//批量添加标注
+					aMap.addAnnotations({
+					    annotations: annDataTemp,
+					    icons: ['widget://image/redpacket.png'],
+					    draggable: false,
+					    timeInterval: 2.0
+					}, function(ret) {
+					    if (ret.eventType == 'click') {
+					        receiveRedPackets(ret.id);
+					    }
+					});
+				}
+				
+				//添加气泡
+				addMapBubble(0);
+			}
+		});
+	}
+	
+	
+	/**
+	 *加载红包券数据 ，添加标注
+	 */
+	function loadRedPacketsCoupon(){
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collection/coupon?regionName=' + regionName,
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if (ret && ret.length > 0) {
+					var couponTemp = getScope(longitude, latitude, 100/1000, false);
+					var couponData = { objId : '3' + ret[0].id, id : 1, lon : regionTemp[0], lat : regionTemp[1] };
+					annCouponData = [];
+					annCouponData.push(couponData);
+					
+					aMap.addAnnotations({
+					    annotations: annCouponData,
+					    icons: ['widget://image/redpacket/countdown-icon.png'],
+					    draggable: false,
+					    timeInterval: 2.0
+					}, function(ret) {
+					    if (ret.eventType == 'click') {
+					        receiveRedPacketsCoupon(ret.id);
+					    }
+					});
+			}
+		});
+	}
+	
+	/**
+	 *添加气泡 
+	 */
+	function addMapBubble(i){
+		if(i === annData.length){
+			return;
+		}
+		
+		//非半径范围内添加气泡
+		aMap.getDistance({
+		    start: {
+		        lon: longitude,
+		        lat: latitude
+		    },
+		    end: {
+		        lon: annData[i].lon,
+		        lat: annData[i].lat
+		    }
+		}, function(ret, err) {
+		    if (ret.status) {
+		    	//判断是否半径范围内
+		        if(ret.distance > radius){
+		        	var distance = global.formatCurrency(ret.distance/1000);
+		        	var dataStr = "{logo : " + annData[i].logo + ",title :" + annData[i].name + ",distance : " + distance + ",lon: " + annData[i].lon + ",lat:" + annData[i].lat + "}";
+			        
+			        aMap.getNameFromCoords({
+					    lon: annData[i].lon,
+					    lat: annData[i].lat
+					}, function(ret, err) {
+					    if (ret.status) {
+					    	var dataStr = '<style>.receive-prompt{ position: relative; background-color: #fff; width: 223px; height: 98px; border-radius: 4px;'+
+									            '-webkit-box-shadow: 2px 0 10px rgba(253, 97, 32, .3);'+
+									            '-moz-box-shadow: 2px 0 10px rgba(253, 97, 32, .3);'+
+									            'box-shadow: 2px 0 10px rgba(253, 97, 32, .3);'+
+									        '}'+
+									        '.receive-prompt-t{ padding: 16px 5px 6px 16px; height: 22px; line-height: 22px; }'+
+									        '.receive-prompt-t i{ width: 22px; height: 22px; margin-right: 7px; display: inline-block; float: left;}'+
+									        '.receive-prompt-t i img{ width: 22px; height: 22px; border-radius: 11px; }'+
+									        '.receive-prompt-t span{ font-size:12px; color: #464646; display: inline-block; width: 170px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;  }'+
+									        '.receive-prompt p{ font-size:12px; color: #fc531f; line-height: 1; margin-top: 0; margin-bottom: 11px; padding-left: 18px;  }'+
+									        '.receive-promp-b{ padding-left: 16px; height: 17px; line-height: 17px; padding-right: 10px; font-size:12px; color: #464646;  }'+
+									        '.receive-promp-b i{ width: 17px; height: 17px;  background:url(image/send/position-icon.png) no-repeat center center; background-size: 17px 17px; display: inline-block; float: left; }'+
+									        '.receive-promp-b span{ padding-right: 4px;}'+
+									        '.receive-promp-b em{ font-style: normal; padding-left: 4px;  }</style>';
+									        
+					        dataStr = dataStr + '<div class="receive-prompt"><div class="receive-prompt-t"><i><img ';
+							    if(annData[i].logo){
+							    	dataStr = dataStr + 'src="' + global.getImgUri() + '/' + annData[i].logo  + '"/>';
+							    }else{
+							    	dataStr = dataStr + ' src="image/icon150x150.png"/>';
+							    }
+							  dataStr = dataStr +  '</i><span>' + annData[i].name + '</span></div>' +
+							    '<p>距离太远了，走近一点才能拆哦</p><div class="receive-promp-b"><i></i><span>' + ret.street + '</span>|<em>距您' + distance + 
+							    'KM</em></div></div>';
+		
+					        aMap.setWebBubble({
+								id:annData[i].id,
+								size : {
+									width:243,		
+									height:116		
+								},			
+								bg:'rgba(0,0,0,0)',
+								url: 'widget://',
+								data: dataStr
+							}, function(ret) {
+								if(ret){
+									closeBubble(ret.id);
+								}
+							});
+					    }
+					});
+				}
+				addMapBubble(i+1);
+		    }
+
+		});
+	}
+
+	/**
+	 *关闭气泡
+	 */
+	function closeBubble(id){
+		aMap.closeBubble({
+	    	id: id
+		});
+	}
+	
+	/**
+	 *刷新红包数据 
+	 */
+	function refreshRedPacketsData(){
+//		aMap.removeAnnotations({
+//	    	ids: ids
+//		});
+		loadRedPacketsData(longitude, latitude);
+	}
+	
+    /**
+     *收红包
+     */
+    function receiveRedPackets(id){
+		aMap.getAnnotationCoords({
+		    id: id
+		}, function(ret) {
+		    if (ret) {
+		    	aMap.getDistance({
+				    start: {
+				        lon: longitude,
+				        lat: latitude
+				    },
+				    end: {
+				        lon: ret.lon,
+				        lat: ret.lat
+				    }
+				}, function(ret, err) {
+				    if (ret.status) {
+				    	//判断是否半径范围内
+				        if(ret.distance > radius){
+				        	//不在范围内,弹出商家提示,3S后自动关闭
+				        	window.setTimeout("closeBubble(" + id + ");", 3000);
+				        }else{
+				        	//在范围内
+				        	gainRedPackets(id);
+				        }
+				    }
+				});
+		    }
+		});
+    }
+    
+     /**
+     *收红包
+     */
+    function receiveRedPacketsCoupon(id){
+		var tempData = Enumerable.From(annCouponData).Where("$.id==" + id).ToArray();
+		var objId = id;
+		if (tempData && tempData.length > 0) {
+			objId = tempData[0].objId.substring(1,tempData[0].objId.length);
+		}
+    	api.openFrame({
+	        name: 'redpacketCouponFrame',
+	        url: '../redpacket/coupon_receive.html',
+	        pageParam:  {
+	        	id : objId
+	        }
+        });
+    }
+    
+    
+    /**
+     *抢红包，如果已抢完，显示：红包已经被 ”坏人“ 抢了！ 
+     */
+    function gainRedPackets(id){
+    	var tempid = ('' + id).substring(1,id.length);
+    	api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/redpackets/has-finished?id=' + tempid,
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if(ret && ret.success){
+				global.setToast('红包已经被 “坏人”抢了！ ');
+				
+				//移除标注
+				aMap.removeAnnotations({
+				    ids: [id]
+				});
+			}else{
+				var tempData = Enumerable.From(annData).Where("$.id==" + id).ToArray();
+				var objId = id;
+
+				if (tempData && tempData.length > 0) {
+					objId = tempData[0].objId.substring(1,tempData[0].objId.length);
+				}
+
+			    var param = { id : id, objId : objId, regionLogo : regionLogo, cityName : cityName };
+		    	api.openFrame({
+			        name: 'receive',
+			        url: 'receive.html',
+			        pageParam:  param
+		        });
+			}
+		});
+    }
+    
+    /**
+     *获取范围 
+     */
+    function getScope(longitude, latitude, distance, flag) {
+		// 先计算查询点的经纬度范围
+		var r = 6371;
+		regionTemp = [];
+		var dlng = 2 * Math.asin(Math.sin(distance / (2 * r)) / Math.cos(latitude * Math.PI / 180));
+		dlng = dlng * 180 / Math.PI;
+		var dlat = distance / r;
+		dlat = dlat * 180 / Math.PI;
+		var minlat = latitude - dlat;
+		var maxlat = latitude + dlat;
+		var minlng = longitude - dlng;
+		var maxlng = longitude + dlng;
+
+		var leftlat = maxlat;
+		var leftlng = minlng;
+		var rightlat = minlat;
+		var rightlng = maxlng;
+		
+		if(flag){
+			region.push(minlng);
+			region.push(maxlng);
+			region.push(minlat);
+			region.push(maxlat);
+			
+			return region;
+		}else{
+			if(distance - 0.05 > 0){
+				//计算上一区间最大经纬度，作为本次的最小经纬度
+				distance = distance - 0.05;
+				dlng = 2 * Math.asin(Math.sin(distance / (2 * r)) / Math.cos(latitude * Math.PI / 180));
+				dlng = dlng * 180 / Math.PI;
+				dlat = distance / r;
+				dlat = dlat * 180 / Math.PI;
+				
+				var leftlat2 = latitude + dlat;
+				var leftlng2 = longitude - dlng;
+				var rightlat2 = latitude - dlat;
+				var rightlng2 = longitude + dlng;
+				
+				var index = Math.floor(Math.random()*4);
+				switch(index){
+					case 0:
+						//上
+						regionTemp.push(Math.random() * (rightlng - leftlng) + leftlng);
+						regionTemp.push(Math.random() * (leftlat - leftlat2) + leftlat2);
+						break;
+					case 1:
+						//下
+						regionTemp.push(Math.random() * (rightlng - leftlng) + leftlng);
+						regionTemp.push(Math.random() * (rightlat2 - rightlat) + rightlat);
+						break;
+					case 2:
+						//左
+						regionTemp.push(Math.random() * (leftlng2 - leftlng) + leftlng);
+						regionTemp.push(Math.random() * (leftlat - rightlat) + rightlat);
+						break;
+					case 3:
+						//右
+						regionTemp.push(Math.random() * (rightlng - rightlng2) + rightlng2);
+						regionTemp.push(Math.random() * (leftlat - rightlat) + rightlat);
+						break;
+				}
+			}else{
+				regionTemp.push(Math.random() * (maxlng - minlng) + minlng);
+				regionTemp.push(Math.random() * (maxlat - minlat) + minlat);
+			}
+			
+			return regionTemp;
+		}
+	}
+	
+	/**
+	 *查找LOGO
+	 */
+	function getRegionLogo(cityName) {
+		cityName = cityName.substring(0, cityName.length - 1);
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/member/info/region-logo?regionName=' + cityName,
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if(ret){
+				regionLogo = ret.sponsorLogo;
+			}
+		});
+	}
+</script>
+</html>

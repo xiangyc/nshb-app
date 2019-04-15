@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>我的优惠劵</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui-list-swipe.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+    <style>
+    .coupon-box .coupon-list{
+	    margin: 0;
+	}
+	.coupon-box .coupon-list.aui-swipe-handle {
+	    margin: 0 0rem 0.75rem 0rem;
+	}
+     </style>
+</head>
+<body>
+<div class="aui-content coupon-box">
+   	<h4 id="titleH" class="aui-hide">全部优惠劵</h4>
+    <div class="aui-content">
+    <ul class="">
+
+    	<script id="coupon-list-template" type="text/x-dot-template">
+          {{ for(var i=0; i< it.length; i++) { }}
+	          <li class="">
+	          {{ if(it[i].status === -1){ }}
+	          <div class="coupon-list coupon-expired coupon-list-delete aui-swipe-handle">
+	          {{ }else{ }}
+	          <div class="coupon-list aui-swipe-handle">
+	          {{ } }}
+
+	          <div class="coupon-list-t">
+		            <div class="coupon-amount">¥<em>{{=global.formatCurrency(it[i].value)}}</em></div>
+		            <div class="coupon-text">
+		                <div>{{=it[i].name}}</div>
+		                <p>{{=it[i].note}}</p>
+		            </div>
+		            {{ if(it[i].status === -1){ }}
+		            	<div class="coupon-use">已过期</div>
+		            {{ }else if(it[i].status === 0){ }}
+		           		<div class="coupon-use">可使用</div>
+		           	{{ }else{ }}
+		           		<div class="coupon-use">已使用</div>
+		            {{ } }}
+		        </div>
+		        <div class="coupon-list-b">有效期：{{=global.formatDate(it[i].startTime, 'yyyy-MM-dd') }} 至 {{=global.formatDate(it[i].expiredTime, 'yyyy-MM-dd') }}</div>
+
+	          </li>
+          {{ } }}
+        </script>
+        <div id="coupon-list-content"></div>
+    </ul>
+    </div>
+</div>
+<div id="noRecordDiv" class="aui-no-data aui-hide">
+	<img src="../../image/my/coupon-no-icon.png" class="no-data-img"/>
+	静静等待它的降临~
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+<script type="text/javascript" src="../../script/common/page.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+// 初始化参数
+var maxResult = 5;
+var url = global.getRequestUri() + '/coupon/list';
+
+apiready = function(){
+  	//初始化事件
+  	initEvent();
+  	//查询我的优惠券列表
+	queryCouponList();
+}
+
+//初始化事件
+function initEvent() {
+	api.setCustomRefreshHeaderInfo({
+		bgColor : '#fdf7e7',
+		image : {
+			pull : global.pullImage(),
+			load : global.pushImage()
+		}
+	}, function(ret, err) {
+		queryCouponList();
+		api.refreshHeaderLoadDone();
+	});
+	
+	api.addEventListener({
+		name : 'scrolltobottom',
+		extra : {
+			threshold : 0
+		}
+	}, function(ret, err) {
+		page.scrollRefresh();
+	});
+		
+	api.addEventListener({
+	    name:'coupon-list-content'
+    },function(ret,err){
+    	$api.addCls($api.byId('titleH'), 'aui-hide');
+    });
+    
+    api.addEventListener({
+	    name:'coupon-list-content-record'
+    },function(ret,err){
+    	$api.removeCls($api.byId('titleH'), 'aui-hide');
+    });
+}
+
+// 查询我的优惠券列表
+function queryCouponList() {
+  var params = '?start=0&maxResult=5';
+  page.init(maxResult, 'coupon-list-content', 'coupon-list-template', url, params, true, 'noRecordDiv');
+}
+</script>
+</html>

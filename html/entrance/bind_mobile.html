@@ -1,0 +1,241 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>绑定手机号</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/entrance.css" />
+</head>
+<body>
+    <div class="aui-content aui-margin-t-10">
+        <ul class="aui-list aui-form-list">
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label item-label-text">+86</div>
+                    <div class="aui-list-item-input"><input id="mobile" maxlength="11" type="text" value="" onkeyup="validateMobile();" placeholder="请输入11位手机号"></div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-input"><input id="code" maxlength="4" type="tel" placeholder="请输入4位短信验证码"></div>
+                    <input id="sendButton" tapmode="aui-active" onclick="sendSmsCode();" type="button" disabled="disabled" class="aui-btn-obtain aui-btn-obtain-zf" value="获取验证码">
+                </div>
+            </li>
+        </ul>
+        <div class="aui-btn-box">
+            <input id="loginBtn" tapmode="aui-active" onclick="login();" type="button" class="aui-btn btn-gradient" value="">
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/library/base64.js"></script>
+<script type="text/javascript" src="../../script/common/validate.js" ></script>
+<script type="text/javascript">
+	//计数
+	var smsInterval = 60;
+	//临时计数
+	var smsIntervalTemp = 60;
+	//计数器
+	var smsTimer;
+	//第三方用户信息
+	var type = 0;
+	var openId = '';
+	var nickname = '';
+	var sex = '1';
+	var headIcon = '';
+
+	apiready = function(){
+		type = api.pageParam.type;
+		if(type){
+			$api.val($api.byId('loginBtn'), '下一步');
+			nickname = api.pageParam.nickname;
+			sex = api.pageParam.sex;
+			headIcon = api.pageParam.headIcon;
+			openId = api.pageParam.openId;
+		}else{
+			type = 0;
+			$api.val($api.byId('loginBtn'), '登录');
+		}
+	}
+
+	/**
+	 *验证手机
+	 */
+	function validateMobile(){
+		var mobile = $api.val($api.byId('mobile'));
+		if (mobile.length == 11) {
+			$api.removeAttr($api.byId('sendButton'), 'disabled');
+		}
+	}
+
+	/**
+	 *发送短信验证码
+	 */
+	function sendSmsCode() {
+		var mobile = $api.val($api.byId('mobile'));
+		if (mobile.length < 1) {
+			global.setToast('手机号不能为空');
+			return;
+		}
+
+	    if (!validate.mobile(mobile)) {
+	        global.setToast('请输入正确的手机号码');
+	        return;
+	    }
+
+		mobile = new Base64().encode(mobile);
+		$api.attr($api.byId('sendButton'), 'disabled', 'disabled');
+		$api.removeAttr($api.byId('sendButton'), 'onclick');
+		console.log( global.getRequestUri() + '/auth/sms?mobile=' + mobile);
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/auth/sms?mobile=' + mobile
+		}, function(ret, err) {
+			if (ret && ret.success) {
+				global.setToast('验证码已发送');
+
+				smsTimer = window.setInterval("smsMsgInterval();", 1000);
+			} else {
+				global.setToast(ret.message);
+				$api.removeAttr($api.byId('sendButton'), 'disabled');
+				$api.attr($api.byId('sendButton'), 'onclick', 'sendSmsCode();');
+			}
+		});
+	}
+
+	/**
+	 *登录
+	 */
+	function login(){
+		var mobile = $api.val($api.byId('mobile'));
+		var code = $api.val($api.byId('code'));
+		if (mobile.length < 1) {
+			global.setToast('手机号不能为空');
+			return;
+		}
+
+	    if (!validate.mobile(mobile)) {
+	        global.setToast('请输入正确的手机号码');
+	        return;
+	    }
+
+		if (code.length < 1) {
+			global.setToast('验证码不能为空');
+			return;
+		}
+
+		mobile = new Base64().encode(mobile);
+		code = new Base64().encode(code);
+		$api.attr($api.byId('loginBtn'), 'disabled', 'disabled');
+		$api.removeAttr($api.byId('loginBtn'), 'onclick');
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/auth/login',
+			data : {
+				values : {
+					mobile : mobile,
+					code : code,
+					type : type,
+					nickname : nickname,
+					sex : sex,
+					headIcon : headIcon,
+					openId : openId,
+					platfromSource : global.getPlatformSource()
+				}
+			}
+		}, function(ret, err) {
+			if (ret) {
+				if(ret.success){
+					//存储会话信息
+					var token = ret.message.split('_');
+					if(token && token.length > 1){
+						global.setToken(token[0]);
+						global.setKey(token[1]);
+					}
+					global.setTokenExpires(ret.code);
+					global.setUserName(ret.obj.nickName);
+					global.setMobile(ret.obj.mobile);
+					global.setHeadIcon(ret.obj.headIcon);
+					global.setType(ret.obj.type);
+					global.setBusinessName(ret.obj.businessName);
+					global.setNotificationFlag(ret.obj.notificationFlag)
+					global.setAuthStatus(ret.obj.authStatus)
+					global.setBusinessLogo(ret.obj.businessLogo);
+					global.setUserWx(ret.obj.bindWx);
+
+					if(ret.obj.havePayPassword === 1){
+						global.setUserPayPassword(true);
+					}else{
+						global.setUserPayPassword(false);
+					}
+
+					api.sendEvent({
+	                    name:'loginSuccessEvent',
+	                    extra:{
+	                    	newUser : ret.obj.newUser
+	                    }
+                    });
+
+                    if(ret.obj.newUser){
+						global.openWin('interest', '');
+					}else{
+						api.closeWin({
+			        		name : "entranceWin"
+			            });
+			            api.closeWin({
+			        		name : "loginWin"
+			            });
+					}
+				}else{
+					global.setToast(ret.message);
+				}
+			} else {
+				global.setToast('登录失败');
+			}
+			
+			$api.removeAttr($api.byId('loginBtn'), 'disabled');
+			$api.attr($api.byId('loginBtn'), 'onclick', 'login();');
+		});
+	}
+
+	/**
+	 *重置倒计时
+	 */
+	function smsResetInterval(){
+		$api.val($api.byId('sendButton'), '获取验证码');
+		$api.removeAttr($api.byId('sendButton'), 'disabled');
+		$api.attr($api.byId('sendButton'), 'onclick', 'sendSmsCode();');
+		window.clearInterval(smsTimer);
+	}
+
+	/**
+	 *倒计时
+	 */
+	function smsMsgInterval() {
+		if (eval(smsInterval < 1)) {
+			smsInterval = smsIntervalTemp;
+			smsResetInterval();
+			return false;
+		}
+
+		if (isNaN(smsInterval - 1) || isNaN(smsInterval)) {
+			smsResetInterval();
+			smsInterval = smsIntervalTemp;
+		} else {
+			$api.val($api.byId('sendButton'), '已发送('+ smsInterval + 's)');
+		}
+
+		smsInterval = smsInterval - 1;
+	}
+</script>
+</html>

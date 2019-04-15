@@ -1,0 +1,521 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>红包集-搜索-详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/redpacket.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/swipe.css" />
+    <style>
+        body{ position: relative; }
+        #header{
+            text-align: center;
+            background-color: #fc531f;
+            color: #ffffff;
+            width: 100%;
+            position:fixed;
+            top: 0;
+            padding-top: 22px;
+            background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+            background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+            background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+            background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+            z-index: 3;
+        }
+        #header .back-icon {
+            background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+            background-size: 10px auto;
+            padding-left:17px;
+            bottom: 0;
+            display: inline-block;
+            height: 44px;
+            line-height:44px;
+            left: 12px;
+            position: absolute;
+            font-size: 16px;
+            color: #fff !important;
+        }
+        #header h1{
+            font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+        }
+        #header .share-top-icon{
+            background: rgba(0, 0, 0, 0) url("../../image/redpacket/share-top-icon.png") no-repeat scroll center center;
+            background-size: 18px;
+            bottom: 0;
+            display: block;
+            height: 44px;
+            right: 5px;
+            position: absolute;
+            width: 30px;
+            line-height: 44px;
+        }
+        #header .collect-top-icon{
+            background: rgba(0, 0, 0, 0) url("../../image/redpacket/collect-top-icon.png") no-repeat scroll center center;
+            background-size: 18px;
+            bottom: 0;
+            display: block;
+            height: 44px;
+            right: 40px;
+            position: absolute;
+            width: 30px;
+            line-height: 44px;
+        }
+        #header .collect-top-icon.already-icon{
+            background: rgba(0, 0, 0, 0) url("../../image/redpacket/already-icon.png") no-repeat scroll center center;
+            background-size: 18px;
+            bottom: 0;
+            display: block;
+            height: 44px;
+            right: 40px;
+            position: absolute;
+            width: 30px;
+            line-height: 44px;
+        }
+    </style>
+</head>
+<body class="body-bg-white">
+<div id="wrap">
+    <div id="header">
+        <a tapmode="" class="back-icon" onclick="api.closeWin();"></a>
+        <h1><span id="title"></span></h1>
+        <a tapmode="aui-active" onclick="openShare();" class="share-top-icon"></a>
+        <a tapmode="aui-active" id="collectI" onclick="collect();" class="collect-top-icon"></a>
+    </div>
+</div>
+
+<div class="redpacket-box" style=" padding-top: 66px;">
+
+    <div id="infoDiv" class="redpacket-ad-list aui-margin-t-10">
+        <div class="redpacket-list-header">
+            <div class="user-avatar">
+                <img id="logoImg" onerror="this.src='../../image/icon150x150.png'">
+            </div>
+            <div class="user-name">
+                <div id="nameDiv" class="user-name-info"></div>
+               <!-- <div class="redpacket-list-share"><img src="../../image/redpacket/more-icon.png"></div>-->
+            </div>
+            <div class="list-user-info"><span><i class="time-icon"></i><em id="sendTimeEm"></em></span><span><i class="look-icon"></i><em id="browseEm"></em></span></div>
+        </div>
+        <div id="contentDiv" class="redpacket-content-padded"></div>
+    </div>
+
+    <div class="ad-banner-box aui-margin-t-10 aui-hide">
+        <div class="aui-slide-wrap" >
+            <div class="aui-slide-node bg-dark">
+                <img src="../../image/redpacket/redpacket-img01.jpg"/>
+            </div>
+        </div>
+        <div class="aui-slide-page-wrap"><!--分页容器--></div>
+    </div>
+    <div id="swipe">
+		<div class="item ad_areabox">
+			<div id='slide' class='swipe'>
+				<div class='swipe-wrap' id="banner-content">
+				</div>
+			</div>
+		</div>
+	</div>
+			
+
+    <div class="carousel-btn">
+        <i tapmode id="beforeI" class="carousel-in"></i>
+        <i tapmode id="afterI" onclick="openRedpacket();" class="carousel-after aui-hide"></i>
+        <p>图片轮播完后有惊喜</p>
+    </div>
+
+</div>
+
+
+<div id="redpackMaskDiv" class="aui-mask aui-mask-in aui-hide"></div>
+<!--抢红包-点击红包弹框-->
+<div id="redpackDiv" class="coupon-receive-box aui-hide">
+    <div class="tear-reb-overflow">
+        <div class="tear-reb-t">
+            <div class="use-portrait"><img id="logoImg2" onerror="this.src='../../image/icon150x150.png'"></div>
+            <h4 id="nameH"></h4>
+            <p>给你发了一个红包</p>
+            <h2>你猜红包有多大！</h2>
+        </div>
+        <div id="dismantleDiv" tapmode="" class="tear-reb-img">拆</div>
+        <div id="unitDiv" class="tear-reb-rmb aui-hide">元</div>
+        <div class="tear-reb-p">所得现金自动存入账户余额</div>
+    </div>
+    <div tapmode="" onclick="closeRedpacket();" class="close-red-icon"><img src="../../image/receive/close-red-icon.png"> </div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/library/swipe.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//红包ID
+	var id;
+	var count=0;
+	var memberId=0;
+	apiready = function (){
+		id = api.pageParam.id;
+	    
+		loadRedPackets();
+		addBrowse();
+	}
+	
+	/**
+	 *加载红包信息
+	 */
+	function loadRedPackets(){
+		//加载服务端数据
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collection/detail?redPacketsId=' + id,
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if (ret) {
+				var redpacketsInfo = ret;
+				bindData(redpacketsInfo);
+				memberId = ret.memberId;
+				//是否已收藏
+				if(ret.note == "1"){
+					$api.addCls($api.byId('collectI'), 'already-icon');
+				}
+			}
+		});
+	}
+
+	/**
+	 *加载数据
+	 */
+	function bindData(redpacketsInfo){
+		if(redpacketsInfo){
+			$api.html($api.byId('contentDiv'), redpacketsInfo.summary);
+			$api.attr($api.byId('logoImg'), 'src', global.getImgUri() + '/' + redpacketsInfo.businessLogo);
+			$api.attr($api.byId('logoImg2'), 'src', global.getImgUri() + '/' + redpacketsInfo.businessLogo);
+			$api.html($api.byId('nameDiv'), redpacketsInfo.businessName);
+			$api.html($api.byId('nameH'), redpacketsInfo.businessName);
+			
+			$api.html($api.byId('sendTimeEm'), global.formatDate(redpacketsInfo.sendTime, 'yyyy-MM-dd'));
+			$api.html($api.byId('browseEm'), redpacketsInfo.browse);
+			
+			var banners = redpacketsInfo.banners;
+			var imgSrc = "";
+			for(var i=0; i<banners.length; i++){
+				imgSrc = '<div><img onerror="this.src=\'../../image/icon150x150.png\'" src="' + global.getImgUri() + '/' + banners[i].banner + '" /></div>';
+				$api.append($api.byId('banner-content'), imgSrc);
+			}
+			
+			count = banners.length
+			if(count === 1){
+				$api.addCls($api.byId('beforeI'), 'aui-hide');
+				$api.removeCls($api.byId('afterI'), 'aui-hide');
+			}
+			window.mySlide = new Swipe(document.getElementById('slide'), {
+				auto : 5000,
+				continuous : true,
+				disableScroll : true,
+				stopPropagation : true,
+				callback : function(index, element) {
+					if(index === count-1){
+						$api.addCls($api.byId('beforeI'), 'aui-hide');
+						$api.removeCls($api.byId('afterI'), 'aui-hide');
+					}else{
+						$api.addCls($api.byId('afterI'), 'aui-hide');
+						$api.removeCls($api.byId('beforeI'), 'aui-hide');
+					}
+				},
+			    onTouchStart: function(swiper,even){
+			        //swiper.unlockSwipeToPrev();
+			        //swiper.unlockSwipeToNext();
+			        if(swiper.isEnd){
+			            swiper.lockSwipeToNext();
+			        }else if(swiper.activeIndex==0){
+			            swiper.lockSwipeToPrev();
+			        }else{
+			        	swiper.lockSwipeToPrev();
+			        	swiper.lockSwipeToNext();
+			        }
+			    }
+			});
+		}
+	}
+	
+	/**
+	 *增加浏览量 
+	 */
+	function addBrowse(){
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collection/browse',
+			headers : global.getRequestToken(),
+			data : {
+				values : {
+					redPacketsId : id,
+				}
+			}
+		}, function(ret, err) {
+		});
+	}
+	
+	/**
+	 *开红包 
+	 */
+	function openRedpacket(){
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collection/record',
+			headers : global.getRequestToken(),
+			data : {
+				values : {
+					redPacketsId : id,
+				}
+			}
+		}, function(ret, err) {
+			$api.removeCls($api.byId('redpackMaskDiv'), 'aui-hide');
+			$api.removeCls($api.byId('redpackDiv'), 'aui-hide');
+			
+			if(ret && ret.id){
+				$api.html($api.byId('dismantleDiv'), global.formatCurrency(ret.balance));
+				$api.removeAttr($api.byId('dismantleDiv'), "onclick");
+				$api.removeCls($api.byId('unitDiv'), 'aui-hide');
+				$api.addCls($api.byId('dismantleDiv'), 'tear-reb-s');
+			}else{
+				$api.attr($api.byId('dismantleDiv'), "onclick", "dismantleRedPackets();");
+			}
+		});
+	}
+	
+	/**
+	 *关闭红包 
+	 */
+	function closeRedpacket(){
+		$api.addCls($api.byId('redpackMaskDiv'), 'aui-hide');
+		$api.addCls($api.byId('redpackDiv'), 'aui-hide');
+	}
+	
+	/**
+	 *拆红包 
+	 */
+	function dismantleRedPackets(){
+		$api.addCls($api.byId('dismantleDiv'), 'rotate');
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collection/gain',
+			headers : global.getRequestToken(),
+			data : {
+				values : {
+					redPacketsId : id,
+				}
+			}
+		}, function(ret, err) {
+			$api.removeCls($api.byId('dismantleDiv'), 'rotate');
+			if(ret && ret.success){
+				$api.removeAttr($api.byId('dismantleDiv'), "onclick");
+				$api.html($api.byId('dismantleDiv'), global.formatCurrency(ret.obj.balance));
+				$api.removeCls($api.byId('unitDiv'), 'aui-hide');
+				$api.addCls($api.byId('dismantleDiv'), 'tear-reb-s');
+				api.sendEvent({
+	                name:'dismantleEvent',
+	                extra:{
+	                	id : id
+	                }
+                });
+				api.sendEvent({
+	                name:'memberStatisticsRefresh'
+                });
+                api.sendEvent({
+	                name:'financeAccountRefresh'
+                });
+			}else{
+				global.setToast(ret.message);
+			}
+		});
+	}
+	
+	 /**
+     *收藏 
+     */
+    function collect(){
+    	$api.removeAttr($api.byId('collectI'), 'onclick');
+    	var type = 1;
+    	if($api.hasCls($api.byId('collectI'), 'already-icon')){
+    		type = 2;
+    	}else{
+    		type = 1;
+    	}
+    	
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collect/operate',
+			headers : global.getRequestToken(),
+			data : {
+				values : {
+					id : memberId,
+					type : type
+				}
+			}
+		}, function(ret, err) {
+			if(ret){
+				if(ret.success){
+					if(type == 1){
+						$api.addCls($api.byId('collectI'), 'already-icon');
+					}else{
+						$api.removeCls($api.byId('collectI'), 'already-icon');
+					}
+					
+					global.setToast((type == 1 ? '收藏' : '取消收藏') + '成功');
+				}else{
+					global.setToast(ret.message);
+				}
+			}else{
+				//global.setToast((type == 1 ? '收藏' : '取消收藏') +  '失败');
+				global.setErrorToast();
+			}
+			
+			$api.attr($api.byId('collectI'), 'onclick', 'collect();');
+		});
+    }
+    
+    /**
+     *分享 
+     */
+    function openShare(){
+    	var dialogBox = api.require('dialogBox');
+		dialogBox.actionMenu ({
+		    rect:{
+		        h: 142
+		    },
+		    texts:{
+		         cancel: '取消'
+		    },
+		    isCuttingLine : true,
+		    items:[{
+				        text: '微信好友',
+				        icon: 'widget://image/receive/share-wechat-icon.png'
+				    }, {
+				        text: '朋友圈',
+				        icon: 'widget://image/receive/share-friend-icon.png'
+				    }, {
+				        text: 'QQ好友',
+				        icon: 'widget://image/receive/share-qq-icon.png'
+				    }, {
+				        text: '新浪微博',
+				        icon: 'widget://image/receive/share-sina-icon.png'
+				    }],
+		    styles:{
+		        bg:'#FFF',
+		        column: 4,
+		        itemText: {
+		            color: '#303030',
+		            size: 12,
+		            marginT:16
+		        },
+		        itemIcon:{
+		            size:38
+		        },
+		        cancel:{  
+		            bg: '#fff',
+		            color:'#464646',
+		            h: 48 ,
+		            size: 14       
+		        }
+		    }
+		}, function(ret){
+			if(ret && ret.eventType == 'cancel'){
+				dialogBox.close({
+				    dialogName: 'actionMenu'
+				});
+			}
+		    if(ret){
+		    	switch(ret.index){
+		    		case 0:
+		    			shareWx('session','session');
+		    			break;
+		    		case 1:
+		    			shareWx('timeline','timeline');
+		    			break;
+		    		case 2:
+		    			shareQzone('QFriend','qfriend');
+		    			break;
+		    		case 3:
+		    			shareWeiBo('weibo','weibo');
+		    			break;
+		    	}
+		    }
+		});
+    }
+    
+    function shareQzone(shareType, platType) {
+		var qq = api.require('qq');
+		qq.installed(function(ret, err) {
+			if (ret.status) {
+				qq.shareNews({
+					url : global.getShareUri() + '/views/guide_frame.html',
+					title : '拿手红包',
+					description : '拿手红包 ',
+					imgUrl : global.getShareUri() + '/image/my/logo-icon.png',
+					type : shareType
+				});
+			} else {
+				global.setToast('当前设备未安装QQ客户端');
+			}
+		});
+	}
+
+	function shareWx(shareType, platType) {
+		var wx = api.require('wx');
+		wx.isInstalled(function(ret, err) {
+			if (ret.installed) {
+				wx.shareWebpage({
+					scene : shareType,
+					title : '拿手红包',
+					description : '拿手红包',
+					thumb : 'widget://image/icon150x150.png',
+					contentUrl : global.getShareUri() + '/views/guide_frame.html'
+				}, function(ret, err) {
+					dialogBox.close({
+						 dialogName: 'actionMenu'
+					});
+				});
+			} else {
+				global.setToast('当前设备未安装微信客户端');
+			}
+		});
+	}
+	
+	function shareWeiBo(shareType, platType) {
+		var weibo = api.require('weibo');
+		weibo.isInstalled(function(ret) {
+			if (ret.status) {
+				weibo.shareWebPage({
+					title : '拿手红包',
+					description : '拿手红包',
+					thumb : 'widget://image/icon150x150.png',
+					contentUrl : global.getShareUri() + '/views/guide_frame.html'
+				}, function(ret, err) {
+					dialogBox.close({
+						dialogName: 'actionMenu'
+					});
+				});
+			} else {
+				global.setToast('当前设备未安装新浪微博客客户端');
+			}
+		});
+	}
+</script>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>编辑微信号</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<style>
+		html,body{
+			height: 100%;
+			width:100%;
+		}
+		#wrap{	
+		    display: -webkit-box;
+		    display: -webkit-flex;
+		    display: flex;
+		    -webkit-box-orient: vertical;
+		    -webkit-flex-flow: column;
+		           flex-flow: column;
+		}
+		#header{
+		    text-align: center;
+		   	background-color: #fc531f;
+			color: #ffffff;
+		    width: 100%;
+		    position:relative;
+		    padding-top: 22px;
+			background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+			background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		}
+		#header .left-text{
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		    color: #fff;
+		}
+		
+	   #header .right-text{
+	        background-size: 1.4rem auto;
+	        bottom: 0;
+	        display: block;
+	        height: 44px;
+	        right: 12px;
+	        position: absolute;
+	        line-height: 44px;
+	        font-size: 16px;
+	        color: #fff;
+		}
+		#header h1{
+		    font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+		}	
+	</style>
+</head>
+<body class="body-bg-ef">
+<div id="wrap">
+	<div id="header">
+		<a tapmode="" class="left-text" onclick="api.closeWin();">取消</a>
+		<h1><span id="title">编辑微信号</span></h1>
+		<a tapmode="" class="right-text" onclick="save()">完成</a>
+	</div>
+</div>	
+<div class="collection-contact">
+    <ul class="aui-list aui-form-list">
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label aui-w13"><img src="../../image/send/weixin-iconpng.png" style="max-width: 1.5rem;"></div>
+                <div class="aui-list-item-input"><input type="text" id="search-input" maxlength="20" onkeyup="amountUp();" placeholder="请输入微信号"></div>
+                <i tapmode="" id="closeIcon" onclick="clearText();" class="input-close" style="display:none;"><img id="imgId" class=""  src="../../image/send/close.png"></i>
+            </div>
+        </li>
+    </ul>
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+	var keyword="";
+	
+	apiready = function(){
+	    var header = $api.byId('header');
+		$api.fixStatusBar(header);
+		
+	  	keyword = api.pageParam.keyword;
+	  	if(keyword){
+	  		$api.val($api.byId('search-input'), keyword);
+	  		$api.attr($api.byId('closeIcon'), 'style', 'display:block;');
+	  	}
+	  	
+	    // 使用模块弹出键盘
+	    var softInput = api.require('softInputMgr');
+	    // 将相应的输入框获取焦点
+	    document.getElementById("search-input").focus();
+	    softInput.toggleKeyboard();
+	}
+	
+	/**
+	 *查找 
+	 */
+	function amountUp(){
+        keyword = $api.val($api.byId('search-input'));
+        if(keyword.length < 1){
+        	$api.attr($api.byId('closeIcon'), 'style', 'display:none;');
+        }else{
+        	$api.attr($api.byId('closeIcon'), 'style', 'display:block;');
+        }
+	}
+	
+	/**
+	 *清除文字 
+	 */
+	function clearText(){
+		$api.attr($api.byId('closeIcon'), 'style', 'display:none;');
+		$api.val($api.byId('search-input'), '');
+	}
+	
+	/**
+	 *存储
+	 */
+	function save(){
+		api.sendEvent({
+	        name:'collectionWxSelectEvent',
+	        extra:{
+	        	keyword : keyword
+	        }
+        });
+	}
+</script>
+</html>

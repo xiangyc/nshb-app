@@ -1,0 +1,35 @@
+/*登录*/
+.login-bg{ background:url("../image/entrance/login-bg.jpg") top center no-repeat; background-size: 100%; background-color: #fff; overflow: hidden; }
+.login-top{ width: 100%; padding-top: 6.9rem; padding-bottom: 3.2rem; text-align: center;   }
+.login-top img{  width: 5rem; height: 5rem; border-radius: 0.7rem; margin: 0 auto;  }
+.login-top p{ font-size:0.9rem; color: #fff; line-height: 1;  padding-top: 0.75rem; }
+.aui-btn-login {  display: block;  margin: 4rem 0.75rem 0rem 0.75rem;  height: 2.15rem;  line-height: 2.15rem; background-color: #fff;  border-radius:1.075rem;  font-size: 0.75rem;  color: #fc531f;  }
+.aui-btn-login:active {  color: #fc531f;  background-color: #fff;  }
+@media only screen and (max-width: 320px) {
+	.login-top { padding-top: 2rem; padding-bottom: 3.2rem; }
+	.login-down p{ padding-top: 1rem !important; }
+}
+@media only screen and (min-width: 360px) {
+	.login-top { padding-top: 5rem; padding-bottom: 5rem; }
+	.login-down{ position: absolute; bottom:0; width: 100%; }
+}
+.login-down{ text-align: center; }
+.login-down h4{ font-size: 0.7rem; color: #fc531f; line-height: 1;  }
+.login-down .login-other{ padding: 1.5rem 2.325rem 0rem 2.325rem; }
+.login-down .login-other li{ margin: 0 5.665%; width:22%; background-color: #fff; border: 0.05rem solid #ececec; border-radius: 100%;  float: left;  }
+.login-down .login-other li img{ width: 100%; display: block; }
+.login-down p{  float: left; text-align: center; padding: 1.8rem 0rem 0.75rem 0rem; width: 100%;  color: #9e9e9e; }
+.login-down p em{ color: #fc531f;  }
+/*兴趣爱好*/
+.hobby-box{  margin: 1.35rem 0.5rem 0rem 0.5rem; color: #000; }
+.hobby-box h2{  font-size:1.15rem; line-height: 1; padding-bottom: 1.9rem; text-align: center; }
+.hobby-box ul{ margin-bottom: 3.625rem; text-align: center;  }
+.hobby-box ul li{ min-width: 4.05rem; height: 1.6rem; text-align: center; line-height: 1.6rem; font-size:0.75rem; color: #999; border-radius: 0.8rem; border: 0.05rem solid #dfdfdf; padding: 0 1.15rem; margin: 0rem 0.25rem 0.75rem 0.25rem; display: inline-block;  }
+.hobby-box ul li.aui-active{ background-color: #ff5800; border: 0.05rem solid #ff5800; color: #fff; display: inline-block;  }
+.hobby-btn-box {  float: left; text-align: center; width: 100%;  }
+.hobby-btn-define{ width: 4.7rem; height: 1.75rem; border-radius: 0; line-height: 1.75rem; font-size:0.75rem; background-color: #333; color: #fff; border: 0.05rem solid #fff; }
+.hobby-btn-define:active {background-color: #fd8f26; color: #fff; border: 0.05rem solid #fd8f26; }
+.interest-top{ margin-top: 1.9rem; margin-left: 0.9rem; height: 1.1rem; }
+.interest-top a{ width: 1.1rem; height: 1.1rem; display: block; }
+.interest-top img{ width: 1.1rem; height: 1.1rem;}
+.interest-btn-box{ position: absolute; bottom: 1rem; padding: 0 0.75rem; width: 100%; }

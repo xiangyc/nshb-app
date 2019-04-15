@@ -1,0 +1,518 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>编辑广告内容</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<body class="body-bg-ef" style="margin-bottom:66px;">
+<div class="ad-map-box">
+    <div class="ad-content-textarea collection-content-textarea">
+        <textarea id="content" class="mui-input-clear question" oninput="countWord()" placeholder="请输入广告内容..." maxlength="120"></textarea>
+        <P><span id="word">0</span>/120</P>
+    </div>
+      <div class="ad-photo-box aui-margin-t-10">
+        <h4><em class="color-333">请上传图片（选填，最多6张）</h4>
+        <div class="ui-feedback-photo">
+            <div id="div0" class="position-r">
+                <img id="img0" tabmode="" onclick="selectImage(0)" src="../../image/send/ad-photo-button.jpg" onerror="this.src='../../image/send/ad-photo-button.jpg'">
+                <img id="icon0" tabmode="" onclick="deleteImage(0);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+            <div id="div1" class="position-r aui-hide">
+                <img id="img1" tabmode="" onclick="selectImage(1)" src="../../image/send/ad-photo-button.jpg" onerror="this.src='../../image/send/ad-photo-button.jpg'">
+                <img id="icon1" tabmode="" onclick="deleteImage(1);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+            <div id="div2" class="position-r aui-hide">
+                <img id="img2" tabmode="" onclick="selectImage(2)" src="../../image/send/ad-photo-button.jpg" onerror="this.src='../../image/send/ad-photo-button.jpg'">
+                <img id="icon2" tabmode="" onclick="deleteImage(2);"src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+            <div id="div3" class="position-r aui-hide">
+                <img id="img3" tabmode="" onclick="selectImage(3)" src="../../image/send/ad-photo-button.jpg" onerror="this.src='../../image/send/ad-photo-button.jpg'">
+                <img id="icon3" tabmode="" onclick="deleteImage(3);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+            <div id="div4" class="position-r aui-hide">
+                <img id="img4" tabmode="" onclick="selectImage(4)" src="../../image/send/ad-photo-button.jpg" onerror="this.src='../../image/send/ad-photo-button.jpg'">
+                <img id="icon4" tabmode="" onclick="deleteImage(4);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+
+            <div id="div5" class="position-r aui-hide">
+                <img id="img5" tabmode="" onclick="selectImage(5)" src="../../image/send/ad-photo-button.jpg" onerror="this.src='../../image/send/ad-photo-button.jpg'">
+                <img id="icon5" tabmode="" onclick="deleteImage(5);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+        </div>
+    </div>
+
+    <ul class="aui-list map-form-list aui-margin-t-10">
+        <li tapmode onclick="openRegionWin();" class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="list-img-icon">广告投放城市</div>
+                <div id="locationDiv" class="aui-list-item-input">请选择</div>
+            </div>
+        </li>
+        <li tapmode onclick="openInterstWin();" class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="list-img-icon">用户兴趣标签</div>
+                <div id="interestDiv" class="aui-list-item-input">请选择</div>
+            </div>
+        </li>
+    </ul>
+    <ul class="aui-list map-form-list aui-margin-t-10">
+        <li tapmode onclick="openContactWin();" class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="list-img-icon">联系方式(选填)</div>
+                <div id="contactDiv" class="aui-list-item-input">请填写</div>
+            </div>
+        </li>
+        <li tapmode onclick="openWechatWin();" class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="list-img-icon">微信号(选填)</div>
+                 <div id="wxDiv" class="aui-list-item-input">请填写</div>
+            </div>
+        </li>
+    </ul>
+
+    <p class="prompt-writing prompt-writing2">根据《广告法》相关规定，需审核广告内容<br/>客服电话:15600688801</p>
+    <div class="ad-collection-bottom body-bg-white">
+        <div class="aui-btn-box2">
+            <div id="submitDiv" tapmode="aui-active" onclick="submit();"  class="aui-btn btn-gradient">提交审核</div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//广告投放城市
+	var cityName="";
+	//用户兴趣标签
+	var interest="";
+	//用户兴趣标签Id
+	var interestId="";
+	//微信号
+	var wx="";
+	//联系方式
+	var contact="";
+	//内容
+	var content="";
+	//图片
+	var filePath = [6];
+	var regionIndex = [0,0,0];
+	var regionJson;
+	
+	apiready = function(){
+		initEvent();
+		
+		api.readFile({
+			path : 'widget://res/UIRegionList.json'
+		}, function(ret, err) {
+			 regionJson = eval("(" + ret.data + ")");			
+		});
+	}
+
+	/**
+	 *事件 
+	 */
+	function initEvent(){
+		api.addEventListener({
+	        name:'collectionInterestSelectEvent'
+        },function(ret,err){
+        	api.closeWin({ name : 'interstWin' });
+        	if(ret && ret.value){
+        		interestId = ret.value.interestsIds;
+        		interest = ret.value.interestsNames;
+        		$api.html($api.byId('interestDiv'), interest);
+        	}
+        });
+		
+		api.addEventListener({
+	        name:'collectionContactSelectEvent'
+        },function(ret,err){
+        	api.closeWin({ name : 'contactWin' });
+        	if(ret && ret.value && ret.value.keyword){
+        		contact = ret.value.keyword;
+        		$api.html($api.byId('contactDiv'), contact);
+        	}else{
+        		contact = "";
+        		$api.html($api.byId('contactDiv'), '请填写');
+        	}
+        });
+        
+		api.addEventListener({
+	        name:'collectionWxSelectEvent'
+        },function(ret,err){
+        	api.closeWin({ name : 'wechatWin' });
+        	if(ret && ret.value && ret.value.keyword){
+        		wx = ret.value.keyword;
+        		$api.html($api.byId('wxDiv'), wx);
+        	}else{
+        		wx = "";
+        		$api.html($api.byId('wxDiv'), '请填写');
+        	}
+        });
+        
+        api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+        	if(api.pageParam.src === 2){
+	        	api.closeWin({ name : 'collectionInfoSubmitWin' });
+	        	api.closeWin({ name : 'advertisementInfoAginWin' });
+        	}
+        });
+	}
+	
+	/**
+	 *选择图片
+	 */
+	function selectImage(id){
+		api.getPicture({
+			sourceType : 'library',
+			encodingType : 'jpg',
+			mediaValue : 'pic',
+			destinationType : 'url',
+			allowEdit : true,
+			quality : 90
+		}, function(ret, err) {
+			if (ret) {
+				if (ret.data) {
+					var imagePath = ret.data;
+					$api.attr($api.byId('img' + id), 'src', imagePath);
+					$api.removeCls($api.byId('icon' + id), 'aui-hide');
+					
+					for(var i=id; i<5; i++){
+						if((filePath[i + 1] == "" || filePath[i + 1] == undefined)){
+							$api.removeCls($api.byId('div' + (i + 1)), 'aui-hide');
+							break;
+						}
+					}
+
+					filePath[id] = imagePath;
+				}
+			}
+		});
+	}
+
+	/**
+	 *册除图片
+	 */
+	function deleteImage(id){
+		filePath[id] = "";
+		$api.attr($api.byId('img' + id), 'src', '../../image/my/photo-button.png');
+		$api.addCls($api.byId('icon' + id), 'aui-hide');
+		
+		var flag = 0;
+		for(var i=0; i<5; i++){
+			if(i>=id && (filePath[i + 1] == "" || filePath[i + 1] == undefined)){
+				$api.addCls($api.byId('div' + (i + 1)), 'aui-hide');
+			}
+			if(i>0 && (filePath[i] == "" || filePath[i] == undefined) && (filePath[i + 1] == "" || filePath[i + 1] == undefined)){
+				$api.addCls($api.byId('div' + i), 'aui-hide');
+			}
+		}
+		
+		for(var i=0; i<= id; i++){
+			if(filePath[i] == "" || filePath[i] == undefined){
+				flag = 1;
+			}
+		}
+		
+		if(filePath[id + 1] == "" || filePath[id + 1] == undefined){
+			$api.removeCls($api.byId('div' + id), 'aui-hide');
+		}
+		
+		if(id === 5 && flag === 1){
+			$api.addCls($api.byId('div' + id), 'aui-hide');
+		}
+		
+		var startIndex = 0;
+		for(var i=0; i<6; i++){
+			if(filePath[i] == "" || filePath[i] == undefined){
+				startIndex = i;
+				break;
+			}
+		}
+		if(startIndex < 5){
+			for(var i=startIndex+1; i<6; i++){
+				if(filePath[i] == "" || filePath[i] == undefined){
+					$api.addCls($api.byId('div' + i), 'aui-hide');
+				}
+			}
+		}else{
+			$api.removeCls($api.byId('div' + startIndex), 'aui-hide');
+		}
+		
+		for(var i=0; i<6; i++){
+			if((filePath[i] == "" || filePath[i] == undefined) && (filePath[i+1] != "" && filePath[i+1] != undefined)){
+				filePath[i] = filePath[i+1];
+				filePath[i+1] = "";
+				
+				$api.attr($api.byId('img' + i), 'src', filePath[i]);
+				$api.removeCls($api.byId('icon' + i), 'aui-hide');
+				
+				$api.attr($api.byId('img' + (i+1)), 'src', '../../image/my/photo-button.png');
+				$api.addCls($api.byId('icon' + (i+1)), 'aui-hide');
+			}
+		}
+	}
+
+	/**
+	 *提交审核
+	 */
+	function submit(){
+		//获取广告图片、文字
+		var imagePath = [];
+		content = $api.val($api.byId('content'));
+
+		for(var i = 0; i < filePath.length; i++){
+			if(filePath[i].length > 0){
+				imagePath.push(filePath[i]);
+			}
+		}
+
+		if (content.length === 0){
+			api.toast({
+				msg : '请填写广告文字'
+			});
+			return;
+		}
+		if (content.length > 120) {
+			api.toast({
+				msg : '广告文字最多不能超过120个字'
+			});
+			return;
+		}
+		if (imagePath.length === 0){
+			api.toast({
+				msg : '请上传至少一张图片'
+			});
+			return;
+		}
+		if (cityName.length < 1) {
+			api.toast({
+				msg : '请选择投放区域'
+			});
+			return;
+		}
+		if (interestId.length < 1) {
+			api.toast({
+				msg : '请选择兴趣爱好'
+			});
+			return;
+		}
+		if (content.length === 0) {
+			content = '恭喜发财，大吉大利';
+		}
+
+		$api.addCls($api.byId('submitDiv'), 'aui-disabled');
+		$api.removeAttr($api.byId('submitDiv'), 'onclick');
+		
+		var uiloading = api.require('UILoading');
+		uiloading.keyFrame({
+			rect: {
+		        w: 80,
+		        h: 80
+		    },
+		    styles: {
+		        bg: 'rgba(0,0,0,0.5)',
+		        corner: 5,
+		        interval: 50,
+		        frame: {
+		            w: 80,
+		            h: 80
+		        }
+		    },
+		    content : global.loadImage()
+		}, function(ret) {
+		});
+
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collection/red-packets-apply',
+			headers : global.getRequestToken(),
+			timeout : 120,
+			data : {
+				values : {
+					cityName : cityName,
+					interest : interest,
+					interestId : interestId,
+					wx : wx,
+					contact : contact,
+					content : content
+				},
+				files : {
+					file : imagePath
+					}
+			}
+		}, function(ret, err) {
+			uiloading.closeKeyFrame();
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			$api.removeCls($api.byId('submitDiv'), 'aui-disabled');
+			$api.attr($api.byId('submitDiv'), 'onclick', 'submit();');
+			if (ret) {
+				if(ret.success){
+					global.setToast('提交成功');
+
+					var params = { page : '../send/collection_submit', title : '红包集广告红包', id : ret.id };
+					global.openWinName('collectionInfoSubmitWin', '../common/common_win', params);
+                }else{
+                	global.setToast(ret.message);
+                }
+			}else{
+				global.setErrorToast();
+			}
+		});
+	}
+	
+	function countWord(){
+		var content = $api.val($api.byId('content'));
+		var count = 120
+		var word = 0;
+		if (content.length <= count) {
+			word = count - content.length;
+		} else {
+			$api.val($api.byId('content'), content.slice(0,120));
+		}
+		$api.html($api.byId('word'), word);
+	}
+	
+	/**
+	 *选择区域 
+	 */
+	function openRegionWin(){
+		var UIActionSelector = api.require('UIActionSelector');
+
+		UIActionSelector.open({
+		    datas: 'widget://res/UIRegionList.json',
+		    actives: regionIndex,
+		    layout: {
+		        row: 5,
+		        col: 3,
+		        height: 30,
+		        size: 12,
+		        sizeActive: 14,
+		        rowSpacing: 6,
+		        colSpacing: 10,
+		        maskBg: 'rgba(0,0,0,0.6)',
+		        bg: '#fff',
+		        color: '#999',
+		        colorActive: '#333',
+		        colorSelected: '#333'
+		    },
+		    animation: true,
+		    cancel: {
+		        text: '取消',
+		        size: 12,
+		        w: 90,
+		        h: 35,
+		        bg: '#f7f7f7',
+		        bgActive: '#f7f7f7',
+		        color: '#fc531f',
+		        colorActive: '#fc531f'
+		    },
+		    ok: {
+		        text: '完成',
+		        size: 12,
+		        w: 90,
+		        h: 35,
+	            bg: '#f7f7f7',
+		        bgActive: '#f7f7f7',
+		        color: '#fc531f',
+		        colorActive: '#fc531f'
+		    },
+		    title: {
+		        text: '选择地点',
+		        size: 15,
+		        h: 42,
+		        bg: '#f7f7f7',
+		        color: '#333'
+		    },
+		    fixedOn: api.frameName
+		}, function(ret, err) {
+		    if (ret) {
+		    	if(ret.eventType == 'ok'){
+//		       		areaId = ret.selectedInfo[1].c_id;
+//		       		cityActives = ret.selectedInfo[1].c_no;
+//		       		provinceActives = ret.selectedInfo[0].p_no;
+					cityName = ret.level1 + ',' + ret.level2 + ','+ret.level3;
+					$api.html($api.byId('locationDiv'), cityName.replace(",市辖区", "").replace(",县", ""));
+					
+					//获取下标
+					getRegionIndex(ret.level1, ret.level2, ret.level3);
+		        }
+		    }
+		});
+	}
+	
+	/**
+	 *获取下标 
+	 */
+	function getRegionIndex(level1, level2, level3){
+		for(var i=0; i<regionJson.length; i++){
+			if(regionJson[i].name == level1){
+				regionIndex[0] = i;
+				for(var j=0; j<regionJson[i].sub.length; j++){
+					if(regionJson[i].sub[j].name == level2){
+						regionIndex[1] = j;
+						for(var k=0; k<regionJson[i].sub[j].sub.length; k++){
+							if(regionJson[i].sub[j].sub[k].name == level3){
+								regionIndex[2] = k;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 *兴趣标签 
+	 */
+	function openInterstWin(){
+		var params = { page : '../send/collection_interst', title : '请选择兴趣标签 ', id: '', ids: interestId, names : interest };
+		global.openWinName('interstWin', '../common/common_win', params);
+	}
+	
+	/**
+	 *联系方式  
+	 */
+	function openContactWin(){
+		api.openWin({
+	        name: 'contactWin',
+	        url: './collection_contact.html',
+	        pageParam:{
+	        	keyword: contact
+	        }
+        });
+	}
+	
+	/**
+	 *wechat 
+	 */
+	function openWechatWin(){
+		api.openWin({
+	        name: 'wechatWin',
+	        url: './collection_wechat.html',
+	        pageParam:{
+	        	keyword: wx
+	        }
+        });
+	}
+</script>
+</html>

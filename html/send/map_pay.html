@@ -1,0 +1,626 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>付款</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+    <style>
+		body{ position: relative; }
+		#header{
+		    text-align: center; 
+		    background-color: #fc531f;
+		    color: #ffffff;
+		    width: 100%;
+		    position:fixed;
+			top: 0;
+		   padding-top: 22px;
+		   background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+		   background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   z-index: 3;
+		}
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		    color: #fff !important;
+		}
+		#header h1{
+		    font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+		}		
+		.aui-radio:disabled:before,
+		.aui-radio.aui-disabled:before,
+		.aui-radio:disabled:after,
+		.aui-radio.aui-disabled:after,
+		.aui-checkbox:disabled:before,
+		.aui-checkbox.aui-disabled:before,
+		.aui-checkbox:disabled:after,
+		.aui-checkbox.aui-disabled:after {
+		    content: '';
+		    width: 0rem;
+		    height: 0rem;
+		    position: relative;
+		    border: none;
+		}
+	</style>
+</head>
+<body class="body-bg-ef">
+<div id="wrap">
+	<div id="header">
+		<a class="back-icon" tapmode onclick="api.closeWin();">返回</a>
+		<h1><span id="title">付款</span></h1>
+	</div>
+</div>
+<div class="ad-map-box" style="padding-top:64px;">
+    <div class="red-type-top">
+        <p id="randomP" class="aui-hide">当前为手气红包，红包金额随机分配</p>
+        <p id="normalP" class="aui-hide">当前为普通红包，每个红包金额相同</p>
+    </div>
+
+    <!-- 手气红包-->
+    <ul id="randomUl" class="aui-list aui-form-list border-bottom-ec aui-hide">
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div id="titleDiv" class="aui-list-item-label color-333">红包总额</div>
+                <div id="amountR" class="aui-list-item-input ad-red-item"></div>元
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div class="aui-list-item-label color-333">红包数量</div>
+                <div id="countR" class="aui-list-item-input ad-red-item"></div>个
+            </div>
+        </li>
+    </ul>
+
+    <!-- 普通红包-->
+    <ul id="normalUl" class="aui-list aui-form-list border-bottom-ec aui-hide">
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div id="titleDiv" class="aui-list-item-label color-333">单个红包</div>
+                <div id="amountN" class="aui-list-item-input ad-red-item"></div>元
+            </div>
+        </li>
+
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div class="aui-list-item-label color-333">红包数量</div>
+                <div id="countN" class="aui-list-item-input ad-red-item"></div>个
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div class="aui-list-item-label color-333">红包总额</div>
+                <div id="balanceN" class="aui-list-item-input ad-red-item"></div>元
+            </div>
+        </li>
+    </ul>
+
+    <div class="select-paymode">
+        <div class="paymode-title">选择支付方式</div>
+        <ul class="aui-list aui-list-in">
+            <li id="wxLi" class="aui-list-item">
+                <div class="aui-list-item-media">
+                    <img src="../../image/send/pay-weixin.png">
+                </div>
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-title">微信支付</div>
+                </div>
+                <input onclick="selectPayWay(1);" class="aui-radio" type="radio" name="demo1" checked="">
+            </li>
+            <li id="aliLi" class="aui-list-item">
+                <div class="aui-list-item-media">
+                    <img src="../../image/send/pay-alipay.png">
+                </div>
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-title">支付宝支付</div>
+                </div>
+                <input onclick="selectPayWay(2);" class="aui-radio" type="radio" name="demo1">
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-media">
+                    <img src="../../image/send/pay-nshb.png">
+                </div>
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-title">拿手余额支付
+                        <div class="legend">我的余额：<em id="balanceEm">0.00</em>元</div>
+                    </div>
+                </div>
+                <input id="financeR" onclick="selectPayWay(0);" class="aui-radio" type="radio" name="demo1">
+            </li>
+
+        </ul>
+    </div>
+
+    <div class="red-definite-num ad-red-num"><em>¥</em><span id="amountSpan" style="font-weight: 550;">0.00</span></div>
+
+    <div class="aui-btn-box2">
+        <div id="confirmDiv" tapmode="" onclick="showPasswordDialog();" class="aui-btn btn-gradient">确认支付</div>
+    </div>
+</div>
+
+<div class="aui-mask aui-mask-in aui-hide" id="modal-aui"></div>
+<div class="fixed-box body-bg-f8 aui-hide" id="confimPassword">
+    <div class="fixed-title"><i><img onclick="closeModal()" src="../../image/send/close-icon.png"/></i>请输入支付密码</div>
+    <div class="fixed-tips-info">账号余额：<em id="balanceEm2"></em>元&nbsp;&nbsp;&nbsp;&nbsp;本次支付：<em id="payEm"></em>元 </div>
+    <div class="withdraw-password-tips password-tips">
+        <li class="aui-list-item">
+            <div id="virbox1" class="virbox">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <input id="realbox1" type="password" class="realbox" maxlength="6">
+        </li>
+        <em class="aui-font-size-12 color-333 color-666" onclick="openPayPassworWin()">忘记密码？</em>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/common/calculate.js"></script>
+<script type="text/javascript" src="../../script/library/zepto.min.js"></script>
+<script type="text/javascript">
+	var id;
+	var type = 1;
+	var amount = 0;
+	var count = 0;
+	var payType = 1;
+	var tradeNo = '';
+	var payPwd;
+	var payPwdFlag = true;
+	
+	apiready = function(){
+		id = api.pageParam.id;
+		type = api.pageParam.type;
+		amount = api.pageParam.amount;
+		count = api.pageParam.count;
+
+		$api.html($api.byId('amountSpan'), global.formatCurrency(amount));
+		$api.html($api.byId('payEm'), global.formatCurrency(amount));
+		if(type === 1){
+			//普通
+			$api.removeCls($api.byId('normalUl'), 'aui-hide');
+			$api.removeCls($api.byId('normalP'), 'aui-hide');
+			
+			$api.html($api.byId('amountN'), calculate.div(amount,count));
+			$api.html($api.byId('countN'), count);
+			$api.html($api.byId('balanceN'), global.formatCurrency(amount));
+		}else{
+			//拼手气
+			$api.removeCls($api.byId('randomUl'), 'aui-hide');
+			$api.removeCls($api.byId('randomP'), 'aui-hide');
+			
+			$api.html($api.byId('amountR'), global.formatCurrency(amount));
+			$api.html($api.byId('countR'), count);
+		}
+		
+		var financeAccountResult = $api.getStorage("financeAccountResult");
+		if (financeAccountResult && financeAccountResult.accountBalance) {
+			$api.html($api.byId('balanceEm'), global.formatCurrency(financeAccountResult.accountBalance));
+			$api.html($api.byId('balanceEm2'), global.formatCurrency(financeAccountResult.accountBalance));	
+			
+			if(financeAccountResult.accountBalance < amount){
+				$api.attr($api.byId('financeR'), 'disabled', 'disabled');
+			}	
+		}
+		
+		if (api.systemType === 'ios' ){
+			$api.addCls($api.byId('wxLi'), 'aui-hide');
+			$api.addCls($api.byId('aliLi'), 'aui-hide');
+			selectPayWay(0, 2);
+		}
+		
+		initEvent();
+	}
+	
+	function initEvent(){
+    	api.addEventListener({
+        	name:'payPasswordRefresh'
+	    },function(ret,err){
+	    	api.closeWin({
+	    		name:'payPasswordWin'
+	        });
+	        
+	        api.closeWin({
+	    		name:'payPasswordNextWin'
+	        });   
+	        
+            api.closeWin({
+        		name:'payPasswordFinalWin'
+            });
+	    });
+	    
+	    api.addEventListener({
+	        name:'closePay'
+        },function(ret,err){
+        	$api.addCls($api.byId('modal-aui'), 'aui-hide');
+        	api.closeFrame({
+        		name : 'pay_frame'
+			});
+        });
+        
+        api.addEventListener({
+	        name:'inputPay'
+        },function(ret,err){
+        	if(ret && ret.value && ret.value){
+        		payPwd = ret.value.payPwd;
+        		send();
+        	}
+        });
+	}
+	
+	/**
+	 *选择支付方式
+	 */
+	function selectPayWay(item){
+		payType = item;
+	}
+
+	/**
+	 *关闭密码输入框
+	 */
+	function closeModal() {
+		$api.addCls($api.byId('confimPassword'), 'aui-hide');
+		$api.addCls($api.byId('modal-aui'), 'aui-hide');
+		  
+		$('#virbox1 span').html('');
+	}
+
+  /**
+   *设置支付密码
+   */
+  function openPayPassworWin() {
+    var params = {"page" : "../my/pay_password_set", "title" : "验证手机号码" };
+    api.openWin({
+      name : 'payPasswordWin',
+      url : '../common/common_win.html',
+      pageParam : params
+    });
+  }
+  
+	//充值页面
+	function openRechargeWin() {
+		if (api.systemType === 'ios') {
+			openGuideWin('充值');
+		} else {
+			var params = { "page" : "../my/recharge_frame" };
+			api.openWin({
+				name : 'rechargeWin',
+				url : '../my/recharge_win.html',
+				pageParam : params
+			});
+		}
+	}
+
+	/**
+	 *充值提现引导 
+	 */
+	function openGuideWin(typeTitle){
+		api.alert({
+		    msg: '微信搜索关注“拿手app”公众号进行' + typeTitle + '！',
+		    buttons : ["确定"]
+		}, function(ret, err) {
+		});
+	}
+		
+	/**
+	 *弹出交易密码输入框
+	 */
+	function showPasswordDialog(){
+		if(payType === 1){
+			//微信支付
+			wxPay();
+		}else if(payType === 2){
+			//支付宝
+			aliPay();
+		}else{
+			if (global.getUserPayPassword() === '0') {
+				payPwdFlag = false;
+				var dialogBox = api.require('dialogBox');
+				dialogBox.alert({
+				    texts: {
+				        content: '还没有设置支付密码,是否立即设置？',
+				        leftBtnTitle: '取消',
+				        rightBtnTitle: '确认'
+				    },
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 300,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+				    if (ret.eventType == 'right') {
+				    	openPayPassworWin();
+				    }
+				    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				});
+			}else{
+				//$api.removeCls($api.byId('confimPassword'), 'aui-hide');
+				$api.removeCls($api.byId('modal-aui'), 'aui-hide');
+				
+//				setTimeout(function(){
+//					$('#realbox1').focus();
+//				    $('#virbox1 span').css('background','#FFFECF');
+//				}, 300);
+
+			    api.openFrame({
+			        name: 'pay_frame',
+			        url: './pay_input.html',
+			        rect: {
+				        x:0,
+				        y:api.winHeight/2-100,
+				        w:'auto',
+				        h:'auto'
+			        }
+		        });
+			}
+		}
+	}
+	
+	/**
+	 *发送红包 
+	 */
+	function send(){
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/redpackets/red-packets-send',
+			headers : global.getRequestToken(),
+			timeout : 60,
+			data : {
+				values : {
+					redPacketsId : id,
+					payType : payType,
+					tradeNo : tradeNo,
+					payPwd : payPwd
+				}
+			}
+		}, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				if(ret.success){
+					var params = { "title" : "支付结果", page: '../send/map_pay_success', id: id, payType: payType, type: ret.obj.type, balance : ret.obj.balance, count : ret.obj.count };
+					global.openWinName('paySuccessWin', '../common/common_win', params);
+						
+	                api.sendEvent({
+	                	name:'memberStatisticsRefresh'
+	            	});
+					api.sendEvent({
+	                    name :'redpacketsSendEvent'
+	                });
+	            }else{
+	            	if (ret.message == "可用余额不足") {
+	            		var dialogBox = api.require('dialogBox');
+						dialogBox.alert({
+						    texts: {
+						        content: '可用余额不足',
+						        leftBtnTitle: '知道了',
+						        rightBtnTitle: '去充值'
+						    },
+						    styles: {
+						        bg: '#fff',
+						        corner: 10,
+						        w: 300,
+						        content: {
+						        	marginT: 50, 
+						            color: '#000',
+						            size: 16
+						        },
+						        left: {
+						            marginB: 7,
+						            marginL: 20,
+						            w: 130,
+						            h: 35,
+						            corner: 2,
+						            bg: '#fff',
+						            color: '#fc531f',
+						            size: 14
+						        },
+						        right: {
+						            marginB: 7,
+						            marginL: 10,
+						            w: 130,
+						            h: 35,
+						            corner: 2,
+						            bg: '#fff',
+						            color: '#fc531f',
+						            size: 14
+						        }
+						    }
+						}, function(ret) {
+						    if (ret.eventType == 'right') {
+						    	openRechargeWin();
+						    }
+						    dialogBox.close({
+						    	dialogName: 'alert'
+						    });
+						});
+	            	} else {
+	            		global.setToast(ret.message);
+	            	}
+	            }
+	        }else{
+				global.setToast('支付失败');
+			}
+		});
+	}
+	
+	function wxPay(){
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/pay/app-wx-order-info',
+			headers : global.getRequestToken(),
+	        data : {
+				values : {
+					amount : amount,
+					payType : 3
+				}
+			}
+		}, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			
+			if (ret && ret.success) {
+				var signInfo = ret.code.split('_');
+					var orderId = "";
+					var mechId = "";
+					var nonceStr = "";
+					var appId = "";
+					var randTime = "";
+					var appId = "";
+					if(signInfo && signInfo.length > 4){
+						mechId = signInfo[0];
+						orderId = signInfo[1];
+						nonceStr = signInfo[2];
+						randTime = signInfo[3];
+						appId = signInfo[4];
+					}
+	
+					var wxPayM = api.require('wxPay');
+					wxPayM.payOrder({
+						apiKey: appId,
+					    orderId: '' +　orderId,
+					    mchId: '' +　mechId,
+					    nonceStr: '' +　nonceStr,
+					    timeStamp: '' +　randTime,
+					    sign: '' +　ret.message
+					}, function(ret, err) {
+					    if (ret.status) {
+							send();
+					    }
+					});
+			}else{
+				global.setToast(ret.message);
+			}
+		});
+	}
+	
+	function aliPay(){
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/pay/alipay-order-info',
+			headers : global.getRequestToken(),
+	        data : {
+				values : {
+					amount : amount,
+					payType : 3
+				}
+			}
+		}, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			
+			if (ret && ret.success) {
+				//请求支付
+				var aliPayPlus = api.require('aliPayPlus');
+				aliPayPlus.payOrder({
+				    orderInfo: ret.message
+				}, function(ret, err) {
+					if(ret.code == 9000){
+						send();
+				    }
+				});
+			}else{
+				global.setToast(ret.message);
+			}
+		});
+	}
+	
+	$('#virbox1').click(function(){
+	    $('#realbox1').focus();
+	    $('#virbox1 span').css('background','#FFFECF');
+	});
+	$('#realbox1').blur(function(){
+	    $('#virbox1 span').css('background','#ffffff');
+	});
+
+	$('#realbox1').keyup(function(){
+	    $('#virbox1 span').html('');
+	    var realboxLength = Number($('#realbox1').val().length);
+
+	    for(var i=0;i<realboxLength;i++){
+	        payPwd = $('#realbox1').val();
+	        $('#virbox1 span').eq(i).html('·');
+	        if(i == 5) {
+	        	send();
+	        }
+	    }
+	});
+</script>
+</html>

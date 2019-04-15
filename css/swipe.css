@@ -1,0 +1,116 @@
+.swipe {
+  overflow: hidden;
+  visibility: hidden;
+  position: relative;
+}
+.swipe-wrap {
+  overflow: hidden;
+  position: relative;
+}
+.swipe-wrap > div {
+  float:left;
+  width:100%;
+  position: relative;
+}
+
+.swipe-wrap > div{
+  height: 180px; overflow: hidden; position: relative;
+}
+.swipe-wrap img{
+  height: 180px; width: 100%;
+}
+#slide{
+  height: 180px; margin:0 auto; position: relative; 
+ border: none;
+}
+#pointer{
+  position: absolute; bottom: 0px; overflow: hidden;
+  left: 50%;
+  text-align: center;
+  transform: translateX(-50%);
+  -ms-transform: translateX(-50%);		/* IE 9 */
+  -webkit-transform: translateX(-50%);	/* Safari and Chrome */
+  -o-transform: translateX(-50%);		/* Opera */
+  -moz-transform: translateX(-50%);		/* Firefox */
+}
+#pointer .li{
+  float: left; list-style: none;
+}
+#pointer .li a{
+  display: inline-block; width: 6px; height: 6px; border-radius: 6px;
+  background-color:rgba(255,255,255,0.6);
+  margin-right: 4px;
+}
+#pointer .li a.active{
+  background-color: #ffffff; 
+}
+
+
+.swipe2 {
+/*  overflow: hidden;
+  visibility: hidden;*/
+  position: relative;
+  padding: 0px 0 0 0;
+  margin: 0;
+}
+.swipe-wrap2 {
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+}
+.swipe-wrap2 > div{
+  float:left;
+  overflow: hidden; 
+  position: relative;
+}
+.swipe-wrap2 img{
+   width: 71.2%;
+   border: 3px solid rgba(255,255,255,.12);
+}
+#slide2{
+   margin:0 auto; position: relative; 
+ border: none;
+}
+#slide3{
+   margin:0 auto; position: relative; 
+ border: none;
+}
+#slide4{
+ margin:0 auto; position: relative; 
+ border: none;
+}
+
+.pointer2{
+  position: absolute; 
+  min-width: 180px;
+  bottom: 20px; 
+  overflow: hidden;
+  left: 50%;
+  text-align: center;
+  transform: translateX(-50%);
+  -ms-transform: translateX(-50%);    
+  -webkit-transform: translateX(-50%);  
+  -o-transform: translateX(-50%);   
+  -moz-transform: translateX(-50%);  
+}
+.pointer2 .li{
+  float: left; list-style: none;
+  padding: 0px;
+  margin: 0px;
+  height: 10px;
+}
+.pointer2 .li a{
+    float: left;
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin: 1px 2px;
+    cursor: pointer;
+    border-radius: 3px;
+    background: rgba(255,255,255,.4);
+}
+.pointer2 .li a.active{
+  background-color: #f9b017; 
+}

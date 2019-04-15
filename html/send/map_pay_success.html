@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>支付结果</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<body class="body-bg-ef">
+<!--普通红包-->
+<div class="ad-map-box body-bg-white">
+    <div class="ad-no-icon">
+        <img src="../../image/send/ok-icon.png">
+    </div>
+    <p class="ad-result-h ad-result-ok">支付成功</p>
+    <ul class="ad-result-ul">
+        <li>广告类型<span>地图红包广告</span></li>
+        <li>红包类型<span id="typeSpan"></span></li>
+        <li id="normalLi" class="aui-hide">单个红包/数量<span><em id="amountN"></em>元/<em id="countN"></em>个</span></li>
+        <li id="randomLi" class="aui-hide">红包数量<span><em id="countR"></em>个</span></li>
+        <li>支付方式<span id="payTypeSpan"></span></li>
+        <li>支付金额<span><em id="balanceEm"></em>元</span></li>
+    </ul>
+</div>
+
+<div class="ad-pay-bottom">
+    <div class="aui-btn-box2 aui-hide">
+        <div tapmode onclick="detail();" class="aui-btn btn-gradient">查看广告详情</div>
+    </div>
+
+    <div class="aui-btn-box2">
+        <div tapmode onclick="continuePublish();" class="aui-btn btn-gradient">继续发布广告</div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/common/calculate.js"></script>
+<script type="text/javascript">
+	var id;
+	apiready = function(){
+		id = api.pageParam.id;
+		$api.html($api.byId('balanceEm'), global.formatCurrency(api.pageParam.balance));
+		
+		if(api.pageParam.type === 0){
+			$api.html($api.byId('typeSpan'), '手气红包');
+			$api.html($api.byId('countR'), api.pageParam.count);
+			$api.removeCls($api.byId('randomLi'), 'aui-hide');
+		}else{
+			$api.html($api.byId('typeSpan'), '普通红包');
+			$api.html($api.byId('amountN'), calculate.div(api.pageParam.balance,api.pageParam.count));
+			$api.html($api.byId('countR'), api.pageParam.countN);
+			$api.removeCls($api.byId('normalLi'), 'aui-hide');
+		}
+		
+		if(api.pageParam.payType === 0){
+			$api.html($api.byId('payTypeSpan'), '余额支付');
+		}else if(api.pageParam.payType === 1){
+			$api.html($api.byId('payTypeSpan'), '微信支付');
+		}else{
+			$api.html($api.byId('payTypeSpan'), '支付宝支付');
+		}
+		
+		initEvent();
+	}
+	
+	function initEvent(){
+        api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+        	api.closeWin({ name : 'advertisementInfoSubmitWin' });
+        	api.closeWin({ name : 'mapSetWin' });
+        	api.closeWin({ name : 'mapPayWin' });
+        });
+	}
+	
+	function detail(){
+		api.openWin({
+	        name: 'mapDetail',
+	        url: './map_detail.html',
+	        pageParam: {
+	        	id:id
+	        }
+        });
+	}
+	
+	function continuePublish(){
+		api.sendEvent({
+	        name:'sendAdvEvent',
+	        extra: {
+	        	type: 1
+	        }
+        });
+	}
+</script>
+</html>

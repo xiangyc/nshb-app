@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>我的</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+</head>
+<body>
+    <div class="aui-content">
+        <div class="aui-list aui-list-noborder aui-media-list bg-gradient my-top-box">
+            <div tapmode="aui-active" onclick="openSubWin(3);" class="aui-media-list-item-inner ">
+                <div class="aui-list-item-media" style="width:4rem;">
+                    <img id='headIconId' onerror="this.src='../../image/icon150x150.png'" class="aui-img-round tximg">
+                </div>
+                <div class="aui-list-item-inner">
+                    <div id='nickNameId' class="aui-list-item-text aui-text-white aui-font-size-18 aui-padded-t-15"></div>
+                    <div id='mobileId' class="aui-list-item-text aui-text-white aui-font-size-16 aui-padded-t-5"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="">
+
+        <div class="my-ad-box aui-margin-t-10">
+            <div class="myred-voucher" tapmode onclick="openVoucher();">我的红包券<em id="couponCount"></em></div>
+            <h3>我的广告</h3>
+            <ul>
+                <li tapmode="aui-active" onclick="openAdvWin(0);"><img src="../../image/my/myad-audit-icon.png"><p>审核中</p></li>
+                <li tapmode="aui-active" onclick="openAdvWin(-1);"><img src="../../image/my/myad-notpass-icon.png"><p>未通过</p></li>
+                <li tapmode="aui-active" onclick="openAdvWin(1);"><img src="../../image/my/myad-pending-icon.png"><p>待付款</p></li>
+                <li tapmode="aui-active" onclick="openAdvWin(2);"><img src="../../image/my/myad-published-icon.png"><p>已发布</p></li>
+            </ul>
+        </div>
+
+        <ul class="aui-list aui-list-in my-main aui-margin-t-10">
+
+            <li tapmode="aui-active" onclick="openSubWin(6);" class="aui-list-item">
+                <div style="width: 1.3rem;" class="aui-list-item-media">
+                    <img src="../../image/my/my-finance-icon.png">
+                </div>
+                <div class="aui-list-item-inner aui-list-item-arrow">
+                    <div class="aui-list-item-title">我的余额</div>
+                    <div class="aui-list-item-right" id="accountBalance">0.00元</div>
+                </div>
+            </li>
+
+            <li tapmode="aui-active" onclick="openSubWin(5);" class="aui-list-item">
+                <div style="width: 1.3rem;" class="aui-list-item-media">
+                    <img src="../../image/my/my-red-icon.png">
+                </div>
+                <div class="aui-list-item-inner aui-list-item-arrow">
+                    <div class="aui-list-item-title">我的红包</div>
+                </div>
+            </li>
+
+            <li tapmode="aui-active" onclick="openSubWin(7);" class="aui-list-item">
+                <div style="width: 1.3rem;" class="aui-list-item-media">
+                    <img src="../../image/my/my-collect-icon.png">
+                </div>
+                <div class="aui-list-item-inner aui-list-item-arrow">
+                    <div class="aui-list-item-title">我收藏的商家</div>
+                </div>
+            </li>
+        </ul>
+
+        <ul class="aui-list aui-list-in my-main aui-margin-t-10">
+
+            <li  tapmode="aui-active" onclick="openSubWin(8);" tapmode="aui-active" class="aui-list-item">
+                <div style="width: 1.3rem;" class="aui-list-item-media">
+                    <img src="../../image/my/my-ranking-icon.png">
+                </div>
+                <div class="aui-list-item-inner aui-list-item-arrow">
+                    <div class="aui-list-item-title">红包排行榜</div>
+                </div>
+            </li>
+
+            <li  tapmode="aui-active" onclick="openSubWin(9);" class="aui-list-item">
+                <div style="width: 1.3rem;" class="aui-list-item-media">
+                    <img src="../../image/my/my-auth-icon.png">
+                </div>
+                <div class="aui-list-item-inner aui-list-item-arrow">
+                    <div class="aui-list-item-title">商家认证</div>
+                    <div id="authDiv" class="aui-list-item-right">未认证</div>
+
+                </div>
+            </li>
+            <li id="bindWxId" tapmode="aui-active" onclick="openSubWin(10);" class="aui-list-item">
+                <div style="width: 1.3rem;" class="aui-list-item-media">
+                    <img src="../../image/my/my-bindweixin-icon.png">
+                </div>
+                <div class="aui-list-item-inner aui-list-item-arrow">
+                    <div class="aui-list-item-title">绑定微信账号</div>
+                    <div id="oauthDiv" class="aui-list-item-right">未绑定</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/my/main.js"></script>
+</html>

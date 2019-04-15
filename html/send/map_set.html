@@ -1,0 +1,253 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>设置广告红包</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+   	<style>
+		body{ position: relative; }
+		#header{
+		    text-align: center; 
+		    background-color: #fc531f;
+		    color: #ffffff;
+		    width: 100%;
+		    position:fixed;
+			top: 0;
+		   padding-top: 22px;
+		   background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+		   background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   z-index: 3;
+		}
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		    color: #fff !important;
+		}
+		#header h1{
+		    font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+		}
+	</style>
+</head>
+<body class="body-bg-ef">
+<div id="wrap">
+	<div id="header">
+		<a class="back-icon" tapmode onclick="api.closeWin();">返回</a>
+		<h1><span id="title">设置红包金额</span></h1>
+	</div>
+</div>
+	
+<div class="ad-map-box" style="padding-top:64px;">
+    <ul class="ad-map-step">
+        <li class="aui-active"><i>1</i>选择投放区域</li>
+        <li class="aui-active"><i>2</i>编辑广告内容</li>
+        <li class="aui-active"><i>3</i>设置广告红包</li>
+    </ul>
+
+    <div id="msgDiv" class="aui-tips aui-tips-red aui-hide"><p>单个红包最低0.1元</p></div>
+    <div class="red-type-box adred-type-box body-bg-white aui-margin-t-10">
+        <h4>选择红包类型</h4>
+        <div class="red-type-btn-row">
+            <div id="randomDiv" tapmode="aui-active" onclick="selectRedPacketType('randomDiv', 0);" class="red-type-btn red-active">手气红包</div>
+            <div id="normalDiv" tapmode="aui-active" onclick="selectRedPacketType('normalDiv', 1);" class="red-type-btn">普通红包</div>
+        </div>
+        <div class="note-box note-ad-box"><p id="randomP" class="">当前为手气红包，红包金额随机分配</p><p id="normalP" class="aui-hide">当前为普通红包，每个红包金额相同</p></div>
+    </div>
+  	<!-- 手气红包-->
+    <ul id="randomUl" class="aui-list aui-form-list border-bottom-ec aui-margin-t-10">
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div id="titleDiv" class="aui-list-item-label color-333">红包总额</div>
+                <div class="aui-list-item-input"><input id="amountR" maxlength="7" type="number" oninput="if(value.length>7)value=value.slice(0,7);"  placeholder="请输入金额" class="aui-text-right"></div>元
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div class="aui-list-item-label color-333">红包数量</div>
+                <div class="aui-list-item-input"><input id="countR" maxlength="5" type="tel" placeholder="请填写个数" class="aui-text-right"></div>个
+            </div>
+        </li>
+    </ul>
+
+    <!-- 普通红包-->
+    <ul id="normalUl" class="aui-list aui-form-list border-bottom-ec aui-margin-t-10 aui-hide">
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div id="titleDiv" class="aui-list-item-label color-333">单个红包</div>
+                <div class="aui-list-item-input"><input id="amountN" onkeyup="showAmount();" maxlength="7" type="number" oninput="if(value.length>7)value=value.slice(0,7);"  placeholder="请输入金额" class="aui-text-right"></div>元
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div class="aui-list-item-label color-333">红包数量</div>
+                <div class="aui-list-item-input"><input id="countN" maxlength="5" onkeyup="showAmount();" type="tel" placeholder="请填写个数" class="aui-text-right"></div>个
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner color-333">
+                <div class="aui-list-item-label color-333">红包总额</div>
+                <div class="aui-list-item-input aui-text-right"><span id="balanceN">0.00</span></div>元
+            </div>
+        </li>
+    </ul>
+
+
+    <div class="aui-btn-box3">
+        <div tapmode="aui-active" onclick="showPayWay();" class="aui-btn btn-gradient">去付款</div>
+    </div>
+    <p class="prompt-writing">根据《广告法》相关规定，需审核广告内容<br/>客服电话:15600688801 </p>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/common/calculate.js"></script>
+<script type="text/javascript" src="../../script/library/zepto.min.js"></script>
+<script type="text/javascript">
+	var id;
+	var type = 0;
+	var amount = 0;
+	var count = 0;
+	
+	apiready = function(){
+		id = api.pageParam.id;
+	}
+	
+	/**
+	 *计算金额 
+	 */
+	function showAmount(){
+		var fmtAmount = $api.val($api.byId('amountN'));
+		var fmtCount = $api.val($api.byId('countN'));
+		if(fmtAmount.length > 0 && fmtCount.length > 0){
+			var fmtAmount =  calculate.mul(fmtAmount,fmtCount);
+			$api.html($api.byId('balanceN'),  global.formatCurrency(fmtAmount));
+		}else{
+			$api.html($api.byId('balanceN'), '0.00');
+		}
+	}
+
+	/**
+	 *选择红包类型
+	 */
+	function selectRedPacketType(id, index){
+		$api.removeCls($api.byId('normalDiv'), 'red-active');
+		$api.removeCls($api.byId('randomDiv'), 'red-active');
+		$api.addCls($api.byId(id), 'red-active');
+		type = index;
+		
+		$api.val($api.byId('amountR'), "");
+		$api.val($api.byId('countR'), "");
+		$api.val($api.byId('amountN'), "");
+		$api.val($api.byId('countN'), "");
+		$api.val($api.byId('balanceN'), '0.00');
+		
+		$api.addCls($api.byId('randomUl'), 'aui-hide');
+		$api.addCls($api.byId('normalUl'), 'aui-hide');
+		$api.addCls($api.byId('randomP'), 'aui-hide');
+		$api.addCls($api.byId('normalP'), 'aui-hide');
+		if(index === 0){
+			$api.removeCls($api.byId('randomP'), 'aui-hide');
+			$api.removeCls($api.byId('noteDiv'), 'aui-hide');
+			$api.removeCls($api.byId('randomUl'), 'aui-hide');
+		}else{
+			$api.removeCls($api.byId('normalP'), 'aui-hide');
+			$api.addCls($api.byId('noteDiv'), 'aui-hide');
+			$api.removeCls($api.byId('normalUl'), 'aui-hide');
+		}
+	}
+
+	function showPayWay(){
+		if(type === 1){
+			//普通
+			var fmtAmount = $api.val($api.byId('amountN'));
+			var fmtCount = $api.val($api.byId('countN'));
+			
+			if(fmtAmount.length < 1){
+				global.setToast('请输入单个金额');
+				return;
+			}
+			if(calculate.sub(fmtAmount,0.01) < 0){
+				api.alert({ msg: '单个红包金额不可低于0.01元，请重新填写金额'});
+				return;
+			}
+			if(fmtAmount && fmtCount){
+				amount = calculate.mul(fmtAmount,fmtCount);
+			}
+			count = fmtCount;
+		}else{
+			//拼手气
+			amount = $api.val($api.byId('amountR'));
+			count = $api.val($api.byId('countR'));
+			if(amount.length < 1){
+				global.setToast('请输入总金额');
+				return;
+			}
+			if(calculate.sub(amount,0.01) < 0){
+				api.alert({ msg: '红包金额不可低于0.01元，请重新填写金额'});
+				return;
+			}
+		}
+		
+		if(count.length < 1){
+			global.setToast('请输入红包个数');
+			return;
+		}
+		if(calculate.sub(1,count) > 0){
+			global.setToast('请输入正确的红包个数');
+			return;
+		}
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/redpackets/red-packets-set',
+			headers : global.getRequestToken(),
+			timeout : 60,
+			data : {
+				values : {
+					redPacketsId : id,
+					type : type,
+					amount : amount,
+					count : count
+				}
+			}
+		}, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				if(ret.success){
+					var params = { id: id, type: type, amount: amount, count: count };
+					global.openWinName('mapPayWin', '../send/map_pay', params);
+	            }else{
+					global.setToast(ret.message);
+	            }
+			}else{
+				global.setToast('设置失败');
+			}
+		});	
+	}
+</script>
+</html>

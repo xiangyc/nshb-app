@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>红包集广告</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<body class="body-bg-ef">
+
+<!--红包集广告详情-->
+<div class="ad-map-box">
+    <div class="ad-detail-top collection-detail-top">
+        <h4><i><img id="logoImg" onerror="this.src='../../image/icon150x150.png'"></i><em id="nameDiv"></em></h4>
+        <p id="content"></p>
+    </div>
+
+    <div class="ad-photo-box">
+        <div id="images" class="ui-feedback-photo">
+        </div>
+    </div>
+
+    <ul class="aui-list map-form-list aui-margin-t-10">
+        <li class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner">
+                <div class="list-img-icon">广告投放城市</div>
+                <div id="locationDiv" class="aui-list-item-input aui-padded-r-0"></div>
+            </div>
+        </li>
+        <li class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner">
+                <div class="list-img-icon">用户兴趣标签</div>
+                <div id="interestDiv" class="aui-list-item-input aui-padded-r-0">
+          
+                </div>
+            </div>
+        </li>
+    </ul>
+    <ul class="aui-list map-form-list aui-margin-t-10">
+        <li class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner">
+                <div class="list-img-icon">联系方式(选填)</div>
+                <div id="contactDiv" class="aui-list-item-input aui-padded-r-0"></div>
+            </div>
+        </li>
+        <li class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner">
+                <div class="list-img-icon">微信号(选填)</div>
+                <div id="wxDiv" class="aui-list-item-input aui-padded-r-0"></div>
+            </div>
+        </li>
+    </ul>
+    <p class="prompt-writing prompt-writing2">根据《广告法》相关规定，需审核广告内容<br/>客服电话:15600688801</p>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//红包ID
+	var id;
+	
+	apiready = function (){
+		id = api.pageParam.id;
+		$api.html($api.byId('nameDiv'), global.getBusinessName());
+		$api.attr($api.byId('logoImg'), 'src', global.getImgUri() + '/' + global.getBusinessLogo());
+		loadRedPackets();
+	}
+
+	
+	/**
+	 *加载红包信息
+	 */
+	function loadRedPackets(){
+		//加载服务端数据
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collection/detail?redPacketsId=' + id,
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if (ret) {
+				var redpacketsInfo = ret;
+				bindData(redpacketsInfo);
+			}
+		});
+	}
+
+	/**
+	 *加载数据
+	 */
+	function bindData(redpacketsInfo){
+		if(redpacketsInfo){
+			id = redpacketsInfo.id;
+			$api.html($api.byId('content'), redpacketsInfo.summary);
+			$api.html($api.byId('locationDiv'), redpacketsInfo.cityName.replace(",市辖区", "").replace(",县", ""));
+			
+			var interests = redpacketsInfo.interest.split(",");
+			var content = '';
+			for(var i=0; i<interests.length; i++){
+				if(i > 1){
+					content = '…';
+				}else{
+					content = '<span class="user-tag">' +　interests[i] +　'</span>';
+				}
+				$api.append($api.byId('interestDiv'),content);
+			}
+			
+			$api.html($api.byId('contactDiv'), (redpacketsInfo.contact?redpacketsInfo.contact:'无'));
+			$api.html($api.byId('wxDiv'), (redpacketsInfo.wx?redpacketsInfo.wx:'无'));
+
+			$api.html($api.byId('images'), '');
+			if(redpacketsInfo.file && redpacketsInfo.file.length > 0){
+				for(var i=0; i<redpacketsInfo.file.length; i++){
+					$api.append($api.byId('images'), '<div class="position-r"><img src="' + global.getImgUri() + '/' + redpacketsInfo.file[i].banner + '"></div>');
+				}
+			}else{
+				$api.append($api.byId('images'), '<div class="position-r"><img src="../../image/receive/redpacket_d_2.png"></div>');
+			}
+
+			switch(redpacketsInfo.status){
+				case -1:
+					$api.removeCls($api.byId('failDiv'), 'aui-hide');
+					$api.html($api.byId('auditNote'), redpacketsInfo.auditNote);
+					break;
+				case 0:
+					$api.removeCls($api.byId('applingDiv'), 'aui-hide');
+					break;
+				case 1:
+					$api.removeCls($api.byId('passDiv'), 'aui-hide');
+					break;
+			}
+		}
+	}
+
+	/**
+	 *打开红包设置
+	 */
+	function openSendRedPacketsWin(){
+		var params = { "id" : id };
+		global.openWin('./map_set', params);
+	}
+
+	function callTel(tel){
+		api.call({
+            type : 'tel_prompt',
+            number : tel
+        });
+	}
+</script>
+</html>

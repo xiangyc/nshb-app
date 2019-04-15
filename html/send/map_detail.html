@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>地图红包广告</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+    <style>
+		body{ position: relative; }
+		#header{
+		    text-align: center; 
+		    background-color: #fc531f;
+		    color: #ffffff;
+		    width: 100%;
+		    position:fixed;
+			top: 0;
+		   padding-top: 22px;
+		   background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+		   background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   z-index: 3;
+		}
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		    color: #fff !important;
+		}
+		#header h1{
+		    font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+		}
+	</style>
+</head>
+<body class="body-bg-ef">
+<div id="wrap">
+	<div id="header">
+		<a class="back-icon" tapmode onclick="api.closeWin();">返回</a>
+		<h1><span id="title">地图红包广告</span></h1>
+	</div>
+</div>
+<!--地图红包广告详情-->
+<div class="ad-map-box body-bg-white"  style="padding-top:64px;">
+    <div class="ad-detail-top">
+        <h4><i><img id="logoImg" onerror="this.src='../../image/icon150x150.png'"></i><em id="nameDiv"></em></h4>
+        <p id="content"></p>
+    </div>
+
+    <div class="ad-photo-box">
+        <div id="images" class="ui-feedback-photo">
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//红包ID
+	var id;
+	
+	apiready = function (){
+		id = api.pageParam.id;
+		$api.html($api.byId('nameDiv'), global.getBusinessName());
+		$api.attr($api.byId('logoImg'), 'src', global.getImgUri() + '/' + global.getBusinessLogo());
+		loadRedPackets();
+	}
+	
+	/**
+	 *加载红包信息
+	 */
+	function loadRedPackets(){
+		//加载服务端数据
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/redpackets/detail?redPacketsId=' + id,
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if (ret) {
+				var redpacketsInfo = { id : ret.id, status: ret.status, longitude : ret.longitude, latitude : ret.latitude, regionName : ret.regionName, radius : ret.radius, content : ret.summary, file : ret.banners, auditNote : ret.auditNote };
+				bindData(redpacketsInfo);
+			}
+		});
+	}
+
+	/**
+	 *加载数据
+	 */
+	function bindData(redpacketsInfo){
+		if(redpacketsInfo){
+			id = redpacketsInfo.id;
+			$api.html($api.byId('content'), redpacketsInfo.content);
+
+			$api.html($api.byId('images'), '');
+			if(redpacketsInfo.file && redpacketsInfo.file.length > 0){
+				for(var i=0; i<redpacketsInfo.file.length; i++){
+					$api.append($api.byId('images'), '<div class="position-r"><img src="' + global.getImgUri() + '/' + redpacketsInfo.file[i].banner + '"></div>');
+				}
+			}else{
+				$api.append($api.byId('images'), '<div class="position-r"><img src="../../image/receive/redpacket_d_2.png"></div>');
+			}
+		}
+	}
+</script>
+</html>

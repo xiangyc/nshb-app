@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>位置搜索</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <style>
+		html,body{
+			height: 100%;
+			width:100%;
+		}
+		#wrap{
+		    height: 100%;
+		    display: -webkit-box;
+		    display: -webkit-flex;
+		    display: flex;
+		    -webkit-box-orient: vertical;
+		    -webkit-flex-flow: column;
+		           flex-flow: column;
+		}
+		#header{
+		    text-align: center; 
+		    background-color: #fc531f;
+		    color: #ffffff;
+		    width: 100%;
+ 			 position:fixed;
+			top: 0;
+		   padding-top: 22px;
+		   background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+		   background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   z-index: 3;
+		}
+	   .aui-content-padded {
+	        padding: 0.75rem;
+	        background-color: #ffffff;
+	        margin-top: 0.75rem;
+	    }
+	   .aui-header{
+	  	background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+		   background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+	   }
+	   .aui-searchbar-clear-btn{ width: 0.9rem; height: 0.9rem; margin: 0.1rem; }
+       .aui-searchbar-clear-btn .aui-iconfont{ top: 0; line-height: 0.9rem; }
+</style>
+</head>
+<body>
+	<div id="wrap">
+		<div id="header">
+			<div class="aui-searchbar aui-header" id="search">
+		        <div class="aui-searchbar-input aui-border-radius">
+		            <i tapmode onclick="doSearch();" class="aui-iconfont aui-icon-search"></i>
+		            <input type="search" oninput="doSearch();" placeholder="搜索你要的坐标位置" id="search-input">
+		            <div id="closeIcon" class="aui-searchbar-clear-btn">
+		                <i tapmode onclick="clearText();" class="aui-iconfont aui-icon-close"></i>
+		            </div>
+		        </div>
+		        <div tapmode="" onclick="cancel();" class="aui-searchbar-btn" style="margin-right: 0; color:#fff;">取消</div>
+		    </div>
+	    </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+	var longitude;
+	var latitude;
+	var keyword;
+	apiready = function(){
+	    var header = $api.byId('header');
+		$api.fixStatusBar(header);
+		
+	    var pos = $api.offset(header);
+
+		longitude = api.pageParam.lon;
+		latitude = api.pageParam.lat;
+	    api.openFrame({
+	        name: 'position_search_frame',
+	        url: 'position_search_frame.html',
+	        rect:{
+	            x: 0,
+	            y: pos.h,
+	            w: 'auto',
+	            h: 'auto'
+	        },
+	        pageParam : api.pageParam,
+	        bounces: false,
+	        vScrollBarEnabled: false
+	    });
+	    
+	    initEvent();
+
+	    // 使用模块弹出键盘
+	    var softInput = api.require('softInputMgr');
+	    // 将相应的输入框获取焦点
+	    document.getElementById("search-input").focus();
+	    softInput.toggleKeyboard();
+	}
+	
+	function initEvent(){
+		api.addEventListener({
+			name : 'selectLocationEvent'
+		}, function(ret, err) {
+			api.closeWin();
+		});
+	}
+	
+	/**
+	 *查找 
+	 */
+	function doSearch(){
+        var keywordTemp = $api.val($api.byId('search-input'));
+        if(keyword == keywordTemp){
+        	return;
+        }
+        
+        keyword = keywordTemp;
+        if(keyword.length < 1){
+        	$api.attr($api.byId('closeIcon'), 'style', 'display:none;');
+        	api.execScript({
+				frameName: 'position_search_frame',
+			    script: "clearLocation();"
+		    });
+			return;
+        }else{
+        	$api.attr($api.byId('closeIcon'), 'style', 'display:block;');
+        }
+
+		api.execScript({
+			frameName: 'position_search_frame',
+		    script: "searchLocation(" + longitude + "," + latitude + ",'" + keyword + "');"
+	    });
+	}
+	
+	/**
+	 *清除文字 
+	 */
+	function clearText(){
+		$api.attr($api.byId('closeIcon'), 'style', 'display:none;');
+		$api.val($api.byId('search-input'), '');
+	}
+	
+	/**
+	 *取消 
+	 */
+	function cancel(){
+		api.closeWin();
+	}
+</script>
+</html>

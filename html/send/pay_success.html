@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>支付成功</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+    <style>
+		body{ position: relative; }
+		#header{
+		    text-align: center; 
+		    background-color: #fc531f;
+		    color: #ffffff;
+		    width: 100%;
+		    position:fixed;
+			top: 0;
+		   padding-top: 22px;
+		   background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+		   background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		   z-index: 3;
+		}
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		    color: #fff !important;
+		}
+		#header h1{
+		    font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+		}
+	</style>
+</head>
+<body>
+<div id="wrap">
+	<div id="header">
+		<a class="back-icon" tapmode onclick="closeToWin();">返回</a>
+		<h1><span id="title">支付成功</span></h1>
+	</div>
+</div>
+<div class="aui-content"  style="padding-top: 66px;">
+    <div class="pay_success-box body-bg-white">
+       <div class="pay_success-l">
+           <i><img src="../../image/send/pay-success-icon.png"/></i>
+           <h4>付款成功</h4>
+           <P>赞，广告红包已派发成功啦！</P>
+       </div>
+       <div class="pay_success-r"><img src="../../image/icon150x150.png"/> </div>
+    </div>
+
+    <div class="pay_success-c body-bg-white aui-margin-t-10">
+        <p>红包类型：<span id="type"></span></p>
+        <p>红包总金额：<span id="balance"></span></p>
+        <p>红包数量：<span id="count"></span></p>
+        <p>投放区域：<span id="regionName"></span></p>
+        <p>投放半经：<span id="radius"></span></p>
+    </div>
+
+    <div class="note-box"><p class="aui-text-center">24小时内未领取完的红包，将退还至您的账户余额中</p></div>
+    <div class="aui-btn-box">
+        <div tapmode onclick="closeToWin();" class="aui-btn btn-gradient <!--aui-disabled-->">返回首页</div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		$api.html($api.byId('type'), (api.pageParam.type === 0 ? '手气红包' : '普通红包'));
+		$api.html($api.byId('balance'), global.formatCurrency(api.pageParam.balance) + '元');
+		$api.html($api.byId('count'), api.pageParam.count + '个');
+		$api.html($api.byId('regionName'), api.pageParam.regionName);
+		$api.html($api.byId('radius'), api.pageParam.radius + '米');
+		
+		initEvent();
+	}
+	
+	/**
+	 *初始化事件 
+	 */
+	function initEvent(){
+		api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+	        api.sendEvent({
+	            name:'resetRadiusEvent'
+	        });
+        });
+	}
+	
+	/**
+	 *返回首页 
+	 */
+	function closeToWin(){
+        api.closeToWin({
+	        name: 'root'
+        });
+	}
+</script>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>拆红包</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/receive.css" />
+</head>
+<body class="body-bg-white y-hide">
+<div class="aui-content">
+   <div class="receive-d-t">
+       <div class="tear-reb-add">
+          <i id="prevI" tapmode onclick="prevBanner();" class="aui-hide"><img src="../../image/receive/left-slip-arrow.png"/></i>
+              <div id="tearDiv" class="tear-reb-add-img">
+              <img tapmode onclick="showImage(this);" class="aui-hide" id="bannerImg1" src="../../image/receive/redpacket_m_1.png"/>
+              <img tapmode onclick="showImage(this);" class="aui-hide" id="bannerImg2" src="../../image/receive/redpacket_m_1.png"/>
+              </div>
+          <i id="nextI" tapmode onclick="nextBanner();" class="aui-float-right aui-hide"><img src="../../image/receive/right-slip-arrow.png"/></i>
+       </div>
+       <div class="tear-reb-add-c">
+			<h3 id="summaryH"></h3>
+			<h2><span id="balanceSpan"></span>元</h2>
+       </div>
+       <div class="receive-d-company">
+           <i> <img id="logoImg" src="../../image/icon150x150.png" onerror="this.src='../../image/icon150x150.png'" > </i>
+           <h4 id="nameH"></h4>
+       </div>
+   </div>
+
+    <div class="receive-d-a">
+        <div class="receive-d-prompt">收到的<span id="typeSpan"></span>已存入余额<em tapmode="" onclick="openFinanceWin();">查看余额</em></div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	var banners = [];
+	var currentBanner = 0;
+	var photoBrowser;
+
+    apiready = function(){
+    	photoBrowser = api.require('photoBrowser');
+    	var type = api.pageParam.type;
+    	var balance = api.pageParam.balance;
+		var detail = api.pageParam.detail;
+
+    	$api.html($api.byId('typeSpan'), (type == 0 ? '随机红包' : '普通红包'));
+    	$api.html($api.byId('balanceSpan'), global.formatCurrency(balance));
+    	if(detail){
+			$api.attr($api.byId('logoImg'), 'src', global.getImgUri() + '/' + detail.logo);
+			$api.html($api.byId('nameH'), detail.name + '的红包');
+			$api.html($api.byId('summaryH'), detail.summary);
+			
+			if(detail.banners && detail.banners.length > 0){
+				banners = detail.banners;
+				$api.attr($api.byId('bannerImg1'), 'src', global.getImgUri() + '/' + banners[0].banner);
+				$api.removeCls($api.byId('bannerImg1'), 'aui-hide');
+				if(banners.length > 1){
+					if(banners.length > 2){
+						$api.removeCls($api.byId('nextI'), 'aui-hide');
+					}
+					$api.removeCls($api.byId('bannerImg2'), 'aui-hide');
+					$api.attr($api.byId('bannerImg2'), 'src', global.getImgUri() + '/' + banners[1].banner);
+				}else{
+					$api.removeCls($api.byId('tearDiv'), 'tear-reb-add-img1');
+					$api.addCls($api.byId('tearDiv'), 'final-add-img');
+				}
+			}else{
+				$api.removeCls($api.byId('bannerImg1'), 'aui-hide');
+				$api.addCls($api.byId('tearDiv'), 'tear-reb-add-img1');
+			}
+		}
+		
+        initEvent();
+    };
+
+	function initEvent(){
+		api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+        	api.closeFrame({
+        		name : 'receive'
+            });
+        });
+	}
+	
+     /**
+     *上一张banner 
+     */
+    function prevBanner(){
+    	currentBanner = currentBanner - 2;
+    	if(currentBanner <= 0){
+    		currentBanner = 0;
+    	}
+    	
+    	$api.addCls($api.byId('bannerImg1'), 'aui-hide');
+    	$api.attr($api.byId('bannerImg1'), 'src', global.getImgUri() + '/' + banners[currentBanner].banner);
+    	setTimeout(function(){
+    		$api.removeCls($api.byId('bannerImg1'), 'aui-hide');
+    	}, 200);
+    	if(currentBanner < banners.length - 1){
+    	    $api.addCls($api.byId('bannerImg2'), 'aui-hide');
+    	    $api.removeCls($api.byId('tearDiv'), 'final-add-img');
+    		
+    		$api.attr($api.byId('bannerImg2'), 'src', global.getImgUri() + '/' + banners[currentBanner + 1].banner);
+    		
+    		setTimeout(function(){
+	    		$api.removeCls($api.byId('bannerImg2'), 'aui-hide');
+	    	}, 200);
+    	}else{
+    		$api.addCls($api.byId('bannerImg2'), 'aui-hide');
+    	    $api.addCls($api.byId('tearDiv'), 'final-add-img');
+    	}
+    	
+    	if(currentBanner === 0){
+    		$api.addCls($api.byId('prevI'), 'aui-hide');
+    	}
+    	if(currentBanner < banners.length - 2){
+    		$api.removeCls($api.byId('nextI'), 'aui-hide');
+    	}
+    }
+    
+    /**
+     *下一张banner 
+     */
+    function nextBanner(){
+    	currentBanner = currentBanner + 2;
+    	if(currentBanner >= banners.length){
+    		currentBanner = banners.length - 1;
+    	}
+    	
+    	$api.addCls($api.byId('bannerImg1'), 'aui-hide');
+    	$api.attr($api.byId('bannerImg1'), 'src', global.getImgUri() + '/' + banners[currentBanner].banner);
+    	setTimeout(function(){
+    		$api.removeCls($api.byId('bannerImg1'), 'aui-hide');
+    	}, 200);
+    	
+    	if(currentBanner < banners.length - 1){
+    		$api.addCls($api.byId('bannerImg2'), 'aui-hide');
+    	    $api.removeCls($api.byId('tearDiv'), 'final-add-img');
+    	    
+    		$api.attr($api.byId('bannerImg2'), 'src', global.getImgUri() + '/' + banners[currentBanner + 1].banner);
+    		
+    		setTimeout(function(){
+	    		$api.removeCls($api.byId('bannerImg2'), 'aui-hide');
+	    	}, 200);
+    	}else{
+    		$api.addCls($api.byId('bannerImg2'), 'aui-hide');
+			$api.addCls($api.byId('tearDiv'), 'final-add-img');
+    	}
+    	
+    	if(currentBanner === banners.length - 2 || currentBanner === banners.length - 1){
+    		$api.addCls($api.byId('nextI'), 'aui-hide');
+    	}
+    	if(currentBanner > 0){
+    		$api.removeCls($api.byId('prevI'), 'aui-hide');
+    	}
+    }
+
+    /**
+	 *显示大图
+	 */
+	function showImage(el) {
+		var imgPath = $api.attr(el, 'src');
+		if (imgPath.length > 0) {
+			photoBrowser.open({
+				images : [imgPath],
+				bgColor : '#000'
+			}, function(ret, err) {
+				if (ret && ret.eventType === "click") {
+					photoBrowser.close();
+				}
+			});
+		}
+	}
+
+    /**
+     *查看余额
+     */
+    function openFinanceWin(){
+    	var params = { "page" : "finance_frame" };
+		api.openWin({
+			name : 'financeWin',
+			url : '../my/finance_win.html',
+			pageParam : params
+		});
+    }
+</script>
+</html>

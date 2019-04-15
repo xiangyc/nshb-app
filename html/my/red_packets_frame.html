@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>我的红包</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+</head>
+<body>
+<!--我发出的-->
+<div id="sendDiv" class="aui-content">
+	<div class="aui-content user-red-info aui-text-center body-bg-white">
+	    <img id="headImg" src="" onerror="this.src='../../image/icon150x150.png'" class="avatar aui-img-round">
+	    <h5>累计发出<span id="sendRedpacketsCount">0</span>个红包</h5>
+	    <h5>共<em id="sendRedpacketsBalance">0.00</em>元</h5>
+	</div>
+
+	<ul class="aui-list aui-media-list aui-margin-t-10">
+
+		<script id="send-list-template" type="text/x-dot-template">
+          {{ for(var i=0; i< it.length; i++) { }}
+	          <li class="aui-list-item aui-list-item-middle">
+	          	<div class="aui-media-list-item-inner user-red-list">
+	            <div class="aui-list-item-media user-red-avatar">
+	                <img src="{{=global.getImgUri() + '/' + it[i].logo }}" onerror="this.src='../../image/icon150x150.png'" class="aui-img-round">
+	            </div>
+	            <div class="aui-list-item-inner">
+	                <div class="aui-list-item-text">
+	                    <div class="aui-list-item-title">{{=it[i].business}}</div>
+	                    <div>{{=global.formatCurrency(it[i].balance)}}元</div>
+	                </div>
+	                <div class="aui-list-item-text aui-font-size-12">
+	                    <div><span class="aui-padded-r-10">已领<em>{{=it[i].receive}}/{{=it[i].count}}</em>个红包</span>{{=global.formatDate(it[i].time, 'yyyy-MM-dd') }}</div>
+	                    <div>退款{{=global.formatCurrency(it[i].money)}}元</div>
+	                </div>
+	            </div>
+	        	</div>
+	          </li>
+          {{ } }}
+        </script>
+        <div id="send-list-content"></div>
+	</ul>
+</div>
+
+<!--我收到的-->
+<div id="receiveDiv" class="aui-content aui-hide">
+<div class="aui-content user-red-info aui-text-center body-bg-white">
+    <img id="headIconId" src="" onerror="this.src='../../image/icon150x150.png'" class="avatar aui-img-round">
+    <h5>累计收到<span id="receiveRedpacketsCount">0</span>个红包</h5>
+    <h5>共<em id="receiveRedpacketsBalance">0.00</em>元</h5>
+</div>
+
+<ul class="aui-list aui-media-list aui-margin-t-10">
+
+	<script id="receive-list-template" type="text/x-dot-template">
+      {{ for(var i=0; i< it.length; i++) { }}
+          <li class="aui-list-item aui-list-item-middle">
+          	<div class="aui-media-list-item-inner user-red-list">
+            <div class="aui-list-item-media user-red-avatar">
+            {{if(global.getHeadIcon()){ }}
+                <img src="{{=global.getImgUri() + '/' + global.getHeadIcon() }}" onerror="this.src='../../image/icon150x150.png'" class="aui-img-round">
+            {{ }else{ }}
+            	<img src="../../image/icon150x150.png" class="aui-img-round">
+            {{ } }}
+            </div>
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-text">
+                    <div class="aui-list-item-title">
+                    {{ if(it[i].nickName) { }}
+                    	{{=it[i].nickName}}
+                    {{ }else{ }}
+                    	暂无昵称
+                    {{ } }}
+                    </div>
+                    <div>{{=global.formatCurrency(it[i].balance)}}元</div>
+                </div>
+                <div class="aui-list-item-text aui-font-size-12">
+                    <div>{{=global.formatDate(it[i].createTime, 'yyyy-MM-dd') }}</div>
+                    <div>已领取</div>
+                </div>
+            </div>
+        	</div>
+          </li>
+      {{ } }}
+    </script>
+    <div id="receive-list-content"></div>
+</ul>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+<script type="text/javascript" src="../../script/common/page.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+
+<script type="text/javascript">
+//初始化参数
+var queryType = 1;
+var maxResult = 8;
+var receiveUrl = global.getRequestUri() + '/redpackets/receive-list';
+var sendUrl = global.getRequestUri() + '/redpackets/send-list';
+
+apiready = function() {
+	var headIconPath = global.getHeadIcon();
+	if (headIconPath) {
+	  $api.attr($api.byId('headIconId'), 'src', global.getImgUri() +'/'+ headIconPath);
+	  $api.attr($api.byId('headImg'), 'src', global.getImgUri() +'/'+ headIconPath);
+	}
+
+  	//查询我发出的红包列表
+	loadRedPackets(queryType);
+  	//初始化事件
+  	initEvent();
+  	
+}
+//初始化事件
+function initEvent() {
+  api.setCustomRefreshHeaderInfo({
+		bgColor : '#fdf7e7',
+		image : {
+			pull : global.pullImage(),
+			load : global.pushImage()
+		}
+	}, function(ret, err) {
+		loadRedPackets(queryType);
+		api.refreshHeaderLoadDone();
+	});
+
+	api.addEventListener({
+		name : 'scrolltobottom',
+		extra : {
+			threshold : 0
+		}
+	}, function(ret, err) {
+		page.scrollRefresh();
+	});
+}
+
+// 获取会员统计数据
+function getMemberStatisticsResult(){
+	api.ajax({
+			method : 'GET',
+			cache : false,
+			timeout : 30,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/memberStatistics',
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+		if(ret){
+			$api.html($api.byId('sendRedpacketsCount'), ret.sendRedpacketsCount);
+		    $api.html($api.byId('sendRedpacketsBalance'), global.formatCurrency(ret.sendRedpacketsBalance));
+		    $api.html($api.byId('receiveRedpacketsCount'), ret.receiveRedpacketsCount);
+		    $api.html($api.byId('receiveRedpacketsBalance'), global.formatCurrency(ret.receiveRedpacketsBalance));
+		}
+	});
+}
+	
+// 查询我收到的红包列表
+function queryReceiveList() {
+  var params = '?start=0&maxResult=8';
+  page.init(maxResult, 'receive-list-content', 'receive-list-template', receiveUrl, params, true, "");
+}
+
+// 查询我发出的红包列表
+function querySendlList() {
+  var params = '?start=0&maxResult=8';
+  page.init(maxResult, 'send-list-content', 'send-list-template', sendUrl, params, true, "");
+}
+
+/**
+ *切换收到和发出的红包
+ */
+function loadRedPackets(type){
+	getMemberStatisticsResult();
+	queryType = type;
+	if (type === 1) {
+		$api.removeCls($api.byId('receiveDiv'), 'aui-hide');
+		$api.addCls($api.byId('sendDiv'), 'aui-hide');
+		queryReceiveList();
+	} else {
+		$api.removeCls($api.byId('sendDiv'), 'aui-hide');
+		$api.addCls($api.byId('receiveDiv'), 'aui-hide');
+		querySendlList();
+	}
+}
+</script>
+</html>

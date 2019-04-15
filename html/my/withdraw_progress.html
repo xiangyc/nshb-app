@@ -1,0 +1,297 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>提现进度</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+    <style>
+		#header{
+		    text-align: center; 
+		   	background-color: #fc531f;
+			color: #ffffff;
+		    width: 100%;
+		    position:relative;
+		    padding-top: 22px;
+			background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+			background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		}
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		    color: #fff !important;
+		}
+		#header h1{
+		    font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+		}	
+		#header .right-text{
+	        background-size: 1.4rem auto;
+	        bottom: 0;
+	        display: block;
+	        height: 44px;
+	        right: 7px;
+	        position: absolute;
+	        line-height: 44px;
+	        font-size: 16px;
+			color: #fff !important;
+		}
+	</style>
+</head>
+<body>
+<div id="header">
+	<a tapmode="" class="back-icon" onclick="closeWin();">返回</a>
+	<h1><span id="title">提现进度</span></h1>
+</div>
+		
+<div class="timeline-box aui-hide" id="applyInit">
+	
+    <div class="timeline-list timeline-list-100">
+        <div class="timeline-light"><img src="../../image/my/withdraw-icon-do.png"/></div>
+        <div class="timeline-inner">
+            <div class="timeline-card">
+                <div class="timeline-card-header">提现申请已提交，等待管理员处理</div>
+                <div class="timeline-card-content">
+                    <P>支付宝<span id="alipayAccount"></span></P>
+                    <P id="withdrawAmount">0.00元</P>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-list timeline-list-100 aui-hide" id="applyProcess">
+        <div class="timeline-light"><img src="../../image/my/withdraw-icon-do.png"/></div>
+        <div class="timeline-inner">
+            <div class="timeline-card">
+                <div class="timeline-card-header">努力提现中</div>
+                <div class="timeline-card-content">
+                    <P>如信息填写有误，资金将原路退回</P>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-list timeline-list-100" id="check1">
+        <div class="timeline-light"><img src="../../image/my/withdraw-icon-no.png"/></div>
+        <div class="timeline-inner">
+            <div class="timeline-card">
+                <div class="timeline-card-header">审核成功</div>
+                <div class="timeline-card-content">
+                    <P>预计3天内进行到账审核</P>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="timeline-list timeline-list-100 aui-hide" id="check2">
+        <div class="timeline-light"><img src="../../image/my/withdraw-icon-do.png"/></div>
+        <div class="timeline-inner">
+            <div class="timeline-card">
+                <div class="timeline-card-header">审核成功</div>
+                <div class="timeline-card-content">
+                    <P>预计3天内进行到账审核</P>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-list timeline-list-100 aui-hide" id="nocheck">
+        <div class="timeline-light"><img src="../../image/my/withdraw-icon-no.png"/></div>
+        <div class="timeline-inner">
+            <div class="timeline-card">
+                <div class="timeline-card-header">审核不通过</div>
+                <div class="timeline-card-content">
+                    <P id="rejectReason">您提供的账号信息有错</P>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-list height0" id="pass1">
+        <div class="timeline-light"><img src="../../image/my/withdraw-icon-ok.png"/></div>
+        <div class="timeline-inner">
+            <div class="timeline-card">
+                <div class="timeline-card-header">到账成功</div>
+                <div class="timeline-card-content">
+                    <P>预计3天内到账，请关注到账通知</P>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="timeline-list height0 aui-hide" id="pass2">
+        <div class="timeline-light"><img src="../../image/my/loan-icon-do.png"/></div>
+        <div class="timeline-inner">
+            <div class="timeline-card">
+                <div class="timeline-card-header">到账成功</div>
+                <div class="timeline-card-content">
+                    <P>预计3天内到账，请关注到账通知</P>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-list height0 aui-hide" id="nopass">
+        <div class="timeline-light"><img src="../../image/my/withdraw-icon-no.png"/></div>
+        <div class="timeline-inner">
+            <div class="timeline-card">
+                <div class="timeline-card-header">到账失败</div>
+                <div class="timeline-card-content">
+                    <P id="loanReason">您提供的账号信息有错</P>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="noDataDiv" class="aui-hide" style="height: 16.5rem; text-align: center; padding-top: 5rem; color: #999;  font-size:0.7rem;">
+	暂无数据
+</div>
+
+<div class="aui-service-box aui-service-box4">
+    <p>如有问题请联系客服<em class="color-fc531f" tapmode onclick="callTel('15600688801');">15600688801</em></p>
+</div>
+
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+
+<script type="text/javascript">
+apiready = function() {
+	showWithdrawApply();
+	initEvent();
+}
+/**
+ *初始化事件
+ */
+function initEvent() {
+	api.addEventListener({
+        name: 'withdrawApplyEvent'
+    }, function(ret, err) {
+	    if (ret) {
+			showWithdrawApply();
+		}
+
+	});
+	
+	api.addEventListener({
+	    name:'viewappear'
+    },function(ret,err){
+    	api.closeWin({
+    		name: 'withdrawCodeWin'
+        });
+    	api.closeWin({
+    		name: 'withdrawWin'
+        });
+    });
+}
+
+function readApply(){
+	api.ajax({
+		method : 'put',
+		cache : false,
+		dataType : 'json',
+		returnAll : false,
+		headers : global.getRequestToken(),
+		url : global.getRequestUri() + '/withdraw/read-process'
+	}, function(ret, err) {
+		
+	});
+}
+
+function showWithdrawApply() {
+	api.ajax({
+		method : 'get',
+		cache : false,
+		dataType : 'json',
+		returnAll : false,
+		headers : global.getRequestToken(),
+		url : global.getRequestUri() + '/withdraw/last-withdraw-apply'
+	}, function(ret, err) {
+		readApply();
+		
+		if(ret && ret.code === "403"){
+			api.sendEvent({
+                name:'tokenExpiredEvent',
+                extra:{
+                	msg : ret.message
+                }
+            });
+            
+            return;
+		}
+		if (ret && ret.id) {
+			$api.removeCls($api.byId('applyInit'), 'aui-hide');
+      		$api.removeCls($api.byId('applyProcess'), 'aui-hide');
+      		$api.html($api.byId('withdrawAmount'), global.formatCurrency(ret.withdrawAmount) + "元");
+      		$api.html($api.byId('rejectReason'), ret.rejectReason);
+      		$api.html($api.byId('loanReason'), ret.loanReason);
+	      	if (ret.status == 1) {
+		        $api.removeCls($api.byId('check2'), 'aui-hide');
+		        $api.addCls($api.byId('check1'), 'aui-hide');
+	      	} else if (ret.status == -1) {
+		        $api.removeCls($api.byId('nocheck'), 'aui-hide');
+		        $api.addCls($api.byId('check1'), 'aui-hide');
+	      	} else if (ret.status == 2) {
+		        $api.removeCls($api.byId('check2'), 'aui-hide');
+		        $api.removeCls($api.byId('pass2'), 'aui-hide');
+		        $api.addCls($api.byId('check1'), 'aui-hide');
+		        $api.addCls($api.byId('pass1'), 'aui-hide');
+	      	} else if (ret.status == -2) {
+		        $api.addCls($api.byId('check1'), 'aui-hide');
+		        $api.addCls($api.byId('pass1'), 'aui-hide');
+		        $api.removeCls($api.byId('check2'), 'aui-hide');
+		        $api.removeCls($api.byId('nopass'), 'aui-hide');
+	      	}
+	      	
+	      	if (ret.alipayAccount && ret.alipayAccount != "") {
+	        	$api.html($api.byId('alipayAccount'), "（" + ret.alipayAccount + "）");
+	      	}
+		} else {
+			$api.removeCls($api.byId('noDataDiv'), 'aui-hide');
+		}
+	});
+}
+
+function closeWin(){
+	if(api.pageParam.status === -1){
+	  	var params = { id: api.pageParam.id, withdrawAmount: api.pageParam.withdrawAmount, "src" : 1, "status" : api.pageParam.status, "page" : "../withdraw_frame","imagePath":api.pageParam.imagePath,"alipayName":api.pageParam.alipayName,"alipayNickName":api.pageParam.alipayNickName,"alipayAccount":api.pageParam.alipayAccount};
+	  	api.openWin({
+	  		name : 'withdrawWin',
+	  		url : './withdraw_win.html',
+	  		pageParam : params
+		  });
+	}else if(api.pageParam.status === -2){
+		var params = { id: api.pageParam.id, withdrawAmount: api.pageParam.withdrawAmount, "src" : 1, "status" : api.pageParam.status, "page" : "../withdraw_code","imagePath":api.pageParam.imagePath,"alipayName":api.pageParam.alipayName,"alipayNickName":api.pageParam.alipayNickName,"alipayAccount":api.pageParam.alipayAccount};
+			api.openWin({
+				name : 'withdrawCodeWin',
+				url : './withdraw_code_win.html',
+				pageParam : params
+		});
+    }else{
+    	api.closeWin({
+        });
+    }
+}
+
+function callTel(tel){
+	api.call({
+        type : 'tel_prompt',
+        number : tel
+    });
+}
+</script>
+</html>

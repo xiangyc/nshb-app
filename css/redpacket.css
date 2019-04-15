@@ -1,0 +1,256 @@
+/*红包集*/
+.aui-slide-wrap .aui-slide-node.bg-dark img{ max-height: 9rem; width: 100%; }
+.redpacket-countdown{ background-color:#fff; padding: 0 0.6rem 0.5rem 0.6rem; position: relative; }
+.redpacket-countdown h4{ padding:0.5rem 0; font-size: 0.75rem; color: #333; height: 2.325rem; line-height: 1.325rem;  }
+.redpacket-countdown h4 i{ margin-right: 0.6rem; width: 1.225rem; height: 1.325rem; display: block; float: left;  }
+.redpacket-countdown .countdown-box{ height: 3.75rem; border: 0.15rem solid #ffce5b; border-radius: 0.25rem; padding-left: 0.5rem;
+    background: -moz-linear-gradient(90deg, #fd762d, #f1492f) !important;
+    background: -webkit-gradient(linear,0 0%,100% 100%,from(#fd762d),to(#f1492f)) !important;
+    background: -webkit-linear-gradient(90deg, #fd762d, #f1492f) !important;
+    background: -o-linear-gradient(90deg, #fd762d, #f1492f) !important;
+}
+.redpacket-countdown .countdown-box h3{ font-size: 0.7rem; color: #fff; padding-top: 0.55rem; padding-bottom: 0.55rem; line-height: 1; }
+.redpacket-countdown .countdown-box h3 span{ font-size: 0.9rem; color: #fff; padding-left: 0.35rem; }
+.redpacket-countdown .countdown-box p{ font-size: 0.6rem; color: #9a4112; }
+.redpacket-countdown .countdown-box img{ width: 7.5rem; height: 4.7rem; position: absolute; right: 0; top: 1.5rem; }
+.redpacket-ad-list{ padding: 0 0.6rem; background-color: #fff; }
+.redpacket-ad-list .redpacket-list-header{ padding:0.75rem 0 0.5rem 0; height: 3.25rem; }
+.redpacket-list-header .user-avatar{ width: 2rem; height: 2rem; display: inline-block; float: left; margin-right: 0.6rem; }
+.redpacket-list-header .user-avatar img{ width: 2rem; height: 2rem; border: 0.05rem solid #dcdcdc; border-radius: 4rem;  }
+.redpacket-list-header .user-name{ padding-top: 0.05rem; display: flex; position: relative;  }
+.redpacket-list-header .user-name .user-name-info{ font-size: 0.75rem; color: #333; }
+.redpacket-list-header .user-name .user-name-info em{ color: #fc531f; }
+.redpacket-list-header .user-name .redpacket-list-share{ position: absolute; right: 0; top: 0.2rem; width: 1.2rem; height: 1.2rem; line-height: 1.2rem;  }
+.redpacket-list-header .user-name .redpacket-list-share img{ width: 0.8rem; height: 0.8rem; margin-left: 0.4rem;}
+.redpacket-list-header .list-user-info { color: #999;  font-size: 0.6rem;}
+.redpacket-list-header .list-user-info span{ color: #999;  font-size: 0.6rem; padding-right: 1.25rem; display: block; float: left; line-height: 0.8rem; margin-top: 0.15rem; }
+.redpacket-list-header .list-user-info span i{ width: 0.7rem; height: 0.7rem; margin-right: 0.5rem; display: inline-block; float: left; }
+.redpacket-list-header .list-user-info span i.time-icon{ background:url("../image/redpacket/time-icon.png") no-repeat; background-size: 100%;  }
+.redpacket-list-header .list-user-info span i.look-icon{ background:url("../image/redpacket/look-icon.png") no-repeat; background-size: 100%;  }
+.redpacket-content-padded{ padding: 0;  font-size: 0.7rem; color: #0b0b0b; line-height: 1.75; }
+.redpacket-ad-list .redpacket-see{ font-size: 0.7rem; color: #ff5800; height: 1.2rem; line-height: 1.2rem;  display:inline-block;  margin-top: 0.25rem; margin-bottom: 0.35rem;  }
+.aui-row.aui-row-padded.redpacket-ad-img img{ min-height: 4.35rem; max-height: 4.35rem; }
+.redpacket-ad-list .redpacket-contact{ font-size: 0.6rem; color: #999; height: 1.2rem; line-height: 1; margin-top: 0.5rem; padding-bottom: 0.6rem;   }
+.redpacket-ad-list .redpacket-contact span{ margin-right: 0.85rem; float: right; }
+.float-release{ width: 2.6rem; height: 2.6rem; position: fixed; right: 0.9rem; bottom: 2.1rem; }
+
+/*红包集-倒计时红包*/
+.countdown-box .countdown-header{ padding:0.55rem 0.2rem 0.55rem 0.4rem; height: 3.1rem; line-height: 2rem; font-size: 0.7rem; color: #333; }
+.countdown-header .user-avatar{ width: 2rem; height: 2rem; display: inline-block; float: left; margin-right: 0.6rem; }
+.countdown-header .user-avatar img{ width: 2rem; height: 2rem; border: 0.05rem solid #dcdcdc; border-radius: 4rem;  }
+.countdown-header .user-name{ width: 12.8rem; overflow: hidden;  white-space: nowrap; text-overflow: ellipsis; vertical-align: middle; }
+.ad-banner-box{ position: relative; }
+.countdown-not-text{ width: 100%; height: 1.5rem; line-height: 1.5rem; padding-left: 0.6rem; background-color: rgba(0,0,0,0.75); position: absolute; bottom: 0;
+    font-size: 0.6rem; color: #fff; }
+.countdown-start-text{ width: 100%; height: 9rem;  background-color: rgba(0,0,0,0.75); position: absolute; top: 0; left: 0; color: #fff; }
+.countdown-start-text .start-answer{ width: 10.257rem; height: 2.1rem; line-height: 2.1rem; text-align: center;  font-size: 0.9rem;
+    margin:2.6rem auto 0.9rem auto; border: 0.1rem solid #ffce5b;
+    border-radius: 1.05rem;
+    background: -moz-linear-gradient(90deg, #ff5800, #ff8752) !important;
+    background: -webkit-gradient(linear,0 0%,100% 100%,from(#ff5800),to(#ff8752)) !important;
+    background: -webkit-linear-gradient(90deg, #ff5800, #ff8752) !important;
+    background: -o-linear-gradient(90deg, #ff5800, #ff8752) !important;
+    }
+.countdown-start-text p{ font-size: 0.85rem; color: #fff; text-align: center; line-height: 1; }
+.countdown-start-text span{ font-size: 0.6rem; color: #fff; position: absolute; bottom: 0.5rem; right: 0.7rem; }
+.countdown-bottom h4{ text-align: center; height: 1.35rem; line-height: 1.35rem; font-size: 1.05rem; color: #ff5800; margin-top: 0.9rem; margin-bottom: 0.7rem; }
+.countdown-bottom h4 i{ margin-right: 0.2rem; margin-top: -0.2rem; width: 1.35rem; height: 1.35rem; display: inline-block; vertical-align: middle;  background:url("../image/redpacket/bonus-icon.png") no-repeat; background-size: 100%; }
+.countdown-bottom span{ text-align: center; font-size: 0.7rem; color: #333; display: block;  line-height: 1; }
+.countdown-prompt{ margin: 0.8rem 0.45rem; padding: 1rem 0.9rem;  border-radius: 1.16rem; border: 0.1rem solid #ff8400; position: relative;  }
+.countdown-prompt h5{ height: 1.1rem; line-height: 1.1rem; font-size: 0.75rem; color: #333; margin-bottom: 0.75rem; }
+.countdown-prompt h5 i{ margin-right: 0.6rem;  margin-top: -0.15rem; width: 1.1rem; height: 1.1rem; display: inline-block; vertical-align: middle;  background:url("../image/redpacket/prompt-iocn.png") no-repeat; background-size: 100%; }
+.countdown-prompt p{ line-height: 1.75; color: #333; }
+.countdown-prompt p span{ display:inline-block; color: #0030ff; }
+.countdown-prompt .myred-voucher{ background:url(../image/my/myred-voucher-bg.png) no-repeat top center; background-size: 3.9rem 4.275rem; width: 3.9rem; height:4.275rem; position: absolute; top: -2rem; right: 0; z-index: 6;
+    font-size: 0.6rem; color: #58381c; font-weight: bold; text-align: center; padding-top: 2.4rem; line-height: 1.3; }
+.countdown-prompt .myred-voucher em{ display:block; }
+
+/*红包集-倒计时红包-答题页面*/
+.qa-bg{ background:url(../image/redpacket/qa-bg.png) repeat-x; }
+.qa-box .qa-return{ width: 1.1rem; height: 1.1rem; position: absolute; top: 1.8rem; left: 0.45rem; }
+.qa-box .qa-top{ text-align: center; margin-top: 2.15rem; }
+.qa-box .qa-top img{ margin: 0 auto;}
+.qa-box .qa-top-c{ margin: -0.8rem 1.4rem -0.6rem 1.4rem; padding: 0.6rem 0.7rem 0.7rem 0.7rem; min-height: 8.375rem; height: auto; background-color: #fff; border-radius: 0.5rem; }
+.qa-box .qa-top-c .qa-top-c-t{ height: 1.9rem; line-height: 1.9rem; border-bottom: 0.05rem dashed #bfbfbf; font-size: 0.85rem; color: #ff6a35; }
+.qa-box .qa-top-c .qa-top-c-t span:last-child{ float:right; }
+.qa-box .qa-top-c p{ line-height: 1.75; padding-top: 0.75rem; font-size: 0.7rem; color: #333; }
+.qa-box .qa-bottom{ text-align: center;}
+.qa-box .qa-bottom img{ margin: 0 auto;}
+.qa-answer{ margin:0 1.4rem;}
+.qa-answer li{ min-height: 2.325rem; height: auto; font-size: 0.75rem; color: #333; position: relative; background-color: #fff; border-radius: 0.5rem; margin-bottom: 0.35rem; padding: 0.65rem 2rem 0.55rem 1.15rem; }
+.qa-answer li i{ width: 1.325rem; height: 1.325rem; display: inline-block; position:absolute; top: 0.5rem; right: 0.7rem; }
+.qa-answer li i.answer-icon{ background:url(../image/redpacket/answer-icon.png) no-repeat; background-size:100%;}
+.qa-answer li i.wrong-icon{ background:url(../image/redpacket/wrong-icon.png) no-repeat; background-size:100%;}
+
+/*答题结果*/
+.qa-result-header{ background-color: #e04e4e; padding-top:22px;}
+.qa-result-topbar{ height:44px; position:relative; }
+.qa-result-topbar .close-icon{
+    background: rgba(0, 0, 0, 0) url("../image/redpacket/close-icon.png") no-repeat scroll center center;
+    background-size: 0.95rem auto;  bottom: 0; display: block;  height: 44px;  left: 6px;  position: absolute;  width: 40px;  line-height: 44px;
+}
+.qa-result-arc{ background-color: #e04e4e; height: 2.2rem;
+    -webkit-border-radius: 0 0 150% 150%/0 0 300% 300%;
+    -moz-border-radius: 0 0 150% 150%/0 0 300% 300%;
+    border-radius: 0 0 150% 150%/0 0 300% 300%; }
+.qa-result-user{ margin-top: -1.8rem; text-align: center; border-bottom: 0.05rem solid #ececec; }
+.qa-result-user .user-avatar{ width: 3.25rem; height: 3.25rem; border-radius: 50%; margin: 0 auto 1.3rem auto;}
+.qa-result-user h5{ font-size: 0.75rem; color: #333; line-height: 1; padding-bottom: 1rem; }
+.qa-result-user h2{ font-size: 0.95rem; color: #fc531f; line-height: 1; padding-bottom: 0.8rem; }
+.qa-result-user h2 em{ padding: 0 0.2rem;}
+.qa-result-user h4{ font-size: 0.75rem; color: #333; line-height: 1; padding-bottom: 1rem; }
+.qa-result-user h4 em{ font-size: 1.2rem; color: #fc531f; line-height: 1; padding-right: 1rem; }
+.qa-result-user p{ font-size: 0.7rem; color: #999; line-height: 1; padding-bottom: 1rem; }
+.qa-result-user p span{ padding: 0 0.375rem; display: inline; }
+.qa-result-user p span i{ width: 0.55rem; height: 0.55rem; display: inline-block; padding: 0; margin-right: 0.2rem; }
+.qa-result-user p span:last-child em{ padding: 0 0.25rem; }
+
+.qa-top-box{ padding: 0.8rem 0.6rem 0.6rem 0.6rem;}
+.qa-top-box .qa-top-header{ font-size: 0.7rem; color: #626262; padding-bottom: 0.3rem; }
+.ranking-info-list { padding: 0 0.15rem 1.85rem 0.15rem; }
+.ranking-info-list li{ height: 4.1rem; line-height: 4.1rem; border-bottom: 0.05rem solid #d2ccbd; position: relative; }
+.ranking-info-list li em{ font-size: 0.95rem; color: #333333; padding-right: 0.25rem; display: inline-block; float: left; }
+.ranking-info-list li .ranking-img{ position: relative; width: 2.1rem; height: 2.1rem; margin:1rem 0.5rem 1rem 0; border-radius: 1.05rem; border: 0.05rem solid #cdcdcd; float: left; display: inline-block;  }
+.ranking-info-list li .ranking-img img{ width: 100%; height: 100%; border-radius: 50%; }
+.ranking-info-list li p{ display: inline-block; width: 6.1rem; font-size: 0.75rem; color: #333;	white-space: nowrap; overflow: hidden; text-overflow: ellipsis;  }
+.ranking-info-list li span{ font-size:0.7rem; color: #e85e5e; text-align: right; float: right; }
+.ranking-info-list li span i{ font-style: normal; }
+.ranking-info-list li:first-child em{ color: #ff4f66; }
+.ranking-info-list li:nth-child(2) em{ color: #ffc825; }
+.ranking-info-list li:nth-child(3) em{ color: #3fa8ff; }
+.ranking-info-list li:first-child .ranking-img{ border: 0.1rem solid #ff9ba8;}
+.ranking-info-list li:nth-child(2) .ranking-img{ border: 0.1rem solid #ffdb70; }
+.ranking-info-list li:nth-child(3) .ranking-img{ border: 0.1rem solid #7ac3ff; }
+.ranking-info-list li .ranking-img:after{ content: ''; position: absolute; width: 1rem; height: 0.775rem;  z-index: 9; top: -0.65rem; left: 0.225rem;  }
+.ranking-info-list li:first-child .ranking-img:after{ background: url(../image/my/ranking-first-icon.png) no-repeat 0 0; background-size: 1rem 0.775rem; }
+.ranking-info-list li:nth-child(2) .ranking-img:after{ background: url(../image/my/ranking-second-icon.png) no-repeat 0 0; background-size: 1rem 0.775rem; }
+.ranking-info-list li:nth-child(3) .ranking-img:after{ background: url(../image/my/ranking-third-icon.png) no-repeat 0 0; background-size: 1rem 0.775rem; }
+@media(max-width: 320px) {
+    .ranking-info-list li p{ width: 5.3rem;}
+}
+
+/*倒计时红包-获取红包券*/
+.coupon-list .aui-list-item{ height: 3.2rem; }
+.aui-list.aui-list-in.coupon-list .aui-list-item-media{ width: 2.05rem; padding-right: 0; margin-right: 0.6rem; }
+.aui-list.aui-list-in.coupon-list .aui-list-item-media img{ width: 2.05rem; height: 2.05rem; }
+.aui-list.aui-list-in.coupon-list .aui-list-item-title{ font-size: 0.75rem; color: #333; }
+.aui-list.aui-list-in.coupon-list .aui-list-item-inner .legend{ color: #666f; }
+.aui-list.aui-list-in.coupon-list .aui-list-item-arrow:before{ border-color: #666; }
+.aui-list.aui-list-in.coupon-list .aui-list-item:last-child{ border-bottom: none; }
+
+/* .carousel-btn{ padding-top: 1.5rem; text-align: center; font-size: 0.6rem; color: #333; } */
+.carousel-btn{ text-align: center; font-size: 0.6rem; color: #333; position: fixed; bottom: 1rem; left: 50%; width: 6.3rem; margin-left:-3.15rem; }
+.carousel-btn i{ width: 2.95rem; height: 2.95rem; display: block; margin: 0 auto 1.3rem auto;}
+.carousel-btn i.carousel-in{ background:url(../image/redpacket/carousel-in.png) no-repeat; background-size:100%;}
+.carousel-btn i.carousel-after{ background:url(../image/redpacket/carousel-after.png) no-repeat; background-size:100%;}
+@media(max-width: 414px) {
+    .carousel-btn{ bottom: 3.8rem;}
+}
+@media(max-width: 375px) {
+    .carousel-btn{ bottom: 2.2rem;}
+}
+@media(max-width: 320px) {
+    .carousel-btn{ bottom: 0;}
+    .carousel-btn i{  margin: 0 auto 0.3rem auto;}
+}
+/*红包集-搜索*/
+#header .aui-title{ padding: 0 0.6rem; }
+#header .aui-title .aui-searchbar{ background-color: transparent; }
+#header .aui-title .aui-searchbar-input{ height: 1.5rem; line-height: 1.5rem; border-radius: 0.2rem; padding-left: 0.6rem; }
+#header .aui-title .aui-searchbar-input i.icon-search{ width: 0.8rem; height: 0.8rem; display: inline-block; margin-top: 0.4rem; margin-right: 0.6rem; }
+#header .aui-title .aui-searchbar .aui-searchbar-btn{ width: auto; padding-left: 0.6rem; margin-right: 0; padding-right: 0; font-size: 0.75rem; color: #fff; }
+#header .aui-title .aui-searchbar-input input{ height: 1.5rem; line-height: 1.5rem; font-size: 0.7rem; color: #333; }
+#header .aui-title .aui-searchbar-input i.icon-close{ width: 1.5rem; height: 1.5rem; position: absolute; right: 0.25rem; top: 0; }
+#header .aui-title .aui-searchbar-input i.icon-close img{ width: 0.875rem; height: 0.875rem; margin: 0.3rem auto 0 auto; }
+
+.search-win-box{ padding: 0.75rem 0.5rem 0 0.5rem; min-height:100%;  min-height:100vh;  }
+.search-win-box h5{ font-size: 0.7rem; color: #666; height: 1rem; line-height: 1rem; }
+.search-win-box ul li{ font-size: 0.75rem; color: #333; height: 2.25rem; line-height: 2.25rem; border-bottom: 0.05rem solid #ececec; position: relative; margin: 0 0.15rem; }
+.search-win-box ul li i{ width: 0.55rem; height: 0.55rem; padding: 0.6rem; position: absolute; right: 0.15rem; top: 0.5rem; background:url(../image/redpacket/search-list-close.png) 0.3rem 0.3rem no-repeat; background-size:0.55rem;}
+.search-win-box ul li span{ width: 86%; display:inline-block; }
+/*点击红包弹框/打开*/
+.coupon-receive-box{ position: fixed; top: 13%; margin: 0 7%; width: 86%; height: 18.45rem;  background-color: #dc001f; z-index: 11; border-radius: 0.6rem; line-height: 1; text-align: center;  }
+.coupon-receive-box .tear-reb-overflow{ overflow: hidden; }
+.coupon-receive-box .tear-reb-t{
+    background-color: #f51c50;
+    background: -moz-linear-gradient(90deg, #f41838, #f8238b) !important;
+    background: -webkit-gradient(linear,90 0%, 0% 90%,from(#f41838),to(#f8238b)) !important;
+    background: -webkit-linear-gradient(90deg, #f41838, #f8238b) !important;
+    background: -o-linear-gradient(90deg, #f41838, #f8238b) !important;
+    border-top-right-radius: 0.6rem;
+    border-top-left-radius: 0.6rem;
+    -webkit-border-radius: 0 0 120% 120%/0 0 25% 25%;
+    -moz-border-radius: 0 0 120% 120%/0 0 25% 25%;
+    border-radius: 0 0 120% 120%/0 0 25% 25%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    overflow: hidden;
+    position: relative;
+    min-height: 14.05rem;
+    margin-bottom: 0.6rem;
+    border-top-left-radius:0.6rem;
+    border-top-right-radius:0.6rem;
+}
+.coupon-receive-box .tear-reb-t .use-portrait{ margin: 2.35rem auto 0.8rem auto; width: 2.55rem; height: 2.55rem; }
+.coupon-receive-box .tear-reb-t .use-portrait img{  width: 2.55rem; height: 2.55rem; border: 0.05rem solid #fff; border-radius: 50%; }
+.coupon-receive-box .tear-reb-t h4{ font-size: 0.9rem; color: #fff; padding-bottom: 0.65rem; }
+.coupon-receive-box .tear-reb-t p{ font-size: 0.7rem; color: #fca2b4; padding-bottom: 1.5rem; }
+.coupon-receive-box .tear-reb-t h2{ font-size: 1.05rem; color: #ffdf69; }
+
+.coupon-receive-box .tear-reb-b .use-portrait{ margin: 1.4rem auto 1.55rem auto; width: 2.55rem; height: 2.55rem; }
+.coupon-receive-box .tear-reb-b .use-portrait img{  width: 2.55rem; height: 2.55rem; border: 0.05rem solid #fff; border-radius: 50%; }
+.coupon-receive-box .tear-reb-b h4{ font-size: 0.9rem; color: #fff; padding-bottom: 1.5rem; }
+.coupon-receive-box .tear-reb-b h2{ font-size: 1.05rem; color: #ffdf69; padding-bottom: 1.5rem; }
+.coupon-receive-box .tear-reb-b p{ font-size: 0.7rem; color: #fca2b4; padding-top: 1.5rem; }
+.coupon-receive-box .tear-reb-b .tear-reb-img{
+    width: 3.8rem; height: 3.8rem; line-height: 3.8rem;
+    margin: 0 auto;
+    background-color: #fede60;
+    color: #e60012;
+    font-size:1.45rem;
+    text-align: center;
+    -webkit-box-shadow:0 0.05rem 0.2rem rgba(200, 10, 20, 1);
+    -moz-box-shadow:0 0.05rem 0.2rem rgba(200, 10, 20, 1);
+    box-shadow:0 0.05rem 0.2rem rgba(200, 10, 20, 1);
+    border-radius: 1.9rem;
+}
+
+.coupon-receive-box .tear-reb-overflow .tear-reb-img{
+    width: 3.8rem; height: 3.8rem; line-height: 3.8rem; position: absolute; bottom: 2.5rem; left: 50%; margin-left: -1.9rem;
+    background-color: #fede60;
+    color: #e30b20;
+    font-size:1.45rem;
+    text-align: center;
+    -webkit-box-shadow:0 0.05rem 0.2rem rgba(200, 10, 20, 1);
+    -moz-box-shadow:0 0.05rem 0.2rem rgba(200, 10, 20, 1);
+    box-shadow:0 0.05rem 0.2rem rgba(200, 10, 20, 1);
+    border-radius: 1.9rem;
+}
+.coupon-receive-box .tear-reb-overflow .tear-reb-img.tear-reb-s{ font-size:1rem; }
+.coupon-receive-box .tear-reb-overflow .tear-reb-rmb{ width:1rem; height:1rem; position:absolute; left:63%; bottom:3.8rem; font-size: 0.8rem; color: #fff; }
+.coupon-receive-box .tear-reb-overflow .tear-reb-p{ padding-top: 2rem; font-size: 0.6rem; color: #fca2b4; }
+
+.rotate{
+    -webkit-animation: anim .6s infinite alternate;
+    -ms-animation: anim .6s infinite alternate;
+    animation: anim .6s infinite alternate;
+}
+@-webkit-keyframes anim {
+    from { -webkit-transform: rotateY(180deg); }
+    to { -webkit-transform: rotateY(360deg); }
+}
+@-ms-keyframes anim {
+    from { -ms-transform: rotateY(180deg); }
+    to { -ms-transform: rotateY(360deg); }
+}
+@keyframes anim {
+    from { transform: rotateY(180deg); }
+    to { transform: rotateY(360deg); }
+}
+.coupon-receive-box .close-red-icon{ position: absolute; bottom: 0; bottom: -2.9rem; left: 50%; margin-left: -1.1rem;   }
+.coupon-receive-box .close-red-icon img{ width: 2.2rem; height: 2.2rem;  }
+
+.mui-backdrop { position: fixed; z-index: 9; top: 0; right: 0; bottom: 0; left: 0; background-color: rgba(0,0,0,.7); }
+.bomb-box{ width: 90%; margin: 0 5%; background-color: #fff; z-index: 999; position: fixed; top: 22%; border-radius: 6px;animation:bgc-fade-in 0.4s ease-in; -webkit-animation:bgc-fade-in 0.4s ease-in; }
+.bomb-box .main{ padding: 10px 15px 5px 15px; }
+.bomb-box h4{ text-align: center;  color: #f27900; font-size:16px; font-weight: normal; height: 42px; line-height: 42px; margin-top: 0px; margin-bottom: 0px;  }
+.bomb-box .main p{ line-height: 1.6; color: #333; }

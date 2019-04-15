@@ -1,0 +1,239 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>红包排行榜</title>
+		<link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/my.css" />
+	</head>
+	<body class="ranking-bg">
+		<div class="ranking-box">
+			<ul class="ranking-top">
+				<li id="regalLi" tapmode="" onclick="doTop(1);" class="active">富豪排行榜</li>
+				<li id="incomeLi" tapmode="" onclick="doTop(2);" class="">收益排行榜</li>
+			</ul>
+
+			<div class="ranking-c">
+				<img src="../../image/my/ranking-c-tbg.jpg"/>
+				<div id="regalDiv" class="ranking-c-c">
+					<div class="ranking-info-box">
+						<div id="regalTopRang" class="ranking-img"><img id="headIcon1" onerror="this.src='../../image/icon150x150.png'"/></div>
+						<h4 id="regalRankH">第<em id="regalRank"></em>名</h4>
+						<div class="ranking-info-money">累计发放<em id="sendRedpacketsBalance">0.00</em><span>元</span></div>
+					</div>
+					<script id="regal-list-template" type="text/x-dot-template">
+					{{ for(var i=0; i< it.length; i++) { }}
+						<li>
+						<em>{{=it[i].rank}}</em>
+						{{ if(it[i].rank === 1){ }}
+						<div class="ranking-img first">
+						{{ }else if(it[i].rank === 2){ }}
+						<div class="ranking-img second">
+						{{ }else if(it[i].rank === 3) { }}
+						<div class="ranking-img third">
+						{{ }else{ }}
+						<div class="ranking-img">
+						{{ } }}
+						<img src="{{=global.getImgUri() + '/' + it[i].businessLogo}}" onerror="this.src='../../image/icon150x150.png'" /></div>
+						<p>
+						{{if(it[i].businessName){ }}
+							{{=it[i].businessName}}
+						{{ }else{ }}
+							暂无昵称
+						{{ } }}
+						</p>
+						<span><i>{{=global.formatCurrency(it[i].balance)}}</i>元</span></li>
+					{{ } }}
+					</script>
+					<ul id="regal-list-content" class="ranking-info-list">
+					</ul>
+				</div>
+
+				<div id="incomeDiv" class="ranking-c-c aui-hide">
+					<div class="ranking-info-box">
+						<div id="incomeTopRang" class="ranking-img"><img id="headIcon2" onerror="this.src='../../image/icon150x150.png'" /></div>
+						<h4 id="incomeRankH">第<em id="incomeRank"></em>名</h4>
+						<div class="ranking-info-money">累计收益<em id="receiveRedpacketsBalance">0.00</em><span>元</span></div>
+					</div>
+					<script id="income-list-template" type="text/x-dot-template">
+					{{ for(var i=0; i< it.length; i++) { }}
+						<li><em>{{=it[i].rank}}</em>
+						{{ if(it[i].rank === 1){ }}
+						<div class="ranking-img first">
+						{{ }else if(it[i].rank === 2){ }}
+						<div class="ranking-img second">
+						{{ }else if(it[i].rank === 3) { }}
+						<div class="ranking-img third">
+						{{ }else{ }}
+						<div class="ranking-img">
+						{{ } }}
+						<img src="{{=global.getImgUri() + '/' + it[i].headIcon}}" onerror="this.src='../../image/icon150x150.png'" /></div>
+						<p>
+						{{if(it[i].nickName){ }}
+							{{=it[i].nickName}}
+						{{ }else{ }}
+							暂无昵称
+						{{ } }}
+						</p>
+						<span><i>{{=global.formatCurrency(it[i].income)}}</i>元</span></li>
+					{{ } }}
+					</script>
+					<ul id="income-list-content" class="ranking-info-list">
+					</ul>
+				</div>
+
+				<img src="../../image/my/ranking-c-bbg.png"/>
+			</div>
+
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+	<script type="text/javascript" src="../../script/common/page.js"></script>
+	<script type="text/javascript" src="../../script/common/global.js"></script>
+	<script type="text/javascript">
+	// 初始化参数
+	var incomeUrl = global.getRequestUri() + '/rank/top-income';
+	var regalUrl = global.getRequestUri() + '/rank/top-regal';
+	var queryType = 1;
+	apiready = function() {
+		loadHeadIcon();
+		getMemberStatisticsResult();
+		//默认查询富豪排行榜
+		doTop(queryType);
+		//初始化事件
+		initEvent();
+	};
+
+	function loadHeadIcon(){
+		var headIcon = global.getHeadIcon();
+		var businessLogo = global.getBusinessLogo();
+		$api.attr($api.byId('headIcon1'), 'src', global.getImgUri() + '/' + businessLogo);
+		$api.attr($api.byId('headIcon2'), 'src', global.getImgUri() + '/' + headIcon);
+	}
+
+	//初始化事件
+	function initEvent() {
+		api.setCustomRefreshHeaderInfo({
+			bgColor : '#fdf7e7',
+			image : {
+				pull : global.pullImage(),
+				load : global.pushImage()
+			}
+		}, function(ret, err) {
+			doTop(queryType);
+			api.refreshHeaderLoadDone();
+		});
+
+		api.addEventListener({
+	        name: 'modifyUserInfo'
+	    }, function(ret, err) {
+		    loadHeadIcon();
+		});
+	}
+	
+	// 获取会员统计数据
+	function getMemberStatisticsResult(){
+		api.ajax({
+			method : 'GET',
+			cache : false,
+			timeout : 30,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/memberStatistics',
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if(ret){
+				if(ret.regalRank > 0){
+					$api.html($api.byId('regalRank'), ret.regalRank);
+				}else{
+					$api.html($api.byId('regalRankH'), '暂无排名');
+				}
+				if(ret.incomeRank > 0){
+					$api.html($api.byId('incomeRank'), ret.incomeRank );
+				}else{
+					$api.html($api.byId('incomeRankH'), '暂无排名');
+				}
+				
+				$api.html($api.byId('sendRedpacketsBalance'), global.formatCurrency(ret.sendRedpacketsBalance));
+				$api.html($api.byId('receiveRedpacketsBalance'), global.formatCurrency(ret.receiveRedpacketsBalance));
+				
+				if(ret.regalRank === 1){
+					$api.addCls($api.byId('regalTopRang'), 'first');
+				}else if(ret.regalRank === 2){
+					$api.addCls($api.byId('regalTopRang'), 'second');
+				}else if(ret.regalRank === 3){
+					$api.addCls($api.byId('regalTopRang'), 'third');
+				}
+				
+				if(ret.incomeRank === 1){
+					$api.addCls($api.byId('incomeTopRang'), 'first');
+				}else if(ret.regalRank === 2){
+					$api.addCls($api.byId('incomeTopRang'), 'second');
+				}else if(ret.regalRank === 3){
+					$api.addCls($api.byId('incomeTopRang'), 'third');
+				}
+			}else{
+				$api.html($api.byId('regalRankH'), '暂无排名');
+				$api.html($api.byId('incomeRankH'), '暂无排名');
+			}
+		});
+	}
+
+	//查询收益排行榜
+	function queryIncomeList() {
+		page.init(null, 'income-list-content', 'income-list-template', incomeUrl, '', false, '');
+	}
+
+	//查询富豪排行榜
+	function queryRegalList() {
+		page.init(null, 'regal-list-content', 'regal-list-template', regalUrl, '', false, '');
+	}
+
+	/**
+	 *切换排行榜
+	 */
+	function doTop(type) {
+		queryType = type;
+		if (type === 1) {
+			$api.removeCls($api.byId('incomeLi'), 'active');
+			$api.addCls($api.byId('incomeDiv'), 'aui-hide');
+			$api.addCls($api.byId('regalLi'), 'active');
+			$api.removeCls($api.byId('regalDiv'), 'aui-hide');
+			queryRegalList();
+		} else {
+			$api.removeCls($api.byId('regalLi'), 'active');
+			$api.addCls($api.byId('regalDiv'), 'aui-hide');
+			$api.addCls($api.byId('incomeLi'), 'active');
+			$api.removeCls($api.byId('incomeDiv'), 'aui-hide');
+			queryIncomeList();
+		}
+	}
+
+	// 显示富豪榜榜单详情
+	function showRegalRankingDetail(rankId) {
+		var rankEls1 = $api.domAll('#regal-list-content .ranking-prompt');
+		var rankEls2 = $api.domAll('#regal-list-content .ranking-prompt-b');
+		for (var i = 0; i < rankEls1.length; i++) {
+			if(rankEls1[i].id != 'regal'+rankId){
+				$api.addCls(rankEls1[i], 'aui-hide');
+			}
+		}
+		for (var i = 0; i < rankEls2.length; i++) {
+			if(rankEls2[i].id != 'regal'+rankId){
+				$api.addCls(rankEls2[i], 'aui-hide');
+			}
+		}
+
+
+		if ($api.hasCls($api.byId('regal'+rankId), 'aui-hide')) {
+			$api.removeCls($api.byId('regal'+rankId), 'aui-hide');
+		} else {
+			$api.addCls($api.byId('regal'+rankId), 'aui-hide');
+		}
+	}
+	</script>
+</html>

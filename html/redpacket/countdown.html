@@ -1,0 +1,269 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>趣味问答领红包</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/redpacket.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+</head>
+<body class="body-bg-white">
+<div class="countdown-box">
+
+    <div class="countdown-header">
+        <div class="user-avatar">
+            <img id="headIconId" onerror="this.src='../../image/icon150x150.png'" src="../../image/icon150x150.png">
+        </div>
+        <div id="nickNameId" class="user-name"></div>
+    </div>
+
+    <div class="ad-banner-box">
+        <div class="aui-slide-wrap" >
+            <div class="aui-slide-node bg-dark">
+                <img src="../../image/redpacket/redpacket-img01.jpg"/>
+            </div>
+        </div>
+        <div class="aui-slide-page-wrap"><!--分页容器--></div>
+        <!--未开始-->
+        <div class="countdown-not-text" id="countDownEm"></div>
+        <!--已开始-->
+        <div class="countdown-start-text aui-hide" id="startQuizzes">
+            <div tapmode onclick="openQAWin();" class="start-answer">开始答题</div>
+            <p>趣味答题进行中...</p>
+            <span>参与用户：<em id="canyuEm">0</em>/<em id="levelEm">0</em></span>
+        </div>
+    </div>
+
+    <div class="countdown-bottom">
+        <h4><i></i>总奖金<em id="balance">0.00</em>元</h4>
+        <span>最多参与人数：<em id="levelSpan">0</em>人</span>
+        <div class="countdown-prompt">
+            <div tapmode onclick="openVoucher();" class="myred-voucher">我的红包券<em id="couponCount"></em></div>
+
+            <h5><i></i>小提示</h5>
+            <p>1.答题将消耗一张“红包劵“，<span tapmode onclick="openGetCoupon();">获取红包券>></span></p>
+            <p>2.共10道趣味问答题，答对越多，答的越快，红包金额越大！</p>
+            <p>3.所得红包金额自动存入账户，可随时提现！</p>
+            <p>4.本次活动最终解释权归拿手官方所有</p>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+var countdownTitle = "活动标题";
+var activityId = 0;
+var timer;
+
+apiready = function(){
+	//加载数据
+	// 获取秒抢红包配置参数
+	getCountDownConfig();
+	//红包券张数
+	showCouponCount();
+	
+	initEvent();
+	//会员图像和昵称
+	$api.attr($api.byId('headIconId'), 'src', global.getImgUri() +'/'+ global.getHeadIcon());
+	$api.html($api.byId('nickNameId'), (global.getUserName()?global.getUserName(): '暂无昵称'));
+}
+
+function initEvent(){
+
+	api.addEventListener({
+		name : 'countExpiredCouponEvent'
+	}, function(ret, err) {
+		api.closeWin({
+			name: 'qaWin'
+        });
+		showCouponCount();
+	});
+	
+}
+
+function showCouponCount(){
+	var financeAccountResult = $api.getStorage("financeAccountResult");
+	if(financeAccountResult){
+		$api.html($api.byId('couponCount'), '(' + financeAccountResult.coupon + ')');
+	}	
+	
+}
+
+//轮询参与人数
+function getJoinNum(){
+    api.ajax({
+        method : 'get',
+        cache : true,
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/quizzes/total/nologin/partake',
+        headers : global.getRequestToken(),
+        data : {
+				values : {
+					activityId : activityId
+				}
+			}
+    }, function(ret, err) {
+        if(ret && ret.success){
+        	$api.html($api.byId('canyuEm'),ret.message);
+        	setTimeout(function(){getJoinNum();},2000);
+        }
+    });
+}
+
+function getCountDownConfig(){
+    api.ajax({
+        method : 'get',
+        cache : true,
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/redpacketscountdown/red-packets-config',
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+        if(ret && ret.success && ret.obj){
+        	var nowTime = parseInt(ret.message);
+			var startTime = ret.obj.startTime;
+			var endTime = ret.obj.endTime;
+			
+        	$api.html($api.byId('levelSpan'),ret.obj.level);
+        	$api.html($api.byId('balance'),ret.obj.balance);
+        	$api.html($api.byId('levelEm'),ret.obj.level);
+        	
+        	calculateTime(nowTime,startTime,endTime);
+        	
+        	activityId = ret.obj.id;
+        	
+        	//参与人数
+			getJoinNum();
+	
+        }
+    });
+}
+
+function calculateTime(nowTime,startTime,endTime){
+
+	var ts = startTime - nowTime;
+	var ls = endTime - nowTime;
+	
+	//答题还未开始
+	if(ts > 0){
+	
+		$api.removeCls($api.byId('countDownEm'), 'aui-hide');
+		$api.addCls($api.byId('startQuizzes'), 'aui-hide');
+		
+		//var dd = parseInt(ts / 1000 / 60 / 60 / 24, 10);  
+	    var hh = parseInt(ts / 1000 / 60 / 60, 10);  
+	    var mm = parseInt(ts / 1000 / 60 % 60, 10);  
+	    var ss = parseInt(ts / 1000 % 60, 10);  
+	    //dd = dd<10?("0" + dd):dd;   //天  
+	    hh = hh<10?("0" + hh):hh;   //时  
+	    mm = mm<10?("0" + mm):mm;   //分  
+	    ss = ss<10?("0" + ss):ss;   //秒  
+	    $api.html($api.byId('countDownEm'),"开抢倒计时:" + hh + "小时" + mm + "分钟" + ss + "秒");
+	    nowTime = nowTime+1000;
+	    timer = setTimeout(function(){calculateTime(nowTime,startTime,endTime);},1000); 
+	} else {
+		//答题中
+		if(ls > 0){
+			clearTimeout(timer);
+			$api.removeCls($api.byId('startQuizzes'), 'aui-hide');
+			$api.addCls($api.byId('countDownEm'), 'aui-hide');
+			isEndQuestion();
+			
+		} else {
+			//答题活动结束
+			$api.removeCls($api.byId('countDownEm'), 'aui-hide');
+			$api.addCls($api.byId('startQuizzes'), 'aui-hide');
+			
+			$api.html($api.byId('countDownEm'),"秒抢红包活动已结束，敬请期待");
+		}
+		
+	}
+	 
+}
+
+// 判断答题活动是否结束
+function isEndQuestion(){
+    api.ajax({
+        method : 'get',
+        cache : true,
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/redpacketscountdown/red-packets-config',
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+        if(ret && ret.success && ret.obj){
+        	if(ret.obj.status == 2){
+        		//答题活动结束
+        		$api.removeCls($api.byId('countDownEm'), 'aui-hide');
+				$api.addCls($api.byId('startQuizzes'), 'aui-hide');
+				$api.html($api.byId('countDownEm'),"秒抢红包活动已结束，敬请期待");
+        	} else {
+        		$api.removeCls($api.byId('startQuizzes'), 'aui-hide');
+				$api.addCls($api.byId('countDownEm'), 'aui-hide');
+				setTimeout(function(){isEndQuestion();},2000); 
+        	}
+        }
+    });
+}
+
+/**
+ *秒抢答题 
+ */
+function openQAWin(){
+	
+	api.ajax({
+        method : 'get',
+        cache : true,
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/quizzes/is-repeat-quizzes?activityId='+activityId,
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+    	if(ret && ret.success){
+  			var params = { page : '../redpacket/qa', title : countdownTitle, activityId:activityId};
+			api.openWin({
+				name : 'qaWin',
+				url : '../redpacket/qa.html',
+				reload : true,
+				slidBackEnabled : false,
+				pageParam : params
+			});
+		
+    	} else {
+    		global.setToast(ret.message);
+    	}
+    });
+	
+}
+
+/**
+ * 获取红包券
+ */
+function openGetCoupon(){
+	var params = { page : '../redpacket/coupon', title : '趣味问答领红包' };
+	global.openWinName('qaWin', '../common/common_win', params);
+}
+
+
+function openVoucher(){
+	api.openFrame({
+        name: 'couponNoteFrame',
+        url: 'coupon_note.html'
+    });
+}
+
+function closeRedpacket(){
+	$api.addCls($api.byId('redpackMaskDiv'), 'aui-hide');
+	$api.addCls($api.byId('vouchertkDiv'), 'aui-hide');
+}
+</script>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>地图红包广告</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<body class="body-bg-ef">
+<!--审核中-->
+<div id="applingDiv" class="ad-map-box aui-hide">
+    <ul class="ad-map-step">
+        <li class="aui-active"><i>1</i>选择投放区域</li>
+        <li class="aui-active"><i>2</i>编辑广告内容</li>
+        <li><i>3</i>设置广告红包</li>
+    </ul>
+    <div class="ad-content-textarea aui-margin-t-10">
+        <div class="textarea" id="content"></div>
+        <P><span id="word"></span>/60</P>
+    </div>
+    <div class="ad-photo-box aui-margin-t-10">
+        <h4><em class="color-333">请上传图片（选填，最多6张）</h4>
+        <div id="images" class="ui-feedback-photo">
+        </div>
+    </div>
+
+    <div class="aui-btn-box2">
+        <div class="aui-btn btn-gradient aui-disabled">审核中，请耐心等待...</div>
+    </div>
+    <p class="prompt-writing">根据《广告法》相关规定，需审核广告内容<br/><em tapmode onclick='callTel(15600688801);'>客服电话:15600688801</em> </p>
+</div>
+
+<!--审核未通过-->
+<div id="failDiv" class="aui-hide">
+	<div class="ad-map-box body-bg-white">
+	    <div class="ad-no-icon">
+	        <img src="../../image/send/no-icon.png">
+	    </div>
+	    <p class="ad-result-h ad-result-no">审核未通过</p>
+	
+	    <ul class="ad-result-ul">
+	        <li>广告类型<span>地图红包广告</span></li>
+	        <li>投放商家<span id="businessName1"></span></li>
+	    </ul>
+	    <div class="ad-result-reason">不通过原因：<p id="auditNote"></p></div>
+	</div>
+	
+	<div class="ad-result-bottom">
+	    <div class="aui-btn-box2">
+	        <div tapmode onclick="openEditRedPacketsWin();" class="aui-btn btn-gradient">编辑广告内容</div>
+	    </div>
+	    <p tapmode onclick='callTel(15600688801);' class="prompt-writing">客服电话:15600688801</p>
+	</div>
+</div>
+
+<!--审核已通过-->
+<div id="passDiv" class="aui-hide">
+	<div class="ad-map-box body-bg-white">
+	    <div class="ad-no-icon">
+	        <img src="../../image/send/ok-icon.png">
+	    </div>
+	    <p class="ad-result-h ad-result-ok">审核已通过</p>
+	    <ul class="ad-result-ul">
+	        <li>广告类型<span>地图红包广告</span></li>
+	        <li>投放商家<span id="businessName2"></span></li>
+	    </ul>
+	</div>
+	
+	<div class="ad-result-bottom">
+	    <div class="aui-btn-box2">
+	        <div tapmode onclick="openSendRedPacketsWin();" class="aui-btn btn-gradient">去设置广告红包</div>
+	    </div>
+	   <!-- <div class="aui-btn-box2">
+	        <div tapmode onclick="detail();" class="aui-btn btn-gradient">查看广告详情</div>
+	    </div>-->
+	    <p tapmode onclick='callTel(15600688801);' class="prompt-writing">客服电话:15600688801</p>
+	</div>
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//红包ID
+	var id;
+	//经度
+	var longitude;
+	//纬度
+	var latitude;
+	//区域名
+	var regionName;
+	//半径
+	var radius;
+	
+	apiready = function (){
+		longitude = api.pageParam.lon;
+		latitude = api.pageParam.lat;
+		regionName = api.pageParam.regionName;
+		radius = api.pageParam.radius;
+		
+//		if(regionName && radius){
+//			updateRedPackets();
+//		}else{
+//			loadRedPackets();
+//		}
+		loadRedPackets();
+		
+		$api.html($api.byId('businessName1'), global.getBusinessName());
+		$api.html($api.byId('businessName2'), global.getBusinessName());
+		initEvent();
+	}
+
+	/**
+	 *初始化事件
+	 */
+	function initEvent(){
+		api.addEventListener({
+	        name:'redpacketsSendEvent'
+        },function(ret,err){
+        	api.closeWin({
+        		name : 'redPacketSetWin'
+            });
+
+            var redpacketsInfo = $api.getStorage("redpacketsInfo");
+        	if(redpacketsInfo){
+        		redpacketsInfo.status = 2;
+        		$api.setStorage("redpacketsInfo", redpacketsInfo);
+        		$api.addCls($api.byId('passDiv'), 'aui-hide');
+        	}
+        });
+
+        api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+        	api.closeWin({ name : 'advApplyWin' });
+        	api.closeWin({ name : 'advertisementInfoWin' });
+			api.closeWin({ name : 'advertisementInfoAginWin' });
+			
+        	$api.setStorage("advertisementInfoWin",1);
+        });
+        
+        api.addEventListener({
+	        name:'redpacketsApplyRefreshEvent'
+        },function(ret,err){
+        	loadRedPackets();
+        });
+	}
+
+	/**
+	 *更新红包数据 
+	 */
+	function updateRedPackets(){
+	
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/redpackets/redpackets-update',
+			headers : global.getRequestToken(),
+			data : {
+				values : {
+					longitude : longitude,
+					latitude : latitude,
+					regionName : regionName,
+					radius : radius
+				}
+			}
+		}, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				var redpacketsInfo = { id : ret.id, status: ret.status, longitude : ret.longitude, latitude : ret.latitude, regionName : ret.regionName, radius : ret.radius, content : ret.summary, file : ret.banners, auditNote : ret.auditNote };
+                $api.setStorage("redpacketsInfo", redpacketsInfo);
+			}
+			loadRedPackets();
+		});
+	}
+	
+	/**
+	 *加载红包信息
+	 */
+	function loadRedPackets(){
+		//加载服务端数据
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/redpackets',
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if (ret) {
+				var redpacketsInfo = { id : ret.id, status: ret.status, longitude : ret.longitude, latitude : ret.latitude, regionName : ret.regionName, radius : ret.radius, content : ret.summary, file : ret.banners, auditNote : ret.auditNote };
+                $api.setStorage("redpacketsInfo", redpacketsInfo);
+				bindData(redpacketsInfo);
+			}
+		});
+	}
+
+	/**
+	 *加载数据
+	 */
+	function bindData(redpacketsInfo){
+		if(redpacketsInfo){
+			id = redpacketsInfo.id;
+			$api.html($api.byId('locationSpan'), redpacketsInfo.regionName);
+			$api.html($api.byId('radiusSpan'), '半径' + redpacketsInfo.radius + '米');
+			$api.html($api.byId('content'), redpacketsInfo.content);
+			if(redpacketsInfo.content){
+				var timeWord = 60 - redpacketsInfo.content.length;
+				$api.html($api.byId('word'), timeWord);
+			}
+
+			$api.html($api.byId('images'), '');
+			if(redpacketsInfo.file && redpacketsInfo.file.length > 0){
+				for(var i=0; i<redpacketsInfo.file.length; i++){
+					$api.append($api.byId('images'), '<div class="position-r"><img src="' + global.getImgUri() + '/' + redpacketsInfo.file[i].banner + '"></div>');
+				}
+			}else{
+				$api.append($api.byId('images'), '<div class="position-r"><img src="../../image/receive/redpacket_d_2.png"></div>');
+			}
+			
+			$api.addCls($api.byId('failDiv'), 'aui-hide');
+			$api.addCls($api.byId('applingDiv'), 'aui-hide');
+			$api.addCls($api.byId('passDiv'), 'aui-hide');
+			switch(redpacketsInfo.status){
+				case -1:
+					$api.removeCls($api.byId('failDiv'), 'aui-hide');
+					$api.html($api.byId('auditNote'), redpacketsInfo.auditNote);
+					break;
+				case 0:
+					$api.removeCls($api.byId('applingDiv'), 'aui-hide');
+					break;
+				case 1:
+					$api.removeCls($api.byId('passDiv'), 'aui-hide');
+					break;
+			}
+		}
+	}
+
+	function detail(){
+		api.openWin({
+	        name: 'mapDetail',
+	        url: './map_detail.html',
+	        pageParam: {
+	        	id:id
+	        }
+        });
+	}
+	
+	/**
+	 *打开红包设置
+	 */
+	function openSendRedPacketsWin(){
+		var params = { "id" : id };
+		global.openWinName('mapSetWin', './map_set', params);
+	}
+	
+	/**
+	 *编辑
+	 */
+	function openEditRedPacketsWin(){
+		var params = { "page" : "../send/map_resubmit", "title" : "编辑广告内容", "id" : id  };
+		api.openWin({
+			name : 'advertisementInfoAginWin',
+			url : '../common/common_win.html',
+			pageParam : params
+		});
+	}
+
+	function callTel(tel){
+		api.call({
+            type : 'tel_prompt',
+            number : tel
+        });
+	}
+</script>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>意见反馈</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+</head>
+<body>
+<div class="aui-content">
+    <ul class="aui-list aui-form-list">
+        <li class="aui-list-header">问题和意见</li>
+    </ul>
+    <div class="summary-textarea">
+        <textarea id="content" class="mui-input-clear question" onkeyup="countWord()" placeholder="请输入至少10个文字" maxlength="140"></textarea>
+        <P><span id="word">140</span>字</P> 
+    </div>
+    <div class="auth-photo-box aui-margin-t-10">
+        <h4><em>请提供相关问题的截图或照片（<em id="count">0</em>/3）</em></h4>
+        <div class="ui-feedback-photo">
+                <div id="div0" class="position-r">
+                	<img id="img0" tabmode="" onclick="selectImage(0)" src="../../image/my/photo-button.png">
+                	<img id="icon0" tabmode="" onclick="deleteImage(0);" src="../../image/close-icon.png" class="aui-close-icon aui-hide">
+                </div>
+               <div id="div1" class="position-r aui-hide">
+                	<img id="img1" tabmode="" onclick="selectImage(1)" src="../../image/my/photo-button.png">
+                	<img id="icon1" tabmode="" onclick="deleteImage(1);" src="../../image/close-icon.png" class="aui-close-icon aui-hide">
+                </div>
+                <div id="div2" class="position-r aui-hide">
+                	<img id="img2" tabmode="" onclick="selectImage(2)" src="../../image/my/photo-button.png">
+                	<img id="icon2" tabmode="" onclick="deleteImage(2);" src="../../image/close-icon.png" class="aui-close-icon aui-hide">
+                </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//图片
+	var filePath = [6];
+	//图片张数
+	var count = 0;
+	
+	/**
+	 *选择图片
+	 */
+	function selectImage(id){
+		api.getPicture({
+			sourceType : 'library',
+			encodingType : 'jpg',
+			mediaValue : 'pic',
+			destinationType : 'url',
+			allowEdit : true,
+			quality : 90
+		}, function(ret, err) {
+			if (ret) {
+				if (ret.data) {
+					var imagePath = ret.data;
+					$api.attr($api.byId('img' + id), 'src', imagePath);
+					$api.removeCls($api.byId('icon' + id), 'aui-hide');
+					$api.removeCls($api.byId('div' + (id + 1)), 'aui-hide');
+
+					filePath[id] = imagePath;
+					
+					count = count + 1;
+					$api.html($api.byId('count'), count);
+				}
+			} else {
+				global.setToast('读取图片异常');
+			}
+		});
+	}
+	
+	/**
+	 *册除图片 
+	 */
+	function deleteImage(id){
+		filePath[id] = "";
+		$api.attr($api.byId('img' + id), 'src', '../../image/my/photo-button.png');
+		$api.addCls($api.byId('icon' + id), 'aui-hide');
+		
+		count = count - 1;
+		$api.html($api.byId('count'), count);
+	}
+	
+	/**
+	 *提交意见反馈
+	 */
+	function submit(){
+		var imagePath = [];
+		var content = $api.val($api.byId('content'));
+		
+		for(var i = 0; i < filePath.length; i++){
+			if(filePath[i].length > 0){
+				imagePath.push(filePath[i]);
+			}
+		}
+		
+		if (content.length < 1 && imagePath.length < 1) {
+			api.toast({
+				msg : '请填写问题和意见、或者提供相关问题的截图'
+			});
+			
+			return;
+		}
+		
+		api.execScript({
+			name: 'feedbackWin',
+	        script: 'submitDisabled();'
+	    });
+		
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/feedback/add',
+			headers : global.getRequestToken(),
+			data : {
+				values : {
+					content : content
+				},
+				files : {
+					file : imagePath
+					}
+				}
+		}, function(ret, err) {
+		
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				if(ret.success){
+					global.setToast('提交成功');
+					window.setTimeout("api.closeWin();", 1000);
+                }else{
+					api.execScript({
+						name: 'feedbackWin',
+				        script: 'submitEnabled();'
+			        });
+                	global.setToast(ret.message);
+                }
+			}else{
+				api.execScript({
+					name: 'feedbackWin',
+			        script: 'submitEnabled();'
+	        	});
+				global.setErrorToast();
+			}
+		});
+	}
+	
+	function countWord(){
+		var content = $api.val($api.byId('content'));
+		var count = 140;
+		var word = 0;
+		if (content.length <= count) {
+			word = count - content.length;
+		} else {
+			$api.val($api.byId('content'), content.slice(0,140));
+		}
+		$api.html($api.byId('word'), word);
+	}
+</script>
+</html>

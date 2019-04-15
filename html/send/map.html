@@ -1,0 +1,312 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>选择投放区域</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<body class="body-bg-ef">
+<div class="ad-map-box">
+    <ul class="ad-map-step">
+        <li class="aui-active"><i>1</i>选择投放区域</li>
+        <li><i>2</i>编辑广告内容</li>
+        <li><i>3</i>设置广告红包</li>
+    </ul>
+
+    <ul class="aui-list map-form-list aui-margin-t-10">
+        <li tapmode="aui-active" onclick="openLocationWin();" class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="list-img-icon">请选择投放坐标</div>
+                <div id="locationDiv" class="list-img-icon">定位中…</div>
+            </div>
+        </li>
+        <li class="aui-list-item list-item-icon">
+            <div class="aui-list-item-inner">
+                <div class="list-img-icon">请填写投放半径</div>
+                <div class="aui-list-item-input"><input id="radius" maxlength="4" type="text" placeholder="50~5000"></div>米
+            </div>
+        </li>
+    </ul>
+
+    <div class="interest-btn-box">
+        <div id="nextDiv" tapmode="aui-active" onclick="openNextWin();" class="aui-btn btn-gradient">下一步</div>
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/common/validate.js"></script>
+<script type="text/javascript">
+	//经度
+	var longitude;
+	//纬度
+	var latitude;
+	//区域名
+	var regionName = '';
+	//申请状态
+	var applyFlag = false;
+	//失败标识
+	var failFlag = false;
+	
+	apiready = function(){
+		//loadRedPackets();
+		//showBusinessInfo();
+		shwoLocation();
+		initEvent();
+	}
+
+	function showBusinessInfo(){
+		var nickName = global.getBusinessName();
+		if(nickName){
+			$api.html($api.byId('nickNameDiv'), nickName);
+			$api.attr($api.byId('headIconImg'), 'src', global.getImgUri() + '/' + global.getBusinessLogo());
+		}
+	}
+
+	function shwoLocation(){
+		var aMap = api.require('aMap');
+		var location = global.getLocation();
+		//$api.val($api.byId('radius'), '50');
+		if(location){
+			aMap.getNameFromCoords({
+			    lon: location.lon,
+			    lat: location.lat
+			}, function(ret, err) {
+			    if (ret.status) {
+			    	regionName = ret.address;
+			    	longitude = location.lon;
+			    	latitude = location.lat;
+			    	if(regionName){
+			        	$api.html($api.byId('locationDiv'), (regionName.length>10?regionName.substring(0,10)+"…":regionName));
+			        }
+			    }
+			});
+		}
+	}
+
+	/**
+	 *加载红包信息
+	 */
+	function loadRedPackets(){
+		var redpacketsInfo = $api.getStorage("redpacketsInfo");
+    	if(redpacketsInfo && redpacketsInfo.id){
+    		bindData(redpacketsInfo)
+    		applyFlag = (redpacketsInfo.status === 2 ? false : true);
+    		failFlag = (redpacketsInfo.status === -1 ? true : false);
+    		$api.removeCls($api.byId('nextDiv'), 'aui-hide');
+    	}else{
+    		//加载服务端数据
+    		api.ajax({
+				method : 'get',
+				cache : false,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/redpackets',
+				headers : global.getRequestToken()
+			}, function(ret, err) {
+				if(ret && ret.code === "403"){
+					api.sendEvent({
+		                name:'tokenExpiredEvent',
+		                extra:{
+		                	msg : ret.message
+		                }
+	                });
+	                
+	                return;
+				}
+				if (ret) {
+					var redpacketsInfo = { id : ret.id, status: ret.status, longitude : ret.longitude, latitude : ret.latitude, regionName : ret.regionName, radius : ret.radius, content : ret.summary, file : ret.banners, auditNote : ret.auditNote };
+	                $api.setStorage("redpacketsInfo", redpacketsInfo);
+					bindData(redpacketsInfo);
+					applyFlag = (redpacketsInfo.status === 2 ? false : true);
+					failFlag = (redpacketsInfo.status === -1 ? true : false);
+				}else{
+					shwoLocation();
+				}
+
+				$api.removeCls($api.byId('nextDiv'), 'aui-hide');
+			});
+    	}
+	}
+
+	/**
+     *绑定数据
+     */
+    function bindData(redpacketsInfo){
+    	if(redpacketsInfo){
+    		if(redpacketsInfo.regionName){
+    			$api.html($api.byId('locationDiv'), redpacketsInfo.regionName);
+    		}
+    		if(redpacketsInfo.status === 2){
+    			$api.val($api.byId('radius'), '');
+    		}else{
+				$api.val($api.byId('radius'), (redpacketsInfo.radius ? redpacketsInfo.radius : 0));
+    		}
+    		longitude = redpacketsInfo.longitude;
+        	latitude = redpacketsInfo.latitude;
+        	regionName = redpacketsInfo.regionName;
+    	}
+    }
+
+	/**
+	 *初始化事件
+	 */
+	function initEvent(){
+		api.addEventListener({
+	        name:'confirmSelectLocationEvent'
+        },function(ret,err){
+        	if(ret && ret.value){
+        		longitude = ret.value.lon;
+        		latitude = ret.value.lat;
+        		regionName = ret.value.regionName;
+
+        		if(regionName){
+        			$api.html($api.byId('locationDiv'), regionName);
+        		}
+        	}
+
+			api.closeWin({
+	        	name: 'positionWin'
+	        });
+        });
+
+        //提交红包申请事件
+		api.addEventListener({
+	        name:'redpacketsApplyEvent'
+        },function(ret,err){
+        	loadRedPackets();
+        });
+
+        api.addEventListener({
+	        name:'redpacketsSendEvent'
+        },function(ret,err){
+        	applyFlag = false;
+        });
+
+        api.addEventListener({
+	        name:'getLocationEvent'
+        },function(ret,err){
+        	if(applyFlag === false){
+				shwoLocation();
+			}
+        });
+
+        api.addEventListener({
+	        name:'loginSuccessEvent'
+        },function(ret,err){
+        	showBusinessInfo();
+        });
+        
+        api.addEventListener({
+	        name:'resetRadiusEvent'
+        },function(ret,err){
+        	$api.val($api.byId('radius'), '');
+        });
+        
+
+        api.addEventListener({
+	        name:'cancelApplyEvent'
+        },function(ret,err){
+			api.closeToWin({
+	      		name:"root"
+			});
+                        
+            shwoLocation();
+            $api.rmStorage('redpacketsInfo');
+            $api.val($api.byId('radius'), '');
+			applyFlag = false;
+			failFlag = false;
+        });
+        
+        api.addEventListener({
+	        name:'authSuccessEvent'
+        },function(ret,err){
+        	showBusinessInfo();
+        });
+	}
+
+	/**
+	 *选择红包投放区域
+	 */
+	function openLocationWin(){
+		var params = { "page" : "../position_select_frame" };
+		api.openWin({
+			name : 'positionWin',
+			url : './position_select_win.html',
+			pageParam : params
+		});
+	}
+
+	/**
+	 *下一步
+	 */
+	function openNextWin(){
+		//获取半径
+		var radius = $api.val($api.byId('radius'));
+
+		if (!regionName || validate.isEmpty(regionName)) {
+			api.toast({
+				msg : '请选择红包投放区域'
+			});
+			return;
+		}
+		if (validate.isEmpty(radius)) {
+			api.toast({
+				msg : '请输入半径'
+			});
+			return;
+		}
+		if (!validate.integer(radius)) {
+			api.toast({
+				msg : '半径请输入整数'
+			});
+			return;
+		}
+		if(radius < 50 || radius > 5000){
+			api.toast({
+				msg : '半径范围必须在50米~5000米之间'
+			});
+			return;
+		}
+		
+		params = { "page" : "../send/map_content", "title" : "编辑广告内容", "lon" : longitude, "lat" : latitude, "regionName" : regionName, "radius" : radius , "src" : api.pageParam.src };
+		api.openWin({
+			name : "advertisementInfoWin",
+			url : "../common/common_win.html",
+			pageParam : params
+		});
+//		if(failFlag){
+//			api.openWin({
+//				name : 'advertisementInfoAginWin',
+//				url : './advertisement_resubmit_win.html',
+//				pageParam : {}
+//			});
+//		}else{
+//			var pageUrl = "../common/common_win.html";
+//			if(applyFlag){
+//				pageUrl = "./advertisement_submit_win.html"
+//			}
+//			
+//			params = { "page" : "../send/map_content", "title" : "编辑广告内容", "lon" : longitude, "lat" : latitude, "regionName" : regionName, "radius" : radius };
+//			api.openWin({
+//				name : "advertisementInfoWin",
+//				url : pageUrl,
+//				pageParam : params
+//			});
+//		}
+	}
+
+	function valRadius(){
+		var radiusTemp = $api.val($api.byId('radius'));
+		if(radiusTemp.indexOf('0') === 0){
+			$api.val($api.byId('radius'), radiusTemp.slice(1));
+		}
+	}
+</script>
+</html>

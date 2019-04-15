@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>关于我们</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+  <style>
+        html,body{
+            height: 100%;
+            width:100%;
+        }
+        #wrap{
+            /* height: 100%;*/
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-flex-flow: column;
+            flex-flow: column;
+        }
+        #header{
+            text-align: center;
+            background-color: #fc531f;
+            color: #ffffff;
+            width: 100%;
+            position:relative;
+            padding-top: 22px;
+            background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+            background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+            background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+            background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+        }
+        #header a{ color: #fff; }
+        #header .back-icon {
+            background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+            background-size: 10px auto;
+            padding-left:17px;
+            bottom: 0;
+            display: inline-block;
+            height: 44px;
+            line-height:44px;
+            left: 12px;
+            position: absolute;
+            font-size: 16px;
+        }
+        #header .right-text{
+            background-size: 1.4rem auto;
+            bottom: 0;
+            display: block;
+            height: 44px;
+            right: 12px;
+            position: absolute;
+            line-height: 44px;
+            font-size: 16px;
+        }
+        #header h1{
+            font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+        }
+        .body-bg-white{ background-color:#fff; overflow-y: hidden; word-break: break-all; }
+        .body-bg-white .aui-content{ width: 100%; height: 100%; background:#fff url("../../image/receive/aboutus-img.jpg") no-repeat top center;
+            background-size: 100% auto;
+        }
+        .aboutus-wz{ position: absolute; bottom: 1.1rem; text-align: center; color: #999; width: 100%; }
+        .aboutus-wz span{ color: #595c5f; display: inline-block; font-size: 0.6rem; font-weight: bold; height: 22px; line-height: 22px; }
+        .aboutus-wz p{ color: #999; font-size: 0.6rem; }
+        img {
+            max-width: 100%;
+            display: block;
+            margin: 0;
+            border: 0;
+            padding: 0;
+            font-style: normal;
+        }
+        .aui-content {
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body class="body-bg-white">
+<div class="aui-content">
+
+    <div class="aboutus-wz">
+        <span tapmode onclick="openRuleWin();">规则中心</span>
+        <p>copyright @2017浦江力量广告有限公司</p>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+	function openRuleWin() {
+		api.openWin({
+			name : 'ruleWin',
+			url : '../common/common_win.html',
+			pageParam : {
+				"page" : "../my/protocol",
+				"title" : "规则中心"
+			}
+		});
+	}
+</script>
+</html>

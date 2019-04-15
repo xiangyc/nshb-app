@@ -1,0 +1,242 @@
+<!DOCTYPE HTML>
+<html class="bodyrollh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>签到送礼</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+    <style>
+        html,body{
+/*            height: 100%;
+*/            width:100%;
+        }
+        #wrap{
+/*            height: 100%;
+*/            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-flex-flow: column;
+            flex-flow: column;
+        }
+        #header{
+            text-align: center;
+            background-color: #fc531f;
+            color: #ffffff;
+            width: 100%;
+            position:relative;
+            padding-top: 22px;
+            background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+            background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+            background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+            background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+            -webkit-box-shadow:0.275rem 0 0.825rem rgba(253, 97, 34, 1);
+            -moz-box-shadow:0.275rem 0 0.825rem rgba(253, 97, 34, 1);
+            box-shadow:0.275rem 0 0.825rem rgba(253, 97, 34, 1);
+        }
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		}
+        #header h1{
+            font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+        }
+
+	input[type=button], input[type=submit], input[type=file], button { -webkit-appearance:none; outline:none }
+    </style>
+
+</head>
+<body class="bodyrollh">
+    <div class="sign-bg">
+        <div id='signDayDiv' class="aui-date-today"></div>
+
+        <div class="btn-sign-box">
+            <input tapmode id="signDivid" onclick="sign();"  class="aui-btn btn-sign <!--aui-disabled-->" type="button" value='立即签到'>
+            <div id="signMonthDiv" class="sign-text"></div>
+         </div>
+
+    </div>
+
+     <div class="sign-prompt">
+         <h4>签到规则</h4>
+         <p>1.每月首次签到获得0.05元现金奖励</p>
+         <p>2.连续签到每天增加0.01元现金奖励</p>
+         <p>3.连续签到7天及以上每天获得0.2元现金奖励</p>
+         <p>4.如果中间有一天间断未签到的，重新开始计算签到连续签到时间</p>
+     </div>
+
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js" ></script>
+<script type="text/javascript">
+	var UICalendar
+	var specialDates = [];
+	apiready = function(){
+	 	UICalendar = api.require('UICalendar');
+	 	detail();
+		showSign();
+		signRecords();
+	}
+
+	function detail(){		
+		var date = new Date();
+		
+		$api.html($api.byId('signDayDiv'), global.toDateString(date) + " (周" + global.getWeek(date) + ")" );	
+		$api.html($api.byId('signMonthDiv'), global.toMonthString(date) +"月签到送豪礼");	
+
+		var todaySignFlag = $api.getStorage("todaySignFlag");
+		if(todaySignFlag && todaySignFlag ==1){
+			$api.val($api.byId('signDivid'), "今日已签到");	
+			$api.addCls($api.byId('signDivid'), 'aui-disabled');   
+			$api.removeAttr($api.byId('signDivid'), 'onclick');
+		}
+	}
+
+	function signRecords(){
+	  api.ajax({
+        method : 'get',
+        cache : false,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/member/info/sign/records',
+        headers : global.getRequestToken()
+	    }, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+	        if (ret) {
+	          	var items = ret.items;
+	          	for(var i in items){
+	          		var day = global.formatDate(items[i].createTime, 'yyyy-MM-dd');
+	          		var temp = { date : '' + day + '', bg : 'widget://image/my/sign.png'};
+	          		specialDates.push(temp);
+	          	}
+	          	
+	          	UICalendar.setSpecialDates({
+				    specialDates: specialDates
+				});
+	        } else {
+	            global.setErrorToast();
+	        }
+	    });
+	}
+
+	function sign(){
+	  $api.attr($api.byId('signDivid'), 'disabled', 'disabled');
+      $api.addCls($api.byId('signDivid'), 'aui-disabled');    
+	  
+	  api.ajax({
+        method : 'post',
+        cache : false,
+        dataType : 'json',
+        returnAll : false,
+        headers : global.getRequestToken(),
+        url : global.getRequestUri() + '/member/info/sign'
+	  }, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+	        if (ret) {
+	        	if(ret.success){
+	          		var day = global.formatDate(ret.obj, 'yyyy-MM-dd');
+	          		var temp = { date : '' + day + '', bg : 'widget://image/my/sign.png'};
+	          		specialDates.push(temp);
+
+	          		$api.val($api.byId('signDivid'), "今日已签到");	  
+	          		$api.setStorage("todaySignFlag", 1);        		
+
+	          		api.sendEvent({
+                     	name:'signSuccess',
+                        extra: {
+                            day: day
+	                        }
+	                });
+
+	          		api.sendEvent({
+      					name:'financeAccountRefresh'
+    				});
+    				
+	          		var UICalendar = api.require('UICalendar');
+	          		UICalendar.setSpecialDates({
+					   specialDates:  specialDates
+					});
+
+	        	}else{
+	        		global.setToast(ret.message);
+	  				$api.removeAttr($api.byId('signDivid'), 'disabled');
+           			$api.removeCls($api.byId('signDivid'), 'aui-disabled');   
+	        	}	     
+	        } else {
+	            global.setErrorToast();	   
+	            $api.removeAttr($api.byId('signDivid'), 'disabled');
+           		$api.removeCls($api.byId('signDivid'), 'aui-disabled');      
+	        }
+
+	    });
+	}
+
+	function showSign(){
+		UICalendar.open({
+		    rect: {
+		        x: 30,
+		        y: 50,
+		        w: api.frameWidth - 60,
+		        h: 230
+		    },
+		    styles: {
+		        bg: 'widget://image/my/sign-line.png',
+		        week: {
+		            weekdayColor: '#9e9e9e',
+		            weekendColor: '#9e9e9e',
+		            size: 16
+		        },
+		        date: {
+		            color: '#333',
+		            selectedColor: '#333',
+		            selectedBg: '#fff',
+		            size: 16
+		        },
+		        today: {
+		            color: '#eb6300',
+		            bg: ''
+		        }
+		    },
+		    switchMode: 'none',
+		    fixedOn: api.frameName,
+		    fixed: true
+		}, function(ret, err) {
+			UICalendar.setSpecialDates({
+			   specialDates:  specialDates
+			});
+		});
+
+	}
+</script>
+</html>

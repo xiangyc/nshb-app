@@ -1,0 +1,309 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/entrance.css" />
+</head>
+<body class="login-bg">
+    <div class="aui-content">
+         <div class="login-top">
+             <img src="../../image/entrance/logo.jpg"/>
+             <p>地图找红包</p>
+             <p>随时提现随时花</p>
+             <div tabmode onclick="openLoginWin();" class="aui-btn aui-btn-login">登录</div>
+         </div>
+         <div id="authDiv" class="login-down aui-hide">
+             <h4>其他登录方式</h4>
+             <ul class="login-other aui-clearfix">
+                 <li tapmode="" onclick="openQQLogin();"><img src="../../image/entrance/qq_login.png"/></li><li tapmode="" onclick="openWBLogin();"><img src="../../image/entrance/weibo_login.png"/></li><li tapmode="" onclick="openWXLogin();"><img src="../../image/entrance/weixin_login.png"/></li>
+             </ul>
+             <P>登录即代表你同意<em tapmode="" onclick="openRuleWin();">拿手红包条款</em> </P>
+         </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	var backTime = new Date().getTime();
+	
+    apiready = function(){
+    	if(api.systemType === 'ios'){
+	    	api.ajax({
+				method : 'get',
+				cache : false,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/auth/check-flag'
+			}, function(ret, err) {
+				if (ret) {
+					if(!ret.success){
+						$api.removeCls($api.byId('authDiv'), 'aui-hide');
+					}
+				}
+			});
+		}else{
+			$api.removeCls($api.byId('authDiv'), 'aui-hide');
+		}
+    
+    	if(api.pageParam.type === -1 && api.pageParam.msg){
+			global.setToast(api.pageParam.msg);
+    	}
+    	
+		initEvent();
+    };
+    
+    /**
+     *初始化页面事件 
+     */
+    function initEvent() {
+		//连续按两次返回退出APP
+		api.addEventListener({
+			name : 'keyback'
+		}, function(ret, err) {
+			if ((new Date().getTime() - backTime) > 2000) {
+				backTime = new Date().getTime();
+	
+				api.toast({
+					msg : '再按一次退出程序',
+					duration : 2000,
+					location : 'middle'
+				});
+			} else {
+				api.closeWidget({
+					silent : true
+				});
+			}
+		});
+		
+		api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+        	api.closeWin({
+        		name : "setWin"
+            });
+            
+            api.closeWin({
+				name: 'setWin'
+	        });
+	
+			/*api.closeFrameGroup({
+				name: 'frameGroup'
+			});*/
+		
+        });
+	}
+	
+	/**
+	 *打开登录 
+	 */
+	function openLoginWin(){
+		var header = '../common/common_win';
+		var params = { "page" : "../entrance/bind_mobile", "title" : "手机号登录" };
+		global.openWinName('loginWin', header, params);
+	}
+	
+	/**
+	 *绑定手机号 
+	 */
+	function openBindMobileWin(type, openId, nickname, sex, headIcon){
+		var uiloading = api.require('UILoading');
+		uiloading.keyFrame({
+			rect: {
+		        w: 80,
+		        h: 80
+		    },
+		    styles: {
+		        bg: 'rgba(0,0,0,0.5)',
+		        corner: 5,
+		        interval: 50,
+		        frame: {
+		            w: 80,
+		            h: 80
+		        }
+		    },
+		    content : global.loadImage()
+		}, function(ret) {
+		});
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/auth/login-oauth',
+			data : {
+				values : {
+					type : type,
+					openId : openId,
+					platfromSource : global.getPlatformSource()
+				}
+			}
+		}, function(ret, err) {
+			uiloading.closeKeyFrame();
+			if (ret) {
+				if(ret.success){
+					//存储会话信息
+					var token = ret.message.split('_');
+					if(token && token.length > 1){
+						global.setToken(token[0]);
+						global.setKey(token[1]);
+					}
+					global.setTokenExpires(ret.code);
+					global.setUserName(ret.obj.nickName);
+					global.setMobile(ret.obj.mobile);
+					global.setHeadIcon(ret.obj.headIcon);
+					global.setType(ret.obj.type);
+					global.setBusinessName(ret.obj.businessName);
+					global.setNotificationFlag(ret.obj.notificationFlag)
+					global.setAuthStatus(ret.obj.authStatus)
+					global.setBusinessLogo(ret.obj.businessLogo);
+					global.setUserWx(ret.obj.bindWx);
+
+					if(ret.obj.havePayPassword === 1){
+						global.setUserPayPassword(true);
+					}else{
+						global.setUserPayPassword(false);
+					}
+
+					api.sendEvent({
+	                    name:'loginSuccessEvent',
+	                    extra:{
+	                    	newUser : ret.obj.newUser
+	                    }
+                    });
+
+                    if(ret.obj.newUser){
+						global.openWin('interest', '');
+					}else{
+						api.closeWin({
+			        		name : "entranceWin"
+			            });
+					}
+				}else{
+					var header = '../common/common_win';
+					var params = { "page" : "../entrance/bind_mobile", "title" : "绑定手机号" , "type" : type, "openId" : openId, "nickname" : nickname, "sex" : sex, "headIcon" :  headIcon};
+					global.openWinName('loginWin', header, params);
+				}
+			} else {
+				global.setToast('登录失败');
+			}
+		});
+	}
+	
+	/**
+	 *QQ登录 
+	 */
+	function openQQLogin(){
+		var qq = api.require('qq');
+		qq.installed(function(ret, err) {
+		    if (ret.status) {
+				qq.login(function(ret, err) {
+					if(ret.status){
+						var qqOpenId = ret.openId;
+						qq.getUserInfo(function(ret, err) {
+						    if (ret.status) {
+						    	//nickname  gender        figureurl_qq_2
+						    	var sex = -1;
+						    	if(ret.info.gender == '男'){
+						    		sex = 1;
+						    	}else if(ret.info.gender == '女'){
+						    		sex = 0;
+						    	}
+						    	openBindMobileWin(1, qqOpenId, ret.info.nickname, sex, ret.info.figureurl_qq_2);
+						    } else {
+						        api.alert({ msg: "获取用户信息失败" });
+						    }
+						});
+					}
+				});
+		    } else {
+		        api.alert({ msg: "当前设备未安装QQ客户端" });
+		    }
+		});
+	}
+	
+	/**
+	 *微博登录 
+	 */
+	function openWBLogin(){
+		var weibo = api.require('weibo');
+		weibo.isInstalled(
+		    function(ret) {
+		        if (ret.status) {
+					var weibo = api.require('weibo');
+					weibo.auth(function(ret, err) {
+					    if (ret.status) {
+							weibo.getUserInfo({
+							    token: ret.token,
+							    userId: ret.userId
+							}, function(ret, err) {
+							    if (ret.status) {
+							    	openBindMobileWin(2, ret.openid, ret.nickname, ret.sex, ret.headimgurl);
+							    } else {
+							        api.alert({ msg: "获取用户信息失败" });
+							    }
+							});
+					    }
+					});
+		        } else {
+		            api.alert({ msg: "当前设备未安装新浪微博客户端" });
+		        }
+		    }
+		);
+	}
+	
+	/**
+	 *微信登录 
+	 */
+	function openWXLogin(){
+		var wx = api.require('wx');
+		wx.isInstalled(function(ret, err) {
+		    if (ret.installed) {
+				wx.auth({
+					apiKey: ''
+				}, function(ret, err) {
+					wx.getToken({
+					    code: ret.code
+					}, function(ret, err) {
+					    if (ret.status) {
+						    wx.getUserInfo({
+							    accessToken: ret.accessToken,
+							    openId: ret.openId
+							}, function(ret, err) {
+							    if (ret.status) {
+							    	//nickname sex headimgurl
+							    	var sex = -1;
+							    	if(ret.sex === 1){
+							    		sex = 1;
+							    	}else if(ret.sex === 2){
+							    		sex = 0;
+							    	}
+						    	
+							        openBindMobileWin(3, ret.openid, ret.nickname, sex , ret.headimgurl);
+							    } else {
+							        api.alert({ msg: "获取用户信息失败" });
+							    }
+							});
+					    }
+					});
+				});
+		    } else {
+		        api.alert({ msg: "当前设备未安装微信客户端" });
+		    }
+		});
+	}
+	
+	function openRuleWin() {
+		var params = { "page" : "../my/protocol", "title" : "规则中心" };
+		api.openWin({
+			name : 'ruleWin',
+			url : '../common/common_win.html',
+			pageParam : params
+		});
+	}
+</script>
+</html>

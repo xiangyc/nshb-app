@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>我的收藏</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+     <style type="text/css">
+			.aui-list-item-inner.aui-swipe-handle {
+				overflow-x: hidden;
+				position: relative;
+				z-index: 1;
+				background-color: #ffffff;
+			}
+		.aui-swipe-btn {
+            position: absolute;
+            right: 0;
+            z-index: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-flex: 1;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+                    justify-content: space-between;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+        }
+			.aui-swipe-btn .aui-btn {
+				border-radius: 0;
+				height: 100%;
+				-webkit-box-sizing: border-box;
+				box-sizing: border-box;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+			}
+			
+			.aui-swipe-btn .aui-btn {
+	            border-radius: 0;
+	            height: 100%;
+	            -webkit-box-sizing: border-box;
+	            box-sizing: border-box;
+	            display: -webkit-box;
+	            display: -webkit-flex;
+	            display: flex;
+	            -webkit-box-align: center;
+	            -webkit-align-items: center;
+	                    align-items: center;
+
+           }
+			.donghua {
+				-webkit-transition-duration: 300ms;
+				transition-duration: 300ms;
+			}
+			.aui-media-list-item-inner.aui-swipe-handle {
+				left: -60px;
+			}
+			.aui-list-item-middle.my-ad-list-li .aui-media-list-item-inner .aui-list-item-inner {
+				height: auto;
+				min-height: auto;
+			}
+			.aui-list .aui-list-item {
+				margin-right: 0;
+			}
+			.aui-list-item-inner.message-list-item-inner {
+				height: auto;
+				min-height: auto;
+				padding-right: 0.6 rem;
+				padding-top: 0.65 rem;
+				padding-bottom: 0.7 rem;
+				display: inline-block;
+				float: left;
+			}		
+			.aui-media-list .aui-list-item-inner { display: -webkit-flex; display: flex; } 
+			.aui-list-item-inner .aui-list-item-text{ width: 100%; margin-right: 0.625rem; line-height:1;   display: -webkit-flex; display: flex;  flex-wrap: wrap;  justify-content:flex-start;  }
+			.aui-list-item-inner .aui-list-item-text.aui-font-size-12{ color: #9e9e9e; }
+			.aui-list-item.message-list-item{ border-bottom: 0.05rem solid #ececec; margin: 0; padding: 0 0 0 0.6rem; min-height: 2.5rem; }
+			.aui-media-list.my-ad-list .aui-list-item-inner{ padding: 0.2rem 0; }
+			.btn-list-delete div{ padding-left: 1rem; }
+			.collect-list{ float: left; flex-shrink:2; }
+			.aui-list-item-inner.collect-list-item-inner{ flex-wrap: wrap; }
+
+    </style>
+</head>
+<body>
+<div class="aui-content">
+    <ul class="aui-list aui-form-list">
+        <li id="titleH" class="aui-list-header aui-hide">商家列表</li>
+    </ul>
+    
+    <ul class="aui-list aui-media-list my-ad-list">
+        <div id="collect-list-content">  
+<!--            <li class="aui-list-item message-list-item">
+			    <div class="aui-list-item-inner aui-swipe-handle">
+			       <div class="aui-list-item-media user-red-avatar red-avatar-margin"><img src="../../image/icon150x150.png" class="aui-img-round" /></div>
+			        
+			        <div class="aui-list-item-inner collect-list-item-inner">
+		                <div class="aui-list-item-text">北冰科</div>
+		                <div class="aui-list-item-text aui-font-size-12">
+		                    <div><span class="aui-padded-r-10">联系方式</span>15800773972</div>
+		                </div>		     
+			        </div>
+			        						       
+		            <div class="aui-list-item-media my-collect-thephone">
+		                <img src="../../image/my/call-thephone-icon.png" tapmode onclick="call({{=it[i].mobile}});">
+		            </div>
+		                                 
+			    </div>
+			 
+			    <div class="aui-swipe-btn aui-swipe-right-btn btn-list-delete" tapmode onclick="delCollect({{=it[i].id}});"><div>删除</div></div>  
+	       </li> -->
+	      	              
+        </div>
+    </ul> 
+ <script id="collect-list-template" type="text/x-dot-template">
+      {{ for(var i=0; i< it.length; i++) { }}
+      <li id="{{=it[i].id}}" class="aui-list-item message-list-item">
+	    <div class="aui-list-item-inner aui-swipe-handle">
+	       <div class="aui-list-item-media user-red-avatar red-avatar-margin">
+			    {{ if(it[i].businessLogo){}}
+					<img src="{{=global.getImgUri() + '/' + it[i].businessLogo}}" onerror="this.src='../../image/icon150x150.png'" class="aui-img-round" />
+				{{ }else{ }}
+					<img src="../../image/icon150x150.png" class="aui-img-round" />
+				{{ } }}
+	        </div>
+
+	        <div class="aui-list-item-inner collect-list-item-inner">
+                <div class="aui-list-item-text">
+                   {{=it[i].name}}
+                </div>
+                <div class="aui-list-item-text aui-font-size-12">
+                    <div><span class="aui-padded-r-10">联系方式</span>{{=it[i].mobile}}</div>
+                </div>
+	        </div>
+
+            <div class="aui-list-item-media my-collect-thephone">
+                <img src="../../image/my/call-thephone-icon.png" tapmode onclick="call({{=it[i].mobile}});">
+            </div>
+
+	    </div>
+	     <div class="aui-swipe-btn aui-swipe-right-btn btn-list-delete" tapmode onclick="delCollect({{=it[i].id}});"><div>删除</div></div>    
+	</li>
+     {{ } }}
+    </script>
+   
+    <div id="noRecordDiv" class="aui-no-data aui-hide">
+		<img src="../../image/my/collect-no-icon.png" class="no-data-img"/>
+		收藏夹是空空的，什么都没有~
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/library/aui-list-swipe.js"></script>
+<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+<script type="text/javascript" src="../../script/common/page.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+
+//初始化参数
+var swipe;
+var maxResult = 13;
+var url = global.getRequestUri() + '/collect/list';
+
+apiready = function() {
+  //侧滑事件
+  swipe = new auiListSwipe(function(ret){
+        // console.log(ret)
+  });
+  api.parseTapmode();
+  
+  //初始化事件
+  initEvent();
+  //查询我的收藏列表
+  queryMyCollectList();
+}
+
+//初始化事件
+function initEvent() {
+	api.setCustomRefreshHeaderInfo({
+		bgColor : '#fdf7e7',
+		image : {
+			pull : global.pullImage(),
+			load : global.pushImage()
+		}
+	}, function(ret, err) {
+		queryMyCollectList();
+		api.refreshHeaderLoadDone();
+	});
+	
+	api.addEventListener({
+		name : 'scrolltobottom',
+		extra : {
+			threshold : 0
+		}
+	}, function(ret, err) {
+		page.scrollRefresh();
+	});
+	
+	api.addEventListener({
+	    name:'collect-list-content'
+    },function(ret,err){
+    	$api.addCls($api.byId('titleH'), 'aui-hide');
+    });
+    
+    api.addEventListener({
+	    name:'collect-list-content-record'
+    },function(ret,err){
+    	$api.removeCls($api.byId('titleH'), 'aui-hide');
+    });
+}
+
+// 查询我的收藏列表
+function queryMyCollectList() {
+  var params = '?start=0&maxResult=13';
+  page.init(maxResult, 'collect-list-content', 'collect-list-template', url, params, true, 'noRecordDiv');
+}
+
+// 根据id删除收藏
+function delCollect(id) {
+    api.ajax({
+        method : 'delete',
+        cache : false,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/collect/del/' + id,
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+		if(ret && ret.code === "403"){
+			api.sendEvent({
+                name:'tokenExpiredEvent',
+                extra:{
+                	msg : ret.message
+                }
+            });
+            
+            return;
+		}
+			
+        if (ret) {
+            if (ret.success) {
+                global.setToast('你删除了一条收藏');
+                queryMyCollectList();
+            } else {
+                global.setToast(ret.message);
+            }
+        } else {
+            global.setErrorToast();
+        }
+    });
+}
+
+// 清空收藏列表
+function clearCol() {
+    api.ajax({
+        method : 'delete',
+        cache : false,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/collect/del',
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+        if (ret) {
+            if (ret.success) {
+                global.setToast('你清空了所有收藏');
+                queryMyCollectList();
+            } else {
+                global.setToast(ret.message);
+            }
+        } else {
+            global.setErrorToast();
+        }
+    });
+}
+
+// 拨打电话
+function call(number) {
+    api.call({
+        type : 'tel_prompt',
+        number : number
+    });
+}
+
+</script>
+</html>

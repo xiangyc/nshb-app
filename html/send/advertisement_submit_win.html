@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>头部</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+	<style>
+		html,body{
+			height: 100%;
+			width:100%;
+		}
+		#wrap{
+		    height: 100%;
+		    display: -webkit-box;
+		    display: -webkit-flex;
+		    display: flex;
+		    -webkit-box-orient: vertical;
+		    -webkit-flex-flow: column;
+		           flex-flow: column;
+		}
+		#header{
+		    text-align: center; 
+		   	background-color: #fc531f;
+			color: #ffffff;
+		    width: 100%;
+		    position:relative;
+		    padding-top: 22px;
+			background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+			background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		}
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		}
+		#header h1{
+		    font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+		}	
+	</style>
+</head>
+<body>
+	<div id="wrap">
+		<div id="header">
+			<a class="back-icon" tapmode onclick="closeWin();">返回</a>
+			<h1><span id="title">红包广告信息</span></h1>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+	    var header = $api.byId('header');
+	    if(header){
+	        $api.fixIos7Bar(header);
+	    }
+	    var pos = $api.offset(header);
+
+	    api.openFrame({
+	        name: 'advertisement_submit_frame',
+	        url: './advertisement_submit_frame.html',
+	        rect:{
+	            x: 0,
+	            y: pos.h,
+	            w: 'auto',
+	            h: 'auto'
+	        },
+	        pageParam : api.pageParam,
+	        bounces: false,
+	        vScrollBarEnabled: false
+	    });
+	    
+	    api.addEventListener({
+	        name:'viewdisappear'
+        },function(ret,err){
+            $api.setStorage('advertisementInfoWin', '0');
+        	api.sendEvent({
+	            name:'advertisementCloseEvent'
+            });
+        });
+        
+        api.addEventListener({
+		    name: 'keyback'
+		}, function(ret, err) {
+			closeWin();
+		});
+	}
+	
+	function closeWin(){
+		$api.setStorage('advertisementInfoWin', '0');
+		api.sendEvent({
+	    	name:'advertisementCloseEvent'
+        });
+        
+        api.closeWin();      
+	}
+</script>
+</html>

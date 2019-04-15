@@ -1,0 +1,495 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>红包集</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/redpacket.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/swipe.css" />
+</head>
+<body class="body-bg-ef">
+<div class="redpacket-box">
+    <div id="swipe">
+		<div class="item ad_areabox">
+			<div id='slide' class='swipe'>
+				<div class='swipe-wrap' id="banner-content"></div>
+				<div id="pointer"></div>
+			</div>
+		</div>
+	</div>
+<!--    <div class="ad-banner-box">
+        <div class="aui-slide-wrap" >
+            <div class="aui-slide-node bg-dark">
+                <img src="../../image/redpacket/redpacket-img01.jpg"/>
+            </div>
+        </div>
+        <div class="aui-slide-page-wrap"></div>
+    </div>-->
+
+    <div tapmode onclick="openQAWin();" class="redpacket-countdown" id="showMoudle">
+        <h4><i><img src="../../image/redpacket/countdown-icon.png"/></i>倒计时抢大红包</h4>
+        <div class="countdown-box">
+            <h3><span id="countDownSpan">暂无倒计时抢大红包</span></h3>
+            <p id="noteP"></p>
+            <img src="../../image/redpacket/countdown-img.png"/>
+        </div>
+    </div>
+    
+    <script id="list-template" type="text/x-dot-template">
+	{{ for(var i=0; i< it.length; i++) { }}
+	<div class="redpacket-ad-list aui-margin-t-10">
+        <div class="redpacket-list-header">
+            <div class="user-avatar">
+                <img src="{{=global.getImgUri() + '/' + it[i].businessLogo}}" onerror="this.src='../../image/icon150x150.png'">
+            </div>
+            <div class="user-name">
+                <div class="user-name-info">{{=it[i].businessName}}</div>
+                <div tapmode onclick='showCollect({{=it[i].id}}, {{=it[i].collect}}, {{=it[i].memberId}});' class="redpacket-list-share"><img src="../../image/redpacket/more-icon.png"></div>
+            </div>
+            <div class="list-user-info"><span><i class="time-icon"></i><em>{{=global.formatDate(it[i].sendTime, 'yyyy-MM-dd') }}</em></span><span><i class="look-icon"></i><em>{{=it[i].browse}}</em></span></div>
+        </div>
+
+        <div class="redpacket-content-padded">{{=it[i].summary}}</div>
+        <div tapmode onclick="openDetail({{=it[i].id}}, '{{=it[i].businessName}}');" class="redpacket-see">查看详情</div>
+        <div class="aui-card-list-content">
+            <div class="aui-row aui-row-padded redpacket-ad-img">
+            	{{ for(var j=0; j<it[i].banners.length; j++){ }}
+                <div class="aui-col-xs-4">
+                    <img tapmode onclick="imageBrowse({{=it[i].id}},{{=j}});"; src="{{=global.getImgUri() + '/' + it[i].banners[j].banner}}" onerror="this.src='../../image/icon150x150.png'" />
+                </div>
+                {{　} }}
+            </div>
+        </div>
+        <div class="redpacket-contact"><span>微信号：<em>
+    	{{ if(it[i].wx){ }}
+        	{{=it[i].wx}}
+        {{ }else {}}
+        	无
+        {{ } }}
+	    </em></span>
+        <span>联系方式：
+        <em>	        
+        {{ if(it[i].contact){ }}
+	        	{{=it[i].contact}}
+	    {{ }else {}}
+	        	无
+	    {{ } }}
+	    </em></span></div>
+    </div>
+    {{ } }}
+    </script>
+    
+    <div id="list-content"></div>
+	<div id="noDataDiv" class="aui-hide" style="height: 16.5rem; text-align: center; padding-top: 5rem; color: #999;  font-size:0.7rem;">
+		暂无数据
+	</div>
+	
+    <div class="float-release" tapmode onclick="openAdvWin();"><img src="../../image/redpacket/release-icon.png"/></div>
+</div>
+
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+<script type="text/javascript" src="../../script/library/swipe.js"></script>
+<script type="text/javascript" src="../../script/common/page.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+//标题
+var countdownTitle = '倒计时抢大红包';
+//搜索类型（1：推荐，2：全部）
+var type = 1;
+//当前位置
+var regionName = "";
+var photoBrowser;
+var timer;
+
+apiready = function(){
+ 	photoBrowser = api.require('photoBrowser');
+ 	//加载banner
+ 	loadBanner();
+	//加载数据
+	shwoLocation();
+	
+	//显示隐藏秒抢红包模块
+	showCountDownBanner();
+	// 获取秒抢红包配置参数
+	getCountDownConfig();
+	
+	initEvent();
+}
+
+/**
+ * 初始化事件
+ */
+function initEvent() {
+	api.setCustomRefreshHeaderInfo({
+		bgColor : '#fdf7e7',
+		image : {
+			pull : global.pullImage(),
+			load : global.pushImage()
+		}
+	}, function(ret, err) {
+		loadData(type);
+		loadBanner();
+		//显示隐藏秒抢红包模块
+		showCountDownBanner();
+		window.clearInterval(timer);
+		getCountDownConfig();
+		api.refreshHeaderLoadDone();
+	});
+
+	api.addEventListener({
+		name : 'scrolltobottom',
+		extra : {
+			threshold : 0
+		}
+	}, function(ret, err) {
+		page.scrollRefresh();
+	});
+	
+    api.addEventListener({
+        name:'getLocationEvent'
+    },function(ret,err){
+    	shwoLocation();
+    });
+    
+    api.addEventListener({
+	    name:'photoBrowserCloseEvent'
+    },function(ret,err){
+    	photoBrowser.close();
+    	api.closeFrame({
+    		name: 'photoBrowserFrame'
+        });
+    });
+}
+	
+/**
+ * 加载banner
+ */
+function loadBanner(){
+    api.ajax({
+        method : 'get',
+        cache : true,
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/collection/banner-list',
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+        if(ret && ret.length > 0){
+        	var imgSrc = "";
+        	var pointSrc = "";
+        	$api.html($api.byId('banner-content'), "");
+        	$api.html($api.byId('pointer'), "");
+			for(var i=0; i<ret.length; i++){
+				imgSrc = '<div><img onerror="this.src=\'../../image/icon150x150.png\'" src="' + global.getImgUri() + '/' + ret[i].bannerUrl + '" /></div>';
+				$api.append($api.byId('banner-content'), imgSrc);
+				
+				if(i === 0){
+					pointSrc = '<div class="li"><a class="active"></a></div>';
+				}else{
+					pointSrc = '<div class="li"><a></a></div>';
+				}
+				$api.append($api.byId('pointer'), pointSrc);
+			}
+			
+			var pointer = $api.domAll('#pointer a');
+			window.mySlide = new Swipe(document.getElementById('slide'), {
+				auto : 5000,
+				continuous : true,
+				disableScroll : true,
+				stopPropagation : true,
+				callback : function(index, element) {
+					var actPoint = $api.dom('#pointer a.active');
+					$api.removeCls(actPoint, 'active');
+					$api.addCls(pointer[index], 'active');
+				}
+			});
+        }
+    });
+}
+
+/**
+ *位置 
+ */
+function shwoLocation(){
+	var aMap = api.require('aMap');
+	var location = global.getLocation();
+
+	//location.lon = 116.3778020000000000;
+	//location.lat = 	39.9833870000000000;
+	if(location){
+		aMap.getNameFromCoords({
+		    lon: location.lon,
+		    lat: location.lat
+		}, function(ret, err) {
+		    if (ret.status) {
+		    	if(ret.state == ret.city){
+		    		if(ret.district.indexOf('区') > 0){
+		    			regionName = ret.state + '|市辖区|' + ret.district;
+		    		}else{
+		    			regionName = ret.state + '|县|' + ret.district;
+		    		}
+		    	}else{
+		    		regionName = ret.state + '|' + ret.city + '|' + ret.district;
+		    	}
+
+		    	loadData(type);
+		    }
+		});
+	}
+}
+	
+/**
+ *事件 
+ */
+function loadData(item){
+	type = item;
+	var params = '?start=0&maxResult=10&type=' + type + '&regionName=' +　regionName;
+	var url = global.getRequestUri() + '/collection/list';
+	page.init(10, 'list-content', 'list-template', url, params, true, "noDataDiv");
+}
+
+
+function showCountDownBanner(){
+    api.ajax({
+        method : 'get',
+        cache : true,
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/system/getConfigValue?name=sign_is_show_redpacket_count_down',
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+        if(ret && ret.success && ret.obj){
+        	if(ret.obj == 1){
+        		$api.removeCls($api.byId('showMoudle'), 'aui-hide');
+        	} else {
+				$api.addCls($api.byId('showMoudle'), 'aui-hide'); 
+				
+        	}
+        }
+    });
+}
+
+function getCountDownConfig(){
+    api.ajax({
+        method : 'get',
+        cache : true,
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/redpacketscountdown/red-packets-config',
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+        if(ret && ret.success && ret.obj){
+        	$api.html($api.byId('noteP'), ret.obj.note);
+        	var nowTime = parseInt(ret.message);
+        	calculateTime(nowTime,ret.obj.startTime,ret.obj.endTime);
+        }
+    });
+}
+
+function calculateTime(nowTime,startTime,endTime){
+	var ts = startTime - nowTime;
+	var ls = endTime - nowTime;
+	
+	if(ts > 0){
+		//var dd = parseInt(ts / 1000 / 60 / 60 / 24, 10);  
+	    var hh = parseInt(ts / 1000 / 60 / 60, 10);  
+	    var mm = parseInt(ts / 1000 / 60 % 60, 10);  
+	    var ss = parseInt(ts / 1000 % 60, 10);  
+	    //dd = dd<10?("0" + dd):dd;   //天  
+	    hh = hh<10?("0" + hh):hh;   //时  
+	    mm = mm<10?("0" + mm):mm;   //分  
+	    ss = ss<10?("0" + ss):ss;   //秒  
+	    $api.html($api.byId('countDownSpan'),"距离开抢还剩:" + hh + ":" + mm + ":" + ss);
+	    nowTime = nowTime+1000;
+	    
+	    timer = setTimeout(function(){calculateTime(nowTime,startTime,endTime);},1000); 
+	} else {
+		//答题中
+		if(ls > 0){
+			clearTimeout(timer);
+			$api.html($api.byId('countDownSpan'),"活动正在进行中....");
+			isEndQuestion();
+			
+		} else {
+			//答题活动结束
+			$api.html($api.byId('countDownSpan'),"活动已结束，敬请期待");
+		}
+	}
+}
+
+// 判断答题活动是否结束
+function isEndQuestion(){
+    api.ajax({
+        method : 'get',
+        cache : true,
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/redpacketscountdown/red-packets-config',
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+        if(ret && ret.success && ret.obj){
+        	if(ret.obj.status == 2){
+        		//答题活动结束
+				$api.html($api.byId('countDownSpan'),"活动已结束，敬请期待");
+        	} else {
+        		$api.html($api.byId('countDownSpan'),"活动正在进行中....");
+        		setTimeout(function(){isEndQuestion();},2000); 
+        	}
+        }
+    });
+}
+
+/**
+ *秒抢答题 
+ */
+function openQAWin(){
+	var params = { page : '../redpacket/countdown', title : countdownTitle };
+	global.openWinName('countdownWin', '../common/common_win', params);
+}
+
+/**
+ * 发红包事件
+ */
+function openAdvWin(){
+	api.sendEvent({
+        name:'sendAdvEvent',
+        extra:{
+         	type:2
+        }
+    });
+}
+
+/**
+ *详情 
+ */
+function openDetail(advId, advname){
+	api.openWin({
+	    name: 'advDetailWin',
+	    url: './search_detail.html',
+	    pageParam: {
+	    	id: advId,
+	        name: advname
+	    }
+    });
+}
+
+/**
+ *收藏 
+ */
+function showCollect(redPacketsId, collect, memberId){
+	var collectText = "收藏商家";
+	var operate = 1;
+	
+	if(collect){
+		collect = "取消收藏";
+		operate = 2;
+	}
+	api.actionSheet({
+    	cancelTitle : '取消',
+        style:{
+            itemNormalColor:'#ffffff', 
+            itemPressColor:'#ffffff', 
+            fontNormalColor:'#fc531f',
+            fontPressColor:'#fc531f',
+            titleFontColor:'#ececec'
+        },
+        buttons : [collectText]
+    }, function(ret, err) {
+        if (ret) {
+        	if(ret.buttonIndex == 1){
+        		api.ajax({
+					method : 'post',
+					cache : false,
+					dataType : 'json',
+					returnAll : false,
+					url : global.getRequestUri() + '/collect/operate',
+					headers : global.getRequestToken(),
+					data : {
+						values : {
+							id : memberId,
+							type : operate
+						}
+					}
+				}, function(ret, err) {
+					if(ret){
+						if(ret.success){
+							global.setToast((type == 1 ? '收藏' : '取消收藏') + '成功');
+						}else{
+							global.setToast(ret.message);
+						}
+					}else{
+						global.setErrorToast();
+					}
+				});
+        	}
+        }
+    });
+}
+
+/**
+ *浏览图片 
+ */
+function imageBrowse(redpacketId, index){
+    api.ajax({
+        method : 'get',
+        cache : true,
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/collection/banners?type=2&redPacketsId='+redpacketId,
+        headers : global.getRequestToken()
+    }, function(ret, err) {
+        if(ret){
+        	var banners = ret;
+			for(var i=0; i<banners.length; i++){
+				banners[i] = global.getImgUri() + '/' + banners[i].banner;
+			}
+
+        	photoBrowser.open({
+			    images: banners,
+			    activeIndex: index,
+			    placeholderImg: 'widget://image/icon150x150.png',
+			    bgColor: '#000'
+			}, function(ret, err) {
+				if(ret){
+					if(ret.eventType == 'change'){
+						api.sendEvent({
+				            name:'imageChangeEvent',
+				            extra: {
+				            	currentIndex : ret.index + 1
+				            }
+			            });
+		            }
+		            
+		            api.openFrame({
+					    name: 'photoBrowserFrame',
+					    url: './imageBar.html',
+					    rect: {
+						    x:0,
+						    y:0,
+						    w:'auto',
+						    h:64
+					    },
+					    pageParam:{
+					    	currentIndex: ret.index,
+					    	total: banners.length
+					    }
+				    });
+				}
+			});
+        }
+    });
+
+	
+}
+</script>
+</html>

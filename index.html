@@ -1,0 +1,1359 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>拿手红包</title>
+    <link rel="stylesheet" type="text/css" href="./css/api.css" />
+    <style>
+		html,body{
+			height: 100%;
+			width:100%;
+		}
+		#wrap{
+		    height: 100%;
+		    display: -webkit-box;
+		    display: -webkit-flex;
+		    display: flex;
+		    -webkit-box-orient: vertical;
+		    -webkit-flex-flow: column;
+		           flex-flow: column;
+		}
+		#header{
+		    text-align: center;
+		   	background-color: #fc531f;
+			color: #ffffff;
+		    width: 100%;
+		    position:relative;
+		    padding-top: 22px;
+			background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+			background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		}
+		.topbar {
+			height: 44px;
+			line-height: 44px;
+			font-size: 18px;
+			text-align: center;
+			display: none;
+			color: #ffffff;
+		}
+		.topbar .help-icon{
+	        background-size: 1.4rem auto;
+	        bottom: 0;
+	        display: block;
+	        height: 44px;
+	        right: 0;
+	        position: absolute;
+	        line-height: 44px;
+	        font-size: 16px;
+			padding-right: 12px;
+		}
+		.topbar .set-icon{
+			background: rgba(0, 0, 0, 0) url("./image/my/top-setup-icon.png") no-repeat scroll center center;
+	        background-size: 1.4rem auto;
+	        bottom: 0;
+	        display: block;
+	        height: 44px;
+	        right: 0;
+	        position: absolute;
+	        width: 40px;
+	        line-height: 44px;
+	        font-size: 16px;
+		}
+		.topbar .news-icon{
+			background: rgba(0, 0, 0, 0) url("./image/my/top-news-icon.png") no-repeat scroll center center;
+	        background-size: 1.4rem auto;
+	        bottom: 0;
+	        display: block;
+	        height: 44px;
+	        left: 0;
+	        position: absolute;
+	        width: 40px;
+	        line-height: 44px;
+	        font-size: 16px;
+		}
+		#main{
+		    -webkit-box-flex: 1;
+		    -webkit-flex: 1;
+		    flex: 1;
+		}
+		ul {
+			display: -webkit-box;
+			display: -webkit-flex;
+			display: flex;
+		}
+		#footer li {
+			-webkit-box-flex: 1;
+			-webkit-flex: 1;
+			flex: 1;
+			height: 48px;
+			background-color: #fff;
+		}
+		.border-top{ position: relative; }
+		.border-top:after{position: absolute; right: 0; top: 0; left: 0; height: 1px; content: ''; -webkit-transform: scaleY(.25); transform: scaleY(.25); background-color: #f0f0f0; }
+		#footer {
+			width: 100%;
+			text-align: center;
+		    height: 48px;
+			line-height: 48px;
+			background-color: #fff;
+			bottom: 0px;
+			position: fixed;
+		}
+		.bottom_btn {
+			background-position-y: 6px;
+			padding-top: 13px;
+			font-size: 11px;
+			color: #333;
+			width: 99%;
+			height: 35px;
+			background-repeat: no-repeat no-repeat;
+			background-position-x: center;
+			background-size: 23px;
+		}
+		.index {
+			background-image: url(./image/tab_index01.png);
+		}
+		.send {
+			background-image: url(./image/tab_send01.png);
+		}
+		.collect {
+			background-image: url(./image/tab_collect01.png);
+		}
+		.top {
+			background-image: url(./image/tab_find01.png);
+		}
+		.account {
+			background-image: url(./image/tab_my01.png);
+		}
+		.active .index {
+			background-image: url(./image/tab_index02.png);
+		}
+		.active .send {
+			background-image: url(./image/tab_send02.png);
+		}
+		.active .collect {
+			background-image: url(./image/tab_collect02.png);
+		}
+		.active .top {
+			background-image: url(./image/tab_find02.png);
+		}
+		.active .account {
+			background-image: url(./image/tab_my02.png);
+		}
+		.active .bottom_btn {
+			color: #fc531f;
+			background-size: 23px;
+		}
+		.activebar {
+			display: block;
+		}
+		.hide {
+			display: none !important;
+		}
+		.redpacket-top{
+		  width: 124px;
+		  margin:0 auto;
+          height: 40px;
+          line-height: 40px;
+          font-size: 18px;
+          color: #fff;
+          padding-top: 4px;
+      }
+      .redpacket-top li{ width: 50%; margin: 0 10%; display: inline-block; float: left; margin-top: -2px; }
+      .redpacket-top li.active{ border-bottom: 2px solid #fff; }
+	  .topbar .news-icon em{ width: 0.35rem; height: 0.35rem; background-color: #fc531f; border-radius: 50%; position: absolute; top: 0.75rem; right: 0.5rem; }
+		.topbar .search-icon{
+			background: rgba(0, 0, 0, 0) url("./image/redpacket/search-icon.png") no-repeat scroll center center;
+			background-size: 1.4rem auto;
+			bottom: 0;
+			display: block;
+			height: 44px;
+			left: 0;
+			position: absolute;
+			width: 40px;
+			line-height: 44px;
+			font-size: 16px;
+		}
+		.topbar .news-num-icon{
+			background: rgba(0, 0, 0, 0) url("./image/my/top-news-icon.png") no-repeat scroll center center;
+			background-size: 1.4rem auto;
+			bottom: 0;
+			display: block;
+			height: 44px;
+			right: 0.5rem;
+			position: absolute;
+			width: 40px;
+			line-height: 44px;
+			font-size: 16px;
+		}
+		.topbar .news-num-icon em{ width: 0.8rem; height: 0.8rem; line-height: 0.8rem; background-color: #ff3535; border: 0.05rem solid #fff; border-radius: 50%;
+			position: absolute; top: 0.35rem; right: 0.2rem; font-size: 0.6rem; }
+		.topbar .news-num-icon2{
+			background: rgba(0, 0, 0, 0) url("./image/my/top-news-icon.png") no-repeat scroll center center;
+			background-size: 1.4rem auto;
+			bottom: 0;
+			display: block;
+			height: 44px;
+			left: 0;
+			position: absolute;
+			width: 40px;
+			line-height: 44px;
+			font-size: 16px;
+		}
+		.topbar .news-num-icon2 em{ width: 0.8rem; height: 0.8rem; line-height: 0.8rem; background-color: #ff3535; border: 0.05rem solid #fff; border-radius: 50%;
+			position: absolute; top: 0.35rem; right: 0.2rem; font-size: 0.6rem; }
+		.topbar .mark-icon{
+			background: rgba(0, 0, 0, 0) url("./image/redpacket/mark-icon.png") no-repeat scroll center center;
+			background-size: 1.4rem auto;
+			bottom: 0;
+			display: block;
+			height: 44px;
+			right: 0;
+			position: absolute;
+			width: 40px;
+			line-height: 44px;
+			font-size: 16px;
+		}
+	</style>
+</head>
+<body>
+	<div id="wrap">
+		<div id="header">
+			<div id="index" class="topbar activebar">
+				<a tapmode="aui-active" onclick="doMessage();" class="news-num-icon2"><!--<em class=""></em>--></a>
+				<a tapmode="aui-active" onclick="doHelp();" class="mark-icon"></a>
+				抢红包
+				<!--<a tapmode="aui-active" onclick="doHelp();" class="help-icon">攻略</a>-->
+			</div>
+			<div id="send" class="topbar hide">
+				发红包
+			</div>
+			<div id="collect" class="topbar">
+				<a tapmode="aui-active" onclick="doSearch();" class="search-icon"></a>
+				<a tapmode="aui-active" onclick="doMessage();" class="news-num-icon"><!--<em class=""></em>--></a>
+				<ul class="redpacket-top">
+					<li id="regalLi" tapmode="" onclick="doRedpackets(1);" class="active">推荐</li>
+					<li id="incomeLi" tapmode="" onclick="doRedpackets(2);">全部</li>
+				</ul>
+			</div>
+			<div id="account" class="topbar">
+				我的
+				<a tapmode="aui-active" onclick="doSet();" class="set-icon"></a>
+				<a tapmode="aui-active" onclick="doMessage();" class="news-icon"><!--<em class=""></em>--></a>
+			</div>
+		</div>
+		<div id="main"></div>
+		<div id="footer">
+			<ul>
+				<li id="indexLi" class="active" onclick="doNavigation(this, 'index', 0)">
+					<a class="bottom_btn index">抢红包</a>
+				</li>
+				<li id="topLi" onclick="doNavigation(this, 'collect', 1)">
+					<a class="bottom_btn collect">红包集</a>
+				</li>
+				<li id="accountLi" onclick="doNavigation(this, 'account', 2)">
+					<a class="bottom_btn account">我的</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="./script/api.js"></script>
+<script type="text/javascript" src="./script/common/global.js"></script>
+<script type="text/javascript">
+	var ajpush;
+	var dialogBox;
+	var header_h;
+    apiready = function(){
+    	ajpush = api.require('ajpush');
+		dialogBox = api.require('dialogBox');
+
+		initEvent();
+		hasFirstLoad();
+    };
+
+	/**
+	 *初始化页面事件
+	 */
+    function initEvent(){
+    	//登录更新事件
+    	api.addEventListener({
+	        name:'loginSuccessEvent'
+        },function(ret,err){
+        	$api.addCls($api.byId('send'), 'hide');
+			$api.addCls($api.byId('sendLi'), 'hide');
+        	if(ret && ret.value && ret.value.newUser){
+        		pushNotice();
+        	}
+        	openMainWin();
+        });
+        
+        api.addEventListener({
+	        name:'advertisementCloseEvent'
+        },function(ret,err){
+        	$api.setStorage('advertisementInfoWin', '0');
+        });
+        
+        api.addEventListener({
+	        name:'tokenExpiredEvent'
+        },function(ret,err){
+        	api.closeFrame({
+        		name: 'receive'
+            });
+			api.closeToWin({
+	            name: 'root'
+            });
+
+            $api.clearStorage();
+            
+            setTimeout(function(){
+            	openLoginWin(-1, ret.value.msg);
+            }, 2000);
+        });
+        
+    	 api.addEventListener({
+	        name:'userStopPushEvent'
+        },function(ret,err){
+        	ajpush.stopPush(function(ret) {
+			});
+        });
+        
+         api.addEventListener({
+	        name:'userResumePushEvent'
+        },function(ret,err){
+        	ajpush.resumePush(function(ret) {
+			});
+        }); 
+
+        api.addEventListener({
+		    name:'resume'
+		}, function(ret, err){        
+	    	ajpush.setBadge({
+		    	badge:0
+			});
+		});    
+                
+        api.addEventListener({
+	        name:'sendAdvEvent'
+        },function(ret,err){
+        	api.closeToWin({
+	            name: 'root'
+            });
+            
+            if(ret && ret.value){
+	            setTimeout(function(){
+	        		openAdvWin(ret.value.type);
+	        		},500);
+        	}
+        });
+        
+        api.addEventListener({
+	        name:'openGainMapEvent'
+        },function(ret,err){
+        	api.closeToWin({
+	            name: 'root'
+            });
+            
+            doNavigation($api.byId('indexLi'), 'index', 0);
+        });
+    }
+
+    /**
+     *该版本是否首次打开
+     */
+    function hasFirstLoad() {
+		if (global.getGuideFlag() !== global.getVersion()) {
+			//global.setGuideFlag();
+			//global.openWinName('guide', './html/guide', '{}');
+			initFrame();
+		}else{
+			initFrame();
+		}
+	}
+
+	function pushNotice(){
+		//首次登陆提示弹窗
+		dialogBox.alert({
+		    texts: {
+		        title: '“拿手红包”想给您发送通知',
+		        content: '“通知”可能包括提醒、声音和图标标记。这些可在“设置”中配置',
+		        leftBtnTitle: '不允许',
+		        rightBtnTitle: '允许'
+		    },
+		    tapClose: true,
+		    styles: {
+		        bg: '#fff',
+		        corner: 10,
+		        w: 300,
+		        title: {
+		            marginT: 20,
+		            titleSize: 16,
+		            titleColor: '#000'
+		        },
+		        content: {
+		            color: '#000',
+		            size: 16
+		        },
+		        left: {
+		            marginB: 7,
+		            marginL: 20,
+		            w: 130,
+		            h: 35,
+		            corner: 2,
+		            bg: '#fff',
+		            color: '#fc531f',
+		            size: 14
+		        },
+		        right: {
+		            marginB: 7,
+		            marginL: 10,
+		            w: 130,
+		            h: 35,
+		            corner: 2,
+		            bg: '#fff',
+		            color: '#fc531f',
+		            size: 14
+		        }
+		    }
+		}, function(ret) {
+			var notifyValue = 0;
+		    if (ret.eventType == 'right') {
+		    	notifyValue = 1;
+		    }
+		    //设置
+			api.ajax({
+				method : 'post',
+				cache : false,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/member/message-notify',
+				headers : global.getRequestToken(),
+				data : {
+					values : {
+						'notifyValue' : notifyValue
+					}
+				}
+			}, function(ret, err) {
+			});
+			
+		    dialogBox.close({
+		    	dialogName: 'alert'
+		    });
+		});
+
+	}
+
+	/**
+	 *初始化框架
+	 */
+	function initFrame() {
+		if (global.isValidUser()) {
+			openMainWin();
+		} else {
+			openLoginWin(1, "");
+		}
+	}
+
+	/**
+	 *打开登录页
+	 */
+	function openLoginWin(type, msg) {
+		api.openWin({
+			name : 'entranceWin',
+			url : './html/entrance/login.html',
+			slidBackEnabled : false,
+			pageParam : { 
+				"type" : type,
+				"msg" : msg
+			}
+		});
+	}
+
+	/**
+	 *打开框架页
+	 */
+	function openMainWin() {
+		var $header = $api.byId('header');
+		var systemType = api.systemType;
+	    var systemVersion = parseFloat(api.systemVersion);
+	    if (systemType == "ios" || (systemType == "android" && systemVersion >= 4.4)) {
+			if (systemType == "android") {
+				header.style.paddingTop = '25px';
+			}
+			$api.fixStatusBar(header);
+	    } else {
+	       	$api.fixIos7Bar(header);
+		}
+
+		var $body = $api.dom('body');
+		var $footer = $api.byId('footer');
+		var header_h = $api.offset($header).h;
+		var body_h = $api.offset($body).h;
+		var footer_h = $api.offset($footer).h;
+		var rect_h = body_h - header_h - footer_h;
+
+		$api.removeCls($api.byId('send'), 'activebar');
+		$api.removeCls($api.byId('top'), 'activebar');
+		$api.removeCls($api.byId('account'), 'activebar');
+		$api.addCls($api.byId('index'), 'activebar');
+
+		$api.removeCls($api.byId('sendLi'), 'active');
+		$api.removeCls($api.byId('topLi'), 'active');
+		$api.removeCls($api.byId('accountLi'), 'active');
+		$api.addCls($api.byId('indexLi'), 'active');
+
+		api.closeFrameGroup({
+				name: 'frameGroup'
+		});
+		//打开frameGroup
+		api.openFrameGroup({
+			name : 'frameGroup',
+			scrollEnabled : false,
+			rect : {
+				x : 0,
+				y : header_h,
+				w : 'auto',
+				h : rect_h
+			},
+			index : 0,
+			frames : [{
+				name : 'index_frame',
+				url : './html/receive/main.html',
+				pageParam : {
+					headerHeight : header_h,
+					bodyHeight : rect_h
+				}
+			}, {
+				name : 'send_frame',
+				url : './html/redpacket/main.html',
+				pageParam : {
+					headerHeight : header_h,
+					bodyHeight : rect_h
+				}
+			}, {
+				name : 'account_frame',
+				url : './html/my/main.html',
+				pageParam : {
+					headerHeight : header_h,
+					bodyHeight : rect_h
+				}
+			}]
+		}, function(ret, err) {
+		});
+
+		//初始化ajpush
+		initAJPush();
+	}
+
+	/**
+	 *底部导航切换
+	 */
+	function doNavigation(obj, name, index) {
+		var $header = $api.byId('header');
+		var $titleBar = $api.domAll($header, '.topbar');
+		for (var i = 0; i < $titleBar.length; i++) {
+			$api.removeCls($titleBar[i], 'activebar');
+		}
+		$api.addCls($api.byId(name), 'activebar');
+
+		var $footer = $api.byId('footer');
+		var $footerBar = $api.domAll($footer, 'li');
+		for (var j = 0; j < $footerBar.length; j++) {
+			$api.removeCls($footerBar[j], 'active');
+		}
+		$api.addCls(obj, 'active');
+
+		var $body = $api.dom('body');
+		var $footer = $api.byId('footer');
+		var header_h = $api.offset($header).h;
+		var body_h = $api.offset($body).h;
+		var footer_h = $api.offset($footer).h;
+		var rect_h = body_h - header_h - footer_h;
+
+		api.setFrameGroupAttr({
+			name : 'frameGroup',
+			rect : {
+				x : 0,
+				y : header_h,
+				w : 'auto',
+				h : rect_h
+			}
+		});
+		
+		api.setFrameGroupIndex({
+			name : 'frameGroup',
+			index : index
+		});
+	}
+
+	/**
+	 *打开攻略
+	 */
+	function doHelp(){
+		global.openWin('./html/receive/guide_win', null);
+	}
+
+	/**
+	 *打开消息
+	 */
+	function doMessage() {
+		api.execScript({
+			frameName: 'account_frame',
+		    script: 'openSubWin(1);'
+	    });
+	}
+
+	/**
+	 *打开设置
+	 */
+	function doSet(){
+		api.execScript({
+			frameName: 'account_frame',
+		    script: 'openSubWin(2);'
+	    });
+	}
+
+	/**
+	 *切换排行榜
+	 */
+	function doRedpackets(type){
+		if (type === 1) {
+			$api.removeCls($api.byId('incomeLi'), 'active');
+			$api.addCls($api.byId('regalLi'), 'active');
+		} else {
+			$api.removeCls($api.byId('regalLi'), 'active');
+			$api.addCls($api.byId('incomeLi'), 'active');
+		}
+
+		api.execScript({
+			frameName: 'send_frame',
+		    script: 'loadData(' + type + ');'
+	    });
+	}
+
+	/**
+	 *初始化
+	 */
+	function initAJPush(){
+		if(api.systemType === 'ios'){
+			bindAlias();
+			addListener();
+		}else{
+			ajpush.init(function(ret, err){
+				if(ret && ret.status){
+					bindAlias();
+					addListener();
+				}
+			});
+		}
+	}
+
+	/**
+	 *绑定别名
+	 */
+	function bindAlias(){
+		ajpush.bindAliasAndTags({
+			alias: global.getMobile(),
+			tags: ['' + global.getType() + '']
+		}, function(ret, err){
+			//alert('bindAlias'+JSON.stringify(ret));
+		});
+	}
+
+	/**
+	 *监听
+	 */
+	function addListener(){
+		ajpush.setListener(function(ret){
+		
+			if(ret){
+        		messageHandle(ret.content, ret.extra, true);
+			}
+		});
+
+		if(api.systemType === 'ios'){
+			api.addEventListener({
+		   		name: 'noticeclicked'
+			}, function(ret, err) {
+			    if (ret && ret.value) {
+			        var data = ret.value;
+					messageHandle(data.content, data.extra, false);
+			    }
+			});
+		}else{
+			api.addEventListener({
+		    	name: 'appintent'
+			}, function(ret, err) {
+			    if (ret && ret.appParam.ajpush) {
+			        var data = ret.appParam.ajpush;
+					messageHandle(data.content, data.extra, false);
+			    }
+			});
+		}
+	}
+
+
+	/**
+	 *处理监听消息
+	 */
+	function messageHandle(content, extra, message){
+		var extraJson = eval("(" + JSON.stringify(extra) + ")");
+		extraJson = eval("(" + extraJson.from + ")");
+
+		if(extraJson.type === undefined){
+			return;
+		}
+
+		if(extraJson.type == '0'){
+			//0.商家认证
+			global.setAuthStatus(extraJson.status);
+
+			if(extraJson.status == '1'){
+				dialogBox.alert({
+				    texts: {
+				        content: content,
+				        leftBtnTitle: '我知道了'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 310,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 90,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+					api.sendEvent({
+					    name:'authSuccessEvent'
+					});
+				    if (ret.eventType == 'left') {
+				    
+				    	var authInfo = $api.getStorage("authInfo");
+						if(authInfo){
+							authInfo.status = 1;
+							global.setBusinessLogo(authInfo.logo);
+							global.setBusinessName(authInfo.businessName);
+									
+						} else {
+			            	//加载服务端数据
+			            	loadAuthInfo();
+		      			}
+		      			
+						global.setType(1);
+						
+						api.closeWin({
+							name : 'authDetailWin'
+						});
+						
+						api.closeWin({
+							name : 'againWin'
+						});	
+						
+						dialogBox.close({
+						   	dialogName: 'alert'
+						 });
+						 
+						$api.removeCls($api.byId('send'), 'hide');
+						$api.removeCls($api.byId('sendLi'), 'hide');
+				    }
+
+				});
+				
+			}else{
+				//失败
+				api.sendEvent({
+					    name:'authFailEvent'
+				});
+				dialogBox.alert({
+				    texts: {
+				        content: content,
+				        leftBtnTitle: '稍后再看',
+				        rightBtnTitle: '立即查看'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 310,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+					$api.setStorage("authInfo", "");
+				    if (ret.eventType == 'right') {
+				    	//查看原因
+				    	global.setAuthStatus(-1);
+						var params = { "page" : "../my/auth_again", "title" : "认证未通过" };
+						global.openWinName('againWin', './html/common/common_win', params);
+				    }
+				    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				    
+				    api.closeWin({
+			            name: 'authDetailWin'
+		            });
+		            
+		            api.closeWin({
+			            name: 'memberCenterWin'
+		            });
+            
+				});
+				
+			}
+		}else if(extraJson.type == '1'){
+			$api.setStorage("redpacketsInfo", "");
+			api.sendEvent({
+	            name:'redpacketsApplyEvent'
+            });
+            api.sendEvent({
+	            name:'redpacketsApplyRefreshEvent'
+            });
+            
+			//1.广告认证
+			if(extraJson.status == '1'){
+				//成功
+				dialogBox.alert({
+				    texts: {
+				        content: content,
+				        leftBtnTitle: '稍后再看',
+				        rightBtnTitle: '立即查看'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 300,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+				    if (ret.eventType == 'right') {
+				    	//查看原因
+						var params = { page : '../send/map_submit', title : '地图广告红包', id :  extraJson.id , src : 2  };
+						global.openWinName('advertisementInfoSubmitWin', './html/common/common_win', params);
+				    }
+				    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				});
+			}else{
+				//失败
+				dialogBox.alert({
+				    texts: {
+				        content: content,
+				        leftBtnTitle: '稍后再看',
+				        rightBtnTitle: '立即查看'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 300,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+				    if (ret.eventType == 'right') {
+				    	//查看原因
+						var params = { page : '../send/map_submit', title : '地图广告红包', id :  extraJson.id, src : 2  };
+						global.openWinName('advertisementInfoSubmitWin', './html/common/common_win', params);
+				    }
+				    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				});
+		
+			}
+		}else if(extraJson.type == '2'){
+			//2.提现
+			if(extraJson.status == '1'  || extraJson.status == '0'){
+				dialogBox.alert({
+				    texts: {
+				        content: content,
+				        leftBtnTitle: '关闭',
+				        rightBtnTitle: '查看'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 300,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+					api.sendEvent({
+            			name:'withdrawApplyEvent'
+        			});
+				    if (ret.eventType == 'right') {
+						withdrawProgress();
+				    }
+				    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				});
+		
+			}
+		}else if(extraJson.type == '3'){
+			if(message){
+				//3.抢红包通知
+				api.sendEvent({
+		            name :'messageReceiveEvent',
+		            extra : {
+		            	mobile : extraJson.mobile,
+		            	title : content,
+		            	sendTime : extraJson.sendTime
+		            }
+	            });
+            }
+		}else if(extraJson.type == '4'){
+	    	api.sendEvent({
+                name:'collectionInfoSubmitEvent'
+            });
+			//1.广告集认证
+			if(extraJson.status == '1'){
+				//成功
+				dialogBox.alert({
+				    texts: {
+				        content: content,
+				        leftBtnTitle: '稍后再看',
+				        rightBtnTitle: '立即查看'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 300,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+				    if (ret.eventType == 'right') {
+				    	var params = { page : '../send/collection_submit', title : '红包集广告红包', id :  extraJson.id , src : 2 };
+						global.openWinName('collectionInfoSubmitWin', './html/common/common_win', params);
+				    }
+				    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				});
+			}else{
+				//失败
+				dialogBox.alert({
+				    texts: {
+				        content: content,
+				        leftBtnTitle: '稍后再看',
+				        rightBtnTitle: '立即查看'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 300,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+				    if (ret.eventType == 'right') {
+				    	//查看原因
+				    	var params = { page : '../send/collection_submit', title : '红包集广告红包', id :  extraJson.id, src : 2 };
+						global.openWinName('collectionInfoSubmitWin', './html/common/common_win', params);
+				    }
+				    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				});
+		
+			}
+		}
+	}
+	
+	function loadAuthInfo(){
+    	api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/member/auth-info',
+			headers : global.getRequestToken()
+			}, function(ret, err) {
+				if(ret && ret.code === "403"){
+					api.sendEvent({
+		                name:'tokenExpiredEvent',
+		                extra:{
+		                	msg : ret.message
+		                }
+	                });
+	                
+	                return;
+				}
+				if (ret) {
+					var authInfo = { status: ret.status, realName : ret.realName, idCard : ret.idCard, businessName : ret.businessName, businessAddress : ret.businessAddress,
+	                    cardFace :  ret.idCardFace, cardBack : ret.idCardBack, logo : ret.businessLogo, license : ret.businessLicense, auditNote : ret.auditNote };
+         			
+         			$api.setStorage("authInfo", authInfo);
+         			global.setAuthStatus(authInfo.status);
+					global.setBusinessLogo(authInfo.logo);
+					global.setBusinessName(authInfo.businessName);
+					
+					api.sendEvent({
+                        name:'authSuccessEvent'
+                    });
+
+				} else {
+					global.setToast('读取认证数据失败');
+				}
+		});
+	}
+	
+	function withdrawProgress(){
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			headers : global.getRequestToken(),
+			url : global.getRequestUri() + '/withdraw/last-withdraw-apply'
+		}, function(ret, err) {
+			if (ret) {
+				//查看原因
+				api.openWin({
+					name : 'progressWin',
+					url : './html/my/withdraw_progress.html',
+					pageParam : {
+						id : ret.id,
+						withdrawAmount : ret.withdrawAmount,
+						status : ret.status,
+						alipayName : ret.alipayName,
+						alipayNickName : ret.alipayNickName,
+						alipayAccount : ret.alipayAccount,
+						imagePath : ret.imagePath
+					}
+				});
+			}
+		});	
+	}
+	
+	/**
+	 * 发送广告
+	 */
+	function openAdvWin(type){
+		if(global.getType() == "1"){
+		    var params = { "type" : type };
+			global.openWinName("advSendWin", "./html/send/main_win", params);
+		}else{
+			if(global.getAuthStatus() == "0"){
+				dialogBox.alert({
+				    texts: {
+				        content: '商家认证尚未通过，请您耐心等待！',
+				        leftBtnTitle: '稍后',
+				        rightBtnTitle: '去看看'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 310,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+				    if (ret.eventType == 'right') {
+						var params = { "page" : "../my/auth_detail", "title" : "商家认证（认证中）"};
+						global.openWinName('authDetailWin', './html/common/common_win', params);
+				    }
+            
+        		    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				});
+			} else if(global.getAuthStatus() == "-1"){
+				//非商家
+				dialogBox.alert({
+				    texts: {
+				        content: '商家认证审核不通过，请重新提交！',
+				        leftBtnTitle: '稍后再看',
+				        rightBtnTitle: '立即查看'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 310,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+				    if (ret.eventType == 'right') {
+				    	//查看原因
+						var params = { "page" : "../my/auth_again", "title" : "商家认证（认证未通过）" };
+						global.openWinName('againWin', './html/common/common_win', params);
+				    }
+            
+        		    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				});
+			} else {
+				dialogBox.alert({
+				    texts: {
+				        content: '您还不是商家，去认证？',
+				        leftBtnTitle: '稍后再看',
+				        rightBtnTitle: '立即查看'
+				    },
+				    tapClose: true,
+				    styles: {
+				        bg: '#fff',
+				        corner: 10,
+				        w: 310,
+				        content: {
+				        	marginT: 50, 
+				            color: '#000',
+				            size: 16
+				        },
+				        left: {
+				            marginB: 7,
+				            marginL: 20,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        },
+				        right: {
+				            marginB: 7,
+				            marginL: 10,
+				            w: 130,
+				            h: 35,
+				            corner: 2,
+				            bg: '#fff',
+				            color: '#fc531f',
+				            size: 14
+				        }
+				    }
+				}, function(ret) {
+				    if (ret.eventType == 'right') {
+				    	//查看原因
+						var params = { "page" : "../my/auth", "title" : "商家认证（未认证）" };
+						global.openWinName('memberCenterWin', './html/common/common_win', params);
+				    }
+            
+        		    dialogBox.close({
+				    	dialogName: 'alert'
+				    });
+				});
+			}
+			
+		}
+	}
+	
+	/**
+	 *搜索 
+	 */
+	function doSearch(){
+		global.openWinName('redpacketSearchWin', './html/redpacket/search_win', "");
+	}
+</script>
+</html>

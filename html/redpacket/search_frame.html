@@ -1,0 +1,309 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>红包集</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/redpacket.css" />
+
+</head>
+<body class="body-bg-ef">
+<div id="barDiv" class="search-win-box body-bg-white">
+	<script id="record-template" type="text/x-dot-template">
+	{{ for(var i=0; i< it.length; i++) { }}
+	 <li id="{{=it[i].id}}"><span tapmode onclick="searchBusiness('{{=it[i].businessName}}')">{{=it[i].businessName}}</span><i tapmode onclick="deleteRecord({{=it[i].id}});"></i></li>
+	{{}}}
+	</script>
+	
+	<div></div>
+	    <h5>搜索历史</h5>
+	    <ul id="record-content">
+	    </ul>
+	</div>
+</div>
+<div id="dataDiv" class="redpacket-box">
+<script id="list-template" type="text/x-dot-template">
+	{{ for(var i=0; i< it.length; i++) { }}
+	<div class="redpacket-ad-list aui-margin-t-10">
+        <div class="redpacket-list-header">
+            <div class="user-avatar">
+                <img src="{{=global.getImgUri() + '/' + it[i].businessLogo}}" onerror="this.src='../../image/icon150x150.png'">
+            </div>
+            <div class="user-name">
+                <div class="user-name-info">{{=it[i].businessName}}</div>
+                <div tapmode onclick='showCollect({{=it[i].id}}, {{=it[i].collect}}, {{=it[i].memberId}});' class="redpacket-list-share"><img src="../../image/redpacket/more-icon.png"></div>
+            </div>
+            <div class="list-user-info"><span><i class="time-icon"></i><em>{{=global.formatDate(it[i].sendTime, 'yyyy-MM-dd') }}</em></span><span><i class="look-icon"></i><em>{{=it[i].browse}}</em></span></div>
+        </div>
+
+        <div class="redpacket-content-padded">{{=it[i].summary}}</div>
+        <div tapmode onclick="openDetail({{=it[i].id}}, '{{=it[i].businessName}}');" class="redpacket-see">查看详情</div>
+        <div class="aui-card-list-content">
+            <div class="aui-row aui-row-padded redpacket-ad-img">
+            	{{ for(var j=0; j<it[i].banners.length; j++){ }}
+                <div class="aui-col-xs-4">
+                    <img tapmode onclick="imageBrowse({{=it[i].id}},{{=j}});"; src="{{=global.getImgUri() + '/' + it[i].banners[j].banner}}" onerror="this.src='../../image/icon150x150.png'" />
+                </div>
+                {{　} }}
+            </div>
+        </div>
+        <div class="redpacket-contact"><span>联系方式：
+        <em>	        
+        {{ if(it[i].contact){ }}
+	        	{{=it[i].contact}}
+	    {{ }else {}}
+	        	无
+	    {{ } }}
+	    </em></span><span>微信号：<em>
+    	{{ if(it[i].wx){ }}
+        	{{=it[i].wx}}
+        {{ }else {}}
+        	无
+        {{ } }}
+	    </em></span></div>
+    </div>
+    {{ } }}
+    </script>
+    
+    <div id="list-content"></div>
+	<div id="noDataDiv" class="aui-hide" style="height: 16.5rem; text-align: center; padding-top: 5rem; color: #999;  font-size:0.7rem;">
+		暂无数据
+	</div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+<script type="text/javascript" src="../../script/common/page.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	var photoBrowser;
+	
+	apiready = function(){
+	 	photoBrowser = api.require('photoBrowser');
+		getSearchRecord();
+		
+		initEvent();
+	}
+	
+	/**
+	 * 初始化事件
+	 */
+	function initEvent() {
+	    api.addEventListener({
+		    name:'photoBrowserCloseEvent'
+	    },function(ret,err){
+	    	photoBrowser.close();
+	    	api.closeFrame({
+	    		name: 'photoBrowserFrame'
+	        });
+	    });
+	}
+
+	/**
+	 *搜索记录 
+	 */
+	function getSearchRecord(){
+		api.ajax({
+			method : 'get',
+			cache : false,
+			timeout : 30,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collection/search-record',
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if(ret){
+	            var template = $api.byId("record-template").text;
+	            var tempFun = doT.template(template);
+				$api.html($api.byId("record-content"),  tempFun(ret));
+			}
+		});
+	}
+	
+	/**
+	 *搜索商家 
+	 */
+	function searchBusiness(businessName){
+		$api.addCls($api.byId('barDiv'), 'aui-hide');
+		var params = '?start=0&maxResult=20&businessName=' + businessName;
+		var url = global.getRequestUri() + '/collection/search';
+
+		page.init(10, 'list-content', 'list-template', url, params, true, "noDataDiv");
+		
+		setTimeout(function(){
+			getSearchRecord();
+		}, 1000);
+	}
+	
+	/**
+	 *详情 
+	 */
+	function selectBusiness(advId, advname){
+		api.openWin({
+		    name: 'advDetailWin',
+		    url: './search_detail.html',
+		    pageParam: {
+		    	id: advId,
+		        name: advname
+		    }
+	    });
+	}
+	
+	/**
+	 *删除搜索记录 
+	 */
+	function deleteRecord(id){
+	console.log(id);
+		api.ajax({
+				method : 'put',
+				cache : false,
+				timeout : 30,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/collection/search-record-remove?id=' + id,
+				headers : global.getRequestToken()
+			}, function(ret, err) {
+			if(ret){
+                $api.remove($api.byId(id));
+			}
+		});
+	}
+	
+	/**
+	 *详情 
+	 */
+	function openDetail(advId, advname){
+		api.openWin({
+		    name: 'advDetailWin',
+		    url: './search_detail.html',
+		    pageParam: {
+		    	id: advId,
+		        name: advname
+		    }
+	    });
+	}
+	
+	/**
+	 *显示历史记录面板 
+	 */
+	function showHistory(type){
+		if(type === 1){
+			$api.removeCls($api.byId('barDiv'), 'aui-hide');
+		}else{
+			$api.addCls($api.byId('barDiv'), 'aui-hide');
+		}
+	}
+	
+	/**
+	 *收藏 
+	 */
+	function showCollect(redPacketsId, collect, memberId){
+		var collectText = "收藏商家";
+		var operate = 1;
+		
+		if(collect){
+			collect = "取消收藏";
+			operate = 2;
+		}
+		api.actionSheet({
+	    	cancelTitle : '取消',
+	        style:{
+	            itemNormalColor:'#ffffff', 
+	            itemPressColor:'#ffffff', 
+	            fontNormalColor:'#fc531f',
+	            fontPressColor:'#fc531f',
+	            titleFontColor:'#ececec'
+	        },
+	        buttons : [collectText]
+	    }, function(ret, err) {
+	        if (ret) {
+	        	if(ret.buttonIndex == 1){
+	        		api.ajax({
+						method : 'post',
+						cache : false,
+						dataType : 'json',
+						returnAll : false,
+						url : global.getRequestUri() + '/collect/operate',
+						headers : global.getRequestToken(),
+						data : {
+							values : {
+								id : memberId,
+								type : operate
+							}
+						}
+					}, function(ret, err) {
+						if(ret){
+							if(ret.success){
+								global.setToast((type == 1 ? '收藏' : '取消收藏') + '成功');
+							}else{
+								global.setToast(ret.message);
+							}
+						}else{
+							global.setErrorToast();
+						}
+					});
+	        	}
+	        }
+	    });
+	}
+
+	/**
+	 *浏览图片 
+	 */
+	function imageBrowse(redpacketId, index){
+	    api.ajax({
+	        method : 'get',
+	        cache : true,
+	        timeout : 30,
+	        dataType : 'json',
+	        returnAll : false,
+	        url : global.getRequestUri() + '/collection/banners?type=2&redPacketsId='+redpacketId,
+	        headers : global.getRequestToken()
+	    }, function(ret, err) {
+	        if(ret){
+	        	var banners = ret;
+				for(var i=0; i<banners.length; i++){
+					banners[i] = global.getImgUri() + '/' + banners[i].banner;
+				}
+				
+	        	photoBrowser.open({
+				    images: banners,
+				    activeIndex: index,
+				    placeholderImg: 'widget://image/icon150x150.png',
+				    bgColor: '#000'
+				}, function(ret, err) {
+					if(ret){
+						if(ret.eventType == 'change'){
+							api.sendEvent({
+					            name:'imageChangeEvent',
+					            extra: {
+					            	currentIndex : ret.index + 1
+					            }
+				            });
+			            }
+			            
+			            api.openFrame({
+						    name: 'photoBrowserFrame',
+						    url: './imageBar.html',
+						    rect: {
+							    x:0,
+							    y:0,
+							    w:'auto',
+							    h:64
+						    },
+						    pageParam:{
+						    	currentIndex: ret.index,
+						    	total: banners.length
+						    }
+					    });
+					}
+				});
+	        }
+	    });
+	}
+</script>
+</html>

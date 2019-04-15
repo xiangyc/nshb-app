@@ -1,0 +1,264 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>我的广告</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui-list-swipe.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+    <style type="text/css">
+        .aui-list-item-inner.aui-swipe-handle {
+            overflow-x: hidden;
+            position: relative;
+            z-index: 1;
+            background-color: #ffffff;
+        }
+        .aui-swipe-btn {
+            position: absolute;
+            right: 0;
+            z-index: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-flex: 1;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+                    justify-content: space-between;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+        }
+        .aui-swipe-btn .aui-btn {
+            border-radius: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+
+        }
+        .donghua {
+            -webkit-transition-duration:300ms;
+            transition-duration:300ms;
+        }
+    </style>
+</head>
+<body class="body-bg-ef">
+<script id="adv-template" type="text/x-dot-template">
+{{ for(var i=0; i< it.length; i++) {}}
+<li id="{{=it[i].type}}{{=it[i].id}}" class="aui-list-item-middle my-ad-list-li" tapmode onclick="view({{=it[i].id}},{{=it[i].type}})">
+     {{ if(status == 0){ }}
+         <div class="aui-media-list-item-inner">
+     {{ } else if(status == -1 || status == 1 || status == 2){ }}
+          <div class="aui-media-list-item-inner aui-swipe-handle">
+     {{ } }} 
+        <div class="aui-list-item-inner">
+            <div class="aui-list-item-text">
+                <div class="aui-list-item-title">
+                    <h4>
+                    {{ if(it[i].content && it[i].content.length>20){ }}
+                        {{=it[i].content.substring(0, 20)}}...</h4>
+                      {{ } else { }}
+                         {{=it[i].content}}
+                    {{ } }}
+					</h4>
+					
+                     <p>广告类型：
+                        <em>{{ if(it[i].type == 1){ }} 地图红包广告   {{ } else { }}  红包集广告  {{ } }} </em>
+                     </p>
+                     
+                    {{ if(status == 0 || status == 2){ }}
+                      	<p>提交日期：<em>{{=global.formatDate(it[i].time1, 'yyyy-MM-dd hh:mm') }}</em></p>
+                    {{ } }}
+                    
+                    {{ if(status == 1){ }}
+                        <div class="see-btn-gradient" tapmode onclick="set({{=it[i].id}},{{=it[i].type}});">去设置红包金额</div>
+                    {{ } }}
+                    
+                    {{ if(status == -1){ }}
+                       <div class="see-btn-gradient" tapmode onclick="cause({{=it[i].id}},{{=it[i].type}});">查看原因</div>
+                    {{ } }} 
+                </div>
+                  
+                <div  class="aui-list-item-right ad-state-img">
+                 {{ if(status == 0){ }}
+                     <img src="../../image/my/ad-audit-img.png"/>
+                 {{ } else if(status == -1){ }}
+                    <img src="../../image/my/ad-notpass-img.png"/>
+                 {{ } else if(status == 1){ }}
+                    <img src="../../image/my/ad-passed-img.png"/>
+                 {{ } else if(status == 2){ }}
+                   <img src="../../image/my/ad-published-img.png"/>              
+                 {{ } }} 
+                </div>
+            </div>
+        </div>
+
+         {{ if(status == -1 || status == 1 || status == 2){ }}
+            <div class="aui-swipe-btn aui-swipe-right-btn btn-list-delete" tapmode onclick="del({{=it[i].id}},{{=it[i].type}});">删除</div>                   
+        {{ } }} 
+    </div>
+</li>
+{{ } }}
+ </script>
+ 
+<div class="aui-content" style="padding-top:10px;">
+    <ul class="aui-list aui-media-list my-ad-list">
+        <div id="adv-content">
+        </div>
+    </ul>
+
+    <div id="noRecordDiv" class="aui-no-data aui-hide">
+		<img src="../../image/my/message-no-icon.png" class="no-data-img"/>
+      	  暂无记录
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+<script type="text/javascript" src="../../script/common/page.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/library/aui-list-swipe.js"></script>
+<script type="text/javascript">
+//初始化参数
+var status =0;
+var maxResult =15;
+var swipe;
+
+apiready = function() {
+  status = api.pageParam.status;
+  list(status);
+  initEvent();
+  
+  swipe = new auiListSwipe(function(ret){
+	// console.log(ret)
+  });
+}
+
+//初始化事件
+function initEvent() {
+	api.setCustomRefreshHeaderInfo({
+		bgColor : '#fdf7e7',
+		image : {
+			pull : global.pullImage(),
+			load : global.pushImage()
+		}
+	}, function(ret, err) {
+		list(status);
+		api.refreshHeaderLoadDone();
+	});
+
+	api.addEventListener({
+		name : 'scrolltobottom',
+		extra : {
+			threshold : 0
+		}
+	}, function(ret, err) {
+		page.scrollRefresh();
+	});
+}
+
+function list(status_) {
+  status = status_;
+  //alert(status);
+  var url = global.getRequestUri() + '/member/adv/list';
+  var params = '?start=0&maxResult='+maxResult+'&status='+status;
+  page.init(maxResult, 'adv-content', 'adv-template', url, params, true, 'noRecordDiv');
+}
+
+function set(id,type){
+	var url = '../send/map_set.html';
+    var params = {"id":id }
+    if(type == 2){
+    	url = '../common/common_win.html';
+        params = {"id":id, "page" : "../send/collection_set", "title" : "设置金额" };
+    }
+    api.openWin({
+        name : 'advSet',
+        url : url,
+        pageParam : params
+    });
+}
+
+function view(id,type){
+	var url = '../send/map_detail.html';
+    var params = {"id": id};
+    if(type == 2){
+    	url = '../common/common_win.html',
+         params = {"id":id, "page" : "../send/collection_detail", "title" : "详情" };
+    }
+    
+    api.openWin({
+        name : 'advView',
+      	url : url,
+        pageParam : params
+    });
+}
+
+function cause(id,type){
+    var params = {"id":id, "page" : "../send/map_submit", "title" : "详情" };
+    if(type == 2){
+         params = {"id":id, "page" : "../send/collection_submit", "title" : "详情" };
+    }
+    
+    api.openWin({
+        name : 'advView',
+      	url : '../common/common_win.html',
+        pageParam : params
+    });
+}
+
+
+function del(id,type){      
+console.log(id + '====' + type);  
+    api.ajax({
+        method : 'post',
+        cache : false,
+        dataType : 'json',
+        returnAll : false,
+        url : global.getRequestUri() + '/member/adv/del',
+        headers : global.getRequestToken(),
+        timeout : 100,
+        data : {
+            values :  {
+                'id' : id,
+                'type' : type
+             }
+        }
+
+    }, function(ret, err) {
+    console.log(JSON.stringify(ret));  
+        if(ret && ret.code === "403"){
+            api.sendEvent({
+                name:'tokenExpiredEvent',
+                extra:{
+                    msg : ret.message
+                }
+            });
+            
+            return;
+        }
+        if (ret) {
+            if (ret.success) {
+              global.setToast('删除成功！');
+              $api.remove($api.byId(type + '' + id));
+            } else {
+                global.setToast(ret.message);
+            }
+        } else {
+            global.setErrorToast();
+        }
+    });
+}
+</script>
+</html>

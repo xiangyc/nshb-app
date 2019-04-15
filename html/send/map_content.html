@@ -1,0 +1,327 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>编辑广告内容</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<body class="body-bg-ef">
+<div class="ad-map-box">
+    <ul class="ad-map-step">
+        <li class="aui-active"><i>1</i>选择投放区域</li>
+        <li class="aui-active"><i>2</i>编辑广告内容</li>
+        <li><i>3</i>设置广告红包</li>
+    </ul>
+    <div class="ad-content-textarea aui-margin-t-10">
+        <textarea id="content" class="mui-input-clear question" oninput="countWord()" placeholder="请输入广告内容..." maxlength="60"></textarea>
+        <P><span id="word">0</span>/60</P>
+    </div>
+    <div class="ad-photo-box aui-margin-t-10">
+        <h4><em class="color-333">请上传图片（选填，最多6张）</h4>
+        <div class="ui-feedback-photo">
+            <div id="div0" class="position-r">
+                <img id="img0" tabmode="" onclick="selectImage(0)" src="../../image/send/ad-photo-button.jpg">
+                <img id="icon0" tabmode="" onclick="deleteImage(0);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+            <div id="div1" class="position-r aui-hide">
+                <img id="img1" tabmode="" onclick="selectImage(1)" src="../../image/send/ad-photo-button.jpg">
+                <img id="icon1" tabmode="" onclick="deleteImage(1);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+            <div id="div2" class="position-r aui-hide">
+                <img id="img2" tabmode="" onclick="selectImage(2)" src="../../image/send/ad-photo-button.jpg">
+                <img id="icon2" tabmode="" onclick="deleteImage(2);"src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+            <div id="div3" class="position-r aui-hide">
+                <img id="img3" tabmode="" onclick="selectImage(3)" src="../../image/send/ad-photo-button.jpg">
+                <img id="icon3" tabmode="" onclick="deleteImage(3);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+            <div id="div4" class="position-r aui-hide">
+                <img id="img4" tabmode="" onclick="selectImage(4)" src="../../image/send/ad-photo-button.jpg">
+                <img id="icon4" tabmode="" onclick="deleteImage(4);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+
+            <div id="div5" class="position-r aui-hide">
+                <img id="img5" tabmode="" onclick="selectImage(5)" src="../../image/send/ad-photo-button.jpg">
+                <img id="icon5" tabmode="" onclick="deleteImage(5);" src="../../image/send/delete-icon.png" class="aui-delete-icon aui-hide">
+            </div>
+        </div>
+    </div>
+    
+    <div class="aui-btn-box2">
+        <div id="submitDiv" tapmode="aui-active" onclick="submit();" class="aui-btn btn-gradient">提交审核</div>
+    </div>
+    <p class="prompt-writing">根据《广告法》相关规定，需审核广告内容<br/><em tapmode onclick='callTel(15600688801);'>客服电话:15600688801</em></p>
+
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//经度
+	var longitude;
+	//纬度
+	var latitude;
+	//区域名
+	var regionName;
+	//半径
+	var radius;
+	//图片
+	var filePath = [6];
+
+	apiready = function(){
+		longitude = api.pageParam.lon;
+		latitude = api.pageParam.lat;
+		regionName = api.pageParam.regionName;
+		radius = api.pageParam.radius;
+
+		initEvent();
+		//$api.html($api.byId('locationSpan'), regionName);
+		//$api.html($api.byId('radiusSpan'), '半径' + radius + '米');
+		//window.setTimeout("$api.addCls($api.byId('msgDiv'), 'aui-hide');", 3000);
+	}
+
+	/**
+	 *事件 
+	 */
+	function initEvent(){        
+        api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+        	if(api.pageParam.src === 2){
+	        	api.closeWin({ name : 'advertisementInfoSubmitWin' });
+	        	api.closeWin({ name : 'advertisementInfoAginWin' });
+        	}
+        });
+	}
+	
+	
+	/**
+	 *选择图片
+	 */
+	function selectImage(id){
+		api.getPicture({
+			sourceType : 'library',
+			encodingType : 'jpg',
+			mediaValue : 'pic',
+			destinationType : 'url',
+			allowEdit : true,
+			quality : 90
+		}, function(ret, err) {
+			if (ret) {
+				if (ret.data) {
+					var imagePath = ret.data;
+					$api.attr($api.byId('img' + id), 'src', imagePath);
+					$api.removeCls($api.byId('icon' + id), 'aui-hide');
+					
+					for(var i=id; i<5; i++){
+						if((filePath[i + 1] == "" || filePath[i + 1] == undefined)){
+							$api.removeCls($api.byId('div' + (i + 1)), 'aui-hide');
+							break;
+						}
+					}
+
+					filePath[id] = imagePath;
+				}
+			}
+		});
+	}
+
+	/**
+	 *册除图片
+	 */
+	function deleteImage(id){
+		filePath[id] = "";
+		$api.attr($api.byId('img' + id), 'src', '../../image/my/photo-button.png');
+		$api.addCls($api.byId('icon' + id), 'aui-hide');
+		
+		var flag = 0;
+		for(var i=0; i<5; i++){
+			if(i>=id && (filePath[i + 1] == "" || filePath[i + 1] == undefined)){
+				$api.addCls($api.byId('div' + (i + 1)), 'aui-hide');
+			}
+			if(i>0 && (filePath[i] == "" || filePath[i] == undefined) && (filePath[i + 1] == "" || filePath[i + 1] == undefined)){
+				$api.addCls($api.byId('div' + i), 'aui-hide');
+			}
+		}
+		
+		for(var i=0; i<= id; i++){
+			if(filePath[i] == "" || filePath[i] == undefined){
+				flag = 1;
+			}
+		}
+		
+		if(filePath[id + 1] == "" || filePath[id + 1] == undefined){
+			$api.removeCls($api.byId('div' + id), 'aui-hide');
+		}
+		
+		if(id === 5 && flag === 1){
+			$api.addCls($api.byId('div' + id), 'aui-hide');
+		}
+		
+		var startIndex = 0;
+		for(var i=0; i<6; i++){
+			if(filePath[i] == "" || filePath[i] == undefined){
+				startIndex = i;
+				break;
+			}
+		}
+		if(startIndex < 5){
+			for(var i=startIndex+1; i<6; i++){
+				if(filePath[i] == "" || filePath[i] == undefined){
+					$api.addCls($api.byId('div' + i), 'aui-hide');
+				}
+			}
+		}else{
+			$api.removeCls($api.byId('div' + startIndex), 'aui-hide');
+		}
+		
+		for(var i=0; i<6; i++){
+			if((filePath[i] == "" || filePath[i] == undefined) && (filePath[i+1] != "" && filePath[i+1] != undefined)){
+				filePath[i] = filePath[i+1];
+				filePath[i+1] = "";
+				
+				$api.attr($api.byId('img' + i), 'src', filePath[i]);
+				$api.removeCls($api.byId('icon' + i), 'aui-hide');
+				
+				$api.attr($api.byId('img' + (i+1)), 'src', '../../image/my/photo-button.png');
+				$api.addCls($api.byId('icon' + (i+1)), 'aui-hide');
+			}
+		}
+	}
+	
+	/**
+	 *提交审核
+	 */
+	function submit(){
+		//获取广告图片、文字
+		var imagePath = [];
+		var content = $api.val($api.byId('content'));
+
+		for(var i = 0; i < filePath.length; i++){
+			if(filePath[i].length > 0){
+				imagePath.push(filePath[i]);
+			}
+		}
+
+		if (content.length > 60) {
+			api.toast({
+				msg : '广告文字最多不能超过60个字'
+			});
+			return;
+		}
+		if (content.length === 0) {
+			content = '恭喜发财，大吉大利';
+		}
+
+		$api.addCls($api.byId('submitDiv'), 'aui-disabled');
+		$api.removeAttr($api.byId('submitDiv'), 'onclick');
+		
+		var uiloading = api.require('UILoading');
+		uiloading.keyFrame({
+			rect: {
+		        w: 80,
+		        h: 80
+		    },
+		    styles: {
+		        bg: 'rgba(0,0,0,0.5)',
+		        corner: 5,
+		        interval: 50,
+		        frame: {
+		            w: 80,
+		            h: 80
+		        }
+		    },
+		    content : global.loadImage()
+		}, function(ret) {
+		});
+		//alert('first submit regionName:'+regionName+' lon '+longitude+',lat '+latitude);
+		
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/redpackets/red-packets-apply',
+			headers : global.getRequestToken(),
+			timeout : 120,
+			data : {
+				values : {
+					longitude : longitude,
+					latitude : latitude,
+					regionName : regionName,
+					radius : radius,
+					content : content
+				},
+				files : {
+					file : imagePath
+					}
+			}
+		}, function(ret, err) {
+			uiloading.closeKeyFrame();
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			$api.removeCls($api.byId('submitDiv'), 'aui-disabled');
+			$api.attr($api.byId('submitDiv'), 'onclick', 'submit();');
+			if (ret) {
+				if(ret.success){
+					global.setToast('提交成功');
+					
+					var redpacketsInfo = { id : ret.obj.id, status: ret.obj.status, longitude : ret.obj.longitude, latitude : ret.obj.latitude, regionName : ret.obj.regionName, radius : ret.obj.radius, content : ret.obj.summary, file : ret.obj.banners, auditNote : ret.obj.auditNote };
+                	$api.setStorage("redpacketsInfo", redpacketsInfo);
+
+					api.sendEvent({
+	                    name:'redpacketsApplyEvent'
+                    });
+
+//					api.openWin({
+//						name : 'advertisementInfoSubmitWin',
+//						url : './advertisement_submit_win.html'
+//					});
+					var params = { page : '../send/map_submit', title : '地图广告红包' };
+					global.openWinName('advertisementInfoSubmitWin', '../common/common_win', params);
+                }else{
+                	global.setToast(ret.message);
+                }
+			}else{
+				global.setErrorToast();
+			}
+		});
+	}
+
+	/**
+	 *摘要内容
+	 */
+	function summaryContent(){
+		var content = $api.val($api.byId('content'));
+		if(content.length>60){
+			$api.val($api.byId('content'), content.slice(0,60));
+			$api.removeCls($api.byId('msgDiv'), 'aui-hide');
+			window.setTimeout("$api.addCls($api.byId('msgDiv'), 'aui-hide');", 3000);
+		}
+	}
+	
+	function countWord(){
+		var content = $api.val($api.byId('content'));
+		var count = 60;
+		var word = 0;
+		if (content.length <= count) {
+			word = count - content.length;
+		} else {
+			$api.val($api.byId('content'), content.slice(0,60));
+		}
+		$api.html($api.byId('word'), word);
+	}
+</script>
+</html>

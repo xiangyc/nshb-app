@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>趣味问答领红包</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/redpacket.css" />
+
+</head>
+<body class="body-bg-ef">
+<div class="coupon-box">
+
+    <ul class="aui-list aui-list-in coupon-list">
+        <li tapmode onclick="openMap();" class="aui-list-item aui-list-item-arrow">
+            <div class="aui-list-item-media">
+                <img src="../../image/redpacket/map-coupon.png">
+            </div>
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title">地图抢"红包劵"
+                    <div class="legend">地图抢红包有几率开到“红包劵”哦</div>
+                </div>
+            </div>
+        </li>
+        <li tapmode onclick="openCouponBuy();" class="aui-list-item aui-list-item-arrow">
+            <div class="aui-list-item-media">
+                <img src="../../image/redpacket/buy-coupon.png">
+            </div>
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title">购买红包劵
+                    <div class="legend">现金购买红包券</div>
+                </div>
+            </div>
+        </li>
+        <li tapmode onclick="openShare();" class="aui-list-item aui-list-item-arrow">
+            <div class="aui-list-item-media">
+                <img src="../../image/redpacket/invite-friends.png">
+            </div>
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-title">邀请微信好友
+                    <div class="legend">邀请新的好友加入，免费获取“红包劵”</div>
+                </div>
+            </div>
+        </li>
+
+    </ul>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+apiready = function(){
+	//加载数据
+}
+
+/**
+ *地图抢"红包劵"
+ */
+function openMap(){
+	//发送事件，在index页中监听
+	api.sendEvent({
+	    name:'openGainMapEvent'
+    });
+}
+
+/**
+ * 购买红包劵
+ */
+function openCouponBuy(){
+	var params = { page : '../redpacket/coupon_buy', title : '购买红包劵' };
+	global.openWinName('couponBuyWin', '../common/common_win', params);
+}
+
+/**
+ *邀请微信好友 
+ */
+    
+function openShare(){
+	var dialogBox = api.require('dialogBox');
+	dialogBox.actionMenu ({
+	    rect:{
+	        h: 142
+	    },
+	    texts:{
+	         cancel: '取消'
+	    },
+	    items:[{
+			        text: '微信好友',
+			        icon: 'widget://image/receive/share-wechat-icon.png'
+			    }],
+	    styles:{
+	        bg:'#FFF',
+	        column: 1,
+	        itemText: {
+	            color: '#303030',
+	            size: 12,
+	            marginT:16
+	        },
+	        itemIcon:{
+	            size:38
+	        },
+	        cancel:{  
+	            bg: '#fff',
+	            color:'#464646',
+	            h: 48 ,
+	            size: 14       
+	        }
+	    }
+	}, function(ret){
+		if(ret && ret.eventType == 'cancel'){
+			dialogBox.close({
+			    dialogName: 'actionMenu'
+			});
+		}
+	    if(ret){
+	    	switch(ret.index){
+	    		case 0:
+	    			shareWx('session','session');
+	    			break;
+	    	}
+	    }
+	});
+}
+
+function shareWx(shareType, platType) {
+		var wx = api.require('wx');
+		wx.isInstalled(function(ret, err) {
+			if (ret.installed) {
+				wx.shareWebpage({
+					scene : shareType,
+					title : '拿手红包',
+					description : '拿手红包',
+					thumb : 'widget://image/icon150x150.png',
+					contentUrl : global.getShareUri() + '/views/coupon_share.html'
+				}, function(ret, err) {
+					dialogBox.close({
+						 dialogName: 'actionMenu'
+					});
+				});
+			} else {
+				global.setToast('当前设备未安装微信客户端');
+			}
+		});
+	}
+
+</script>
+</html>

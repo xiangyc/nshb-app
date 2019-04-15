@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>位置搜索</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+    <style>
+    	html,body {
+			background-color: transparent !important;
+		}
+    </style>
+</head>
+<body>
+<!--<div class="aui-content">-->
+    <div>
+		<script id="address-template" type="text/x-dot-template">
+			{{ for(var i=0; i< it.length; i++) { }}
+            <li tapmode="" onclick="selectLocation(this, '{{=it[i].name}}','{{=it[i].district}}');" class="aui-list-item aui-list-item-middle">
+                <div class="aui-media-list-item-inner user-red-list">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-text aui-list-item-title">{{=it[i].name}}</div>
+                        <div class="aui-list-item-text aui-font-size-12"> {{=it[i].district}}</div>
+                    </div>
+                </div>
+            </li>
+           {{ } }}
+		</script>
+           
+        <ul id="address-content" class="aui-list aui-media-list">
+        </ul>
+<!--    </div>-->
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+<script type="text/javascript" src="../../script/library/linq.min.js"></script>
+<script type="text/javascript">
+	var aMap;
+	var longitude;
+	var latitude;
+	var regionName;
+	var resultData = [];
+	var computResultData;
+	
+    apiready = function(){
+    	aMap = api.require('aMap');
+    	
+    	var location = global.getLocation();
+		if(location){
+			longitude = location.lon;
+			latitude = location.lat;
+		}
+    };
+	
+	/**
+	 *查询位置 
+	 */
+	function searchLocation(lon, lat, keyword){
+		aMap.autocomplete({
+		    keyword: keyword,
+		    city: '中国'
+		}, function(ret) {
+		    if (ret.status) {
+				var template = $api.byId('address-template').text;
+				var tempFun = doT.template(template);
+				$api.html($api.byId('address-content'), tempFun(ret.tips));
+		    }
+		});
+	}
+	
+	function clearLocation(){
+		$api.html($api.byId('address-content'), '');
+	}
+	
+	function computeResult(i){
+		if(i === resultData.length){
+			var newData = Enumerable.From(computResultData).OrderBy("x=>x.distance").ToArray();
+			var template = $api.byId('address-template').text;
+			var tempFun = doT.template(template);
+			$api.html($api.byId('address-content'), tempFun(newData));
+			api.parseTapmode();
+			
+			return;
+		}
+		
+		aMap.getCoordsFromName({
+			city: resultData[i].district,
+		    address: resultData[i].name
+		}, function(ret, err) {
+			var distance = 0;
+		    if (ret.status) {				     
+		    	distance = getDistance(longitude, latitude, ret.lon, ret.lat);
+		    }
+		    
+		    computResultData.push({tips: resultData[i], distance: distance });
+		    computeResult(i+1);
+		});
+	}
+	
+    /**
+     *选择位置 
+     */
+    function selectLocation(el, address, district){
+		regionName = address;
+		
+    	var locations = $api.domAll('#address-content .aui-list-item');
+		for (var i = 0; i < locations.length; i++) {
+			$api.removeCls(locations[i], 'current-selected');
+		}
+		
+		$api.addCls(el, 'current-selected');
+
+		aMap.getCoordsFromName({
+			city: district,
+		    address: address
+		}, function(ret, err) {
+		    if (ret.status) {
+		    	longitude = ret.lon;
+				latitude = ret.lat;
+        		api.sendEvent({
+			        name:'selectLocationEvent',
+			        extra: {
+			        	lon: ret.lon,
+			        	lat: ret.lat,
+			        	regionName: address,
+			        	address : district,
+			        	query: true
+			        }
+		        });
+		    }
+		});
+    }
+    
+    /**
+     *计算距离 
+     */
+    function getDistance(long1, lat1, long2, lat2) {
+		var a, b, R;
+		R = 6378137; // 地球半径
+		lat1 = lat1 * Math.PI / 180.0;
+		lat2 = lat2 * Math.PI / 180.0;
+		a = lat1 - lat2;
+		b = (long1 - long2) * Math.PI / 180.0;
+		var d;
+		var sa2, sb2;
+		sa2 = Math.sin(a / 2.0);
+		sb2 = Math.sin(b / 2.0);
+		d = 2 * R * Math.asin(Math.sqrt(sa2 * sa2 + Math.cos(lat1) * Math.cos(lat2) * sb2 * sb2));
+		return d;
+	}
+</script>
+</html>

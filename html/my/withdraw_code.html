@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>收款码收款</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+    <style>
+		@media (max-height: 400px) {
+		#payDiv3 {display: none;}
+		}
+	</style>
+</head>
+<body>
+<div class="aui-content">
+
+  <ul class="aui-list aui-form-list">
+
+      <li class="aui-list-item">
+          <div class="aui-list-item-inner">
+              <div class="aui-list-item-input pay-select-box">
+                  <label><input class="aui-radio" id="radio1" type="radio" name="payway" value="1" onclick="selectPay()" checked style="margin-right: 0.6rem">收款码收款</label>
+                  <label><input class="aui-radio" id="radio2" type="radio" name="payway" value="2" onclick="selectPay()" style="margin-right: 0.6rem">支付宝账户收款</label>
+              </div>
+          </div>
+      </li>
+  </ul>
+
+
+    <div class="withdraw-code-box" id="codeDiv1" style="background-color: transparent;">
+<!--     <div class="withdraw-code-plus">
+        <img src="../../image/my/receipt-code-plus.png" tabmode="" onclick="selectImage()"/>
+         <h4>请上传收款码照片</h4>
+         <P>支付宝收款码和微信收款码都可以</P>
+     </div>-->
+        <img id="payImg2" src="../../image/my/withdraw-code-img.jpg" onerror="this.src='../../image/my/withdraw-code-img.jpg'"  class="withdraw-code-img" tabmode="" onclick="selectImage()"/>
+
+    </div>
+
+
+     <div class="withdraw-code-c aui-hide" id="codeDiv2">
+        <div class="receipt-code-box">
+           <img id="payImg" width="200px;" height="283px;" onerror="this.src='../../image/my/withdraw-code-img.jpg'" src="../../image/my/withdraw-code-img.jpg"/>
+        </div>
+         <span onclick="selectImage()">重新上传二维码</span>
+    </div>
+
+    <div class="withdraw-service-box" id="codeDiv4">
+        <p>偷偷告诉你个秘密，二维码提现更快速，如有疑问</p>
+        <p>请联系客服<em class="color-fc531f" tapmode onclick="callTel('15600688801');">15600688801</em></p>
+    </div>
+
+    <ul class="aui-list aui-form-list aui-hide" id="payDiv1">
+        <li class="aui-list-header">请填写收款账户信息</li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">姓名</div>
+                <div class="aui-list-item-input"><input onfocus="foucusWay();" type="text" id="alipayName" maxlength="5" placeholder="真实姓名(最长为5位)"></div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">昵称</div>
+                <div class="aui-list-item-input"><input onfocus="foucusWay();" type="text" id="alipayNickName" maxlength="12" placeholder="支付宝昵称(最长为12位)"></div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">账户</div>
+                <div class="aui-list-item-input"><input onfocus="foucusWay();" type="text" id="alipayAccount" maxlength="20" placeholder="支付宝账户(最长为20位)"></div> <i><img src="../../image/my/receipt-alipay.png"></i>
+            </div>
+        </li>
+    </ul>
+    <div class="note-box aui-hide" id="payDiv2"><p class="text-red">注意：提交前，请确认收款人姓名和账户无误，钱款成功转入指定账户，无法退款！提现处理时间为3个工作日！</p></div>
+     
+     <div class="aui-service-box aui-service-box4  aui-hide" id="payDiv3">
+          <p>如有问题请联系客服<em tapmode onclick="callTel('15600688801');">15600688801</em></p>
+     </div>
+
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/library/zepto.min.js"></script>
+<script type="text/javascript">
+	var status;
+	var id;
+	var hasUploadImg = false;
+	var imagePath = '';
+	var checkValue = 1;
+	var withdrawAmount = 0;
+
+apiready = function(){
+	if(api.pageParam.id){
+		id = api.pageParam.id;
+	    $api.val($api.byId('alipayName'), api.pageParam.alipayName);
+	    $api.val($api.byId('alipayNickName'), api.pageParam.alipayNickName);
+	    $api.val($api.byId('alipayAccount'), api.pageParam.alipayAccount);
+	    $api.attr($api.byId('payImg'), 'src', global.getImgUri() + '/' + api.pageParam.imagePath);
+	    $api.attr($api.byId('payImg2'), 'src', global.getImgUri() + '/' + api.pageParam.imagePath);
+
+		withdrawAmount = api.pageParam.withdrawAmount;
+	    if(api.pageParam.alipayAccount && api.pageParam.alipayAccount.length > 0){
+	    	$api.attr($api.byId('radio2'), 'checked', 'checked');
+	    	selectPay();
+	    }else{
+	    	$api.attr($api.byId('radio1'), 'checked', 'checked');
+	    	selectPay();
+	    }
+	}
+	
+    api.addEventListener({
+        name:'viewappear'
+    },function(ret,err){
+    	if(api.pageParam.src === 1){
+    		api.closeWin({
+    			name : 'progressWin'
+            });
+    	}
+    });
+}
+
+//切换收款方式
+function selectPay(){
+  $('input[name="payway"]:checked').each(function(){
+    checkValue = $(this).val();
+    if (checkValue == 1) {
+      if (hasUploadImg) {
+        $api.addCls($api.byId('codeDiv1'), 'aui-hide');
+        $api.removeCls($api.byId('codeDiv2'), 'aui-hide');
+      } else {
+        $api.removeCls($api.byId('codeDiv1'), 'aui-hide');
+      }
+      $api.removeCls($api.byId('codeDiv4'), 'aui-hide');
+      $api.addCls($api.byId('payDiv1'), 'aui-hide');
+      $api.addCls($api.byId('payDiv2'), 'aui-hide');
+      $api.addCls($api.byId('payDiv3'), 'aui-hide');
+    } else {
+      $api.addCls($api.byId('codeDiv1'), 'aui-hide');
+      $api.addCls($api.byId('codeDiv2'), 'aui-hide');
+      $api.addCls($api.byId('codeDiv4'), 'aui-hide');
+      $api.removeCls($api.byId('payDiv1'), 'aui-hide');
+      $api.removeCls($api.byId('payDiv2'), 'aui-hide');
+      $api.removeCls($api.byId('payDiv3'), 'aui-hide');
+    }
+  });
+}
+
+/**
+ *选择图片
+ */
+function selectImage() {
+	api.getPicture({
+		sourceType : 'library',
+		encodingType : 'jpg',
+		mediaValue : 'pic',
+		destinationType : 'url',
+		allowEdit : true,
+		quality : 90
+	}, function(ret, err) {
+		if (ret) {
+			if (ret.data) {
+		        imagePath = ret.data;
+		        $api.attr($api.byId('payImg'), 'src', imagePath);
+		        $api.html($api.byId('nickName'), global.getUserName());
+				$api.addCls($api.byId('codeDiv1'), 'aui-hide');
+		        $api.removeCls($api.byId('codeDiv2'), 'aui-hide');
+		        hasUploadImg =true;
+			}
+		} else {
+			global.setToast('读取图片异常');
+		}
+	});
+}
+
+// 重新上传
+function repeatUpload() {
+  $api.removeCls($api.byId('codeDiv1'), 'aui-hide');
+  $api.removeCls($api.byId('codeDiv4'), 'aui-hide');
+  $api.addCls($api.byId('codeDiv2'), 'aui-hide');
+  hasUploadImg = false;
+  imagePath = "";
+}
+
+// 判断收款方式
+function checkAlipayWay() {
+  var alipayName,alipayNickName,alipayAccount;
+
+  if (checkValue == 1 && !imagePath && !api.pageParam.imagePath) {
+    global.setToast('请上传收款码照片');
+    return;
+  }
+  if (checkValue == 2) {
+    alipayName = $api.val($api.byId('alipayName'));
+    alipayNickName = $api.val($api.byId('alipayNickName'));
+    alipayAccount = $api.val($api.byId('alipayAccount'));
+    if (!alipayName || !alipayNickName || !alipayAccount) {
+      global.setToast('请完善收款账户信息');
+      return;
+    }
+  }
+  
+  openWithdrawWin(imagePath,alipayName,alipayNickName,alipayAccount);
+}
+
+// 打开提现申请页面
+function openWithdrawWin(imagePath,alipayName,alipayNickName,alipayAccount) {
+    if (checkValue == 1) {
+    	alipayName = '';
+    	alipayNickName = '';
+    	alipayAccount = '';
+    }
+    
+    if(!id){
+    	id = 0;
+    }
+  var params = { id: id, "page" : "../withdraw_frame","imagePath":imagePath,"alipayName":alipayName,"alipayNickName":alipayNickName,"alipayAccount":alipayAccount, "withdrawAmount" :withdrawAmount,"checkValue":checkValue};
+  	api.openWin({
+  		name : 'withdrawWin',
+  		url : './withdraw_win.html',
+  		pageParam : params
+	  });
+}
+
+function callTel(tel){
+	api.call({
+        type : 'tel_prompt',
+        number : tel
+    });
+}
+	
+function foucusWay(){
+	;//$api.addCls($api.byId('payDiv3'), 'aui-hide');
+}
+
+function callTel(tel){
+	api.call({
+        type : 'tel_prompt',
+        number : tel
+    });
+}
+</script>
+</html>

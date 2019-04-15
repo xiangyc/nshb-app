@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>抢红包</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/redpacket.css" />
+    <style>
+    	html,body {
+			background-color: transparent !important;
+		}
+    </style>
+</head>
+<body>
+
+<div class="aui-mask aui-mask-in"></div>
+<!--抢红包-点击红包弹框-->
+<div class="coupon-receive-box">
+
+    <div class="tear-reb-b">
+        <div class="use-portrait"><img id="logoImg2" src="../../image/icon150x150.png" onerror="this.src='../../image/icon150x150.png'"></div>
+        <h4 id="nameH"></h4>
+        <h2>红包券</h2>
+        <div id="dismantleDiv" tapmode onclick="dismantleRedPackets();" class="tear-reb-img">拆</div>
+        <p>红包劵用于“抢倒计时红包”活动</p>
+    </div>
+    <div tapmode="" onclick="api.closeFrame();" class="close-red-icon"><img src="../../image/receive/close-red-icon.png"></div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//红包ID
+	var id;
+	var count=0;
+	apiready = function (){
+		id = api.pageParam.id;
+	}
+	
+	/**
+	 *拆红包 
+	 */
+	function dismantleRedPackets(){
+		$api.addCls($api.byId('dismantleDiv'), 'rotate');
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/collection/gain-coupon',
+			headers : global.getRequestToken(),
+			data : {
+				values : {
+					couponId : id,
+				}
+			}
+		}, function(ret, err) {
+			$api.removeCls($api.byId('dismantleDiv'), 'rotate');
+			if(ret && ret.success){
+				$api.removeAttr($api.byId('dismantleDiv'), "onclick");
+				$api.html($api.byId('dismantleDiv'), ret.code+'张');
+				api.sendEvent({
+	                name:'dismantleCouponEvent',
+	                extra:{
+	                	id : id
+	                }
+                });
+				api.sendEvent({
+	                name:'memberStatisticsRefresh'
+                });
+                api.sendEvent({
+	                name:'financeAccountRefresh'
+                });
+			}else{
+				global.setToast(ret.message);
+			}
+		});
+	}
+	</script>
+</html>

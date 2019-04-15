@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>收支明细</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+</head>
+<body>
+<div class="aui-content">
+
+    <ul class="aui-list aui-media-list">
+        <script id="trade-list-template" type="text/x-dot-template">
+          {{ for(var i=0; i< it.length; i++) { }}
+                <li class="aui-list-item aui-list-item-middle">
+                    <div class="aui-media-list-item-inner user-red-list">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title">
+                                {{ switch(it[i].tradeType) {
+                                    case 1: }}
+                                    充值
+                                    {{ break;
+                                    case 2: }}
+                                    提现
+                                    {{ break;
+                                    case 3: }}
+                                    退款
+                                    {{ break;
+                                    case 4: }}
+                                    签到
+                                    {{ break;
+                                     case 5: }}
+                                    发红包
+                                    {{ break;
+                                    case 6: }}
+                                    领取红包
+                                    {{ break;
+                                    case 7: }}
+                                    提现手续费
+                                    {{ break;
+                                    case 8: }}
+                               		答题红包
+                                    {{ break;
+                                    }
+
+                                }}
+                                </div>
+                                {{ if(it[i].tradeKind === 1){ }}
+                                <div style="color: red">-{{=global.formatCurrency(it[i].balance)}}元</div>
+                                {{ } else { }}
+                                <div style="color: green">+{{=global.formatCurrency(it[i].balance)}}元</div>
+                                {{ } }}
+                            </div>
+                            <div class="aui-list-item-text aui-font-size-12">{{=global.formatDate(it[i].createTime, 'yyyy-MM-dd hh:mm:ss') }}</div>
+                        </div>
+                    </div>
+                </li>
+          {{ } }}
+        </script>
+        <div id="trade-list-content"></div>
+    </ul>
+
+</div>
+
+<div id="noDataDiv" class="aui-no-data aui-hide">
+	<img src="../../image/my/message-no-icon.png" class="no-data-img"/>
+	暂无数据
+</div>
+
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+<script type="text/javascript" src="../../script/common/page.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+
+//初始化参数
+var maxResult = 8;
+var url = global.getRequestUri() + '/trade-log/list';
+
+apiready = function(){
+  //初始化事件
+  initEvent();
+  //查询交易收支明细
+  queryTradeLog();
+}
+
+//初始化事件
+function initEvent() {
+	api.setCustomRefreshHeaderInfo({
+		bgColor : '#fdf7e7',
+		image : {
+			pull : global.pullImage(),
+			load : global.pushImage()
+		}
+	}, function(ret, err) {
+		queryTradeLog();
+		api.refreshHeaderLoadDone();
+	});
+
+	api.addEventListener({
+		name : 'scrolltobottom',
+		extra : {
+			threshold : 0
+		}
+	}, function(ret, err) {
+		page.scrollRefresh();
+	});
+}
+
+/**
+ * 查询交易收支明细
+ */
+function queryTradeLog(){
+  var params = '?start=0&maxResult=9';
+  page.init(maxResult, 'trade-list-content', 'trade-list-template', url, params, true, "noDataDiv");
+}
+
+</script>
+</html>

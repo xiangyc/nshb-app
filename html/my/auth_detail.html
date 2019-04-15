@@ -1,0 +1,252 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>商家认证（认证中）</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+</head>
+<body>
+<div class="aui-content">
+    <ul class="aui-list aui-form-list">
+        <li class="aui-list-header aui-list-justify"><span>个人信息</span></li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">真实姓名</div>
+                <div id="realNameDiv" class="aui-list-item-input"></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">身份证信息</div>
+                <div id="idCardDiv" class="aui-list-item-input"></div>
+            </div>
+        </li>
+    </ul>
+
+    <div class="auth-photo-box aui-margin-t-10">
+        <h4>上传身份证件照片<em>（正反面照片各一张）</em></h4>
+        <div class="ui-auth-photo">
+            <div><img id="cardFaceImg" src="../../image/my/id-positive-bg.png" onerror="this.src='../../image/my/id-positive-bg.png'" /></div>
+            <div><img id="cardBackImg" src="../../image/my/id-negative-bg.png" onerror="this.src='../../image/my/id-negative-bg.png'" /> </div>
+        </div>
+    </div>
+
+    <ul class="aui-list aui-form-list">
+        <li class="aui-list-header aui-list-justify"><span>企业信息</span>（请确认营业执照信息与身份证信息一致）</li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">商家名称</div>
+                <div id="businessNameDiv" class="aui-list-item-input"></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">详细地址</div>
+                <div id="businessAddressDiv" class="aui-list-item-input aui-padded-r-0"></div>
+            </div>
+        </li>
+    </ul>
+
+    <div class="auth-photo-box aui-margin-t-10">
+        <h4>上传商家logo及营业执照图片<em>（各一张）</em></h4>
+        <div class="ui-auth-photo">
+            <div><img id="logoImg" src="../../image/my/business-logo-bg.png" onerror="this.src='../../image/my/business-logo-bg.png'" /></div>
+            <div><img id="licenseImg" src="../../image/my/business-license-bg.png" onerror="this.src='../../image/my/business-license-bg.png'" /> </div>
+        </div>
+    </div>
+
+    <div class="aui-btn-box" id="authDiv">
+        <div id="statusDiv" class="aui-btn btn-gradient aui-disabled">认证中...</div>
+        <div id="auditNoteDiv" class="review-by"></div>
+    </div>
+    
+    <div class="aui-btn-box aui-hide" id="reAuthDiv">
+        <div tapmode onclick="reAuth();" class="aui-btn btn-gradient">重新认证</div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+    apiready = function(){
+    	loadAuthData();
+    	
+		initEvent();
+		
+    };
+
+	/**
+	 *添加事件 
+	 */
+	function initEvent(){
+		api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+        	if(api.pageParam.closeAuth === 1){	
+				api.closeWin({
+					name : "memberCenterWin"
+				});
+			}
+			
+			api.closeWin({
+				name : "againWin"
+			});
+        });
+        
+        api.addEventListener({
+	        name:'authSuccessEvent'
+        },function(ret,err){
+        	$api.addCls($api.byId('authDiv'), 'aui-hide');
+        });
+        
+	}
+	
+    /**
+     *加载认证数据
+     */
+    function loadAuthData(){
+//  	var authInfo = $api.getStorage("authInfo");
+//  	if(authInfo){
+//  		bindData(authInfo)
+//  	}else{
+    		//加载服务端数据
+    		api.ajax({
+				method : 'get',
+				cache : false,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/member/auth-info',
+				headers : global.getRequestToken()
+			}, function(ret, err) {
+				if(ret && ret.code === "403"){
+					api.sendEvent({
+		                name:'tokenExpiredEvent',
+		                extra:{
+		                	msg : ret.message
+		                }
+	                });
+	                
+	                return;
+				}
+				if (ret) {
+					var authInfo = { status: ret.status, realName : ret.realName, idCard : ret.idCard, businessName : ret.businessName, businessAddress : ret.businessAddress,
+	                    cardFace :  ret.idCardFace, cardBack : ret.idCardBack, logo : ret.businessLogo, license : ret.businessLicense, auditNote : ret.auditNote };
+					$api.setStorage("authInfo", authInfo);
+
+    				bindData(authInfo);
+                    api.sendEvent({
+	                    name:'authRefreshEvent'
+                    });
+				}else{
+					global.setToast('读取认证数据失败');
+				}
+			});
+    }
+
+    /**
+     *绑定认证数据
+     */
+    function bindData(authInfo){
+    	if(authInfo){
+    		$api.html($api.byId('realNameDiv'), authInfo.realName);
+    		$api.html($api.byId('idCardDiv'), authInfo.idCard);
+    		$api.attr($api.byId('cardFaceImg'), 'src', global.getImgUri() + '/' + authInfo.cardFace);
+    		$api.attr($api.byId('cardBackImg'), 'src', global.getImgUri() + '/' + authInfo.cardBack);
+    		$api.html($api.byId('businessNameDiv'), authInfo.businessName);
+    		$api.html($api.byId('businessAddressDiv'), authInfo.businessAddress);
+    		$api.attr($api.byId('logoImg'), 'src', global.getImgUri() + '/' + authInfo.logo);
+    		$api.attr($api.byId('licenseImg'), 'src', global.getImgUri() + '/' + authInfo.license);
+
+    		if(authInfo.status === 0){
+				$api.html($api.byId('statusDiv'), '认证中');
+				$api.addCls($api.byId('reAuthDiv'), 'aui-hide');
+	    	}else if(authInfo.status === 1 || authInfo.status === 2){
+				$api.addCls($api.byId('authDiv'), 'aui-hide');
+				
+				$api.addCls($api.byId('reAuthDiv'), 'aui-hide');
+	    	}else if(authInfo.status === -1){
+	    		$api.removeCls($api.byId('reAuthDiv'), 'aui-hide');
+				$api.html($api.byId('statusDiv'), '认证未通过');
+				$api.html($api.byId('auditNoteDiv'), authInfo.auditNote);
+	    	}
+    	}
+    }
+    
+    function reAuth(){
+    	var dialogBox = api.require('dialogBox');
+		dialogBox.alert({
+		    texts: {
+		        content: '确认要重新提交商家认证吗？',
+		        leftBtnTitle: '我再想想',
+		        rightBtnTitle: '确定'
+		    },
+		    styles: {
+		        bg: '#fff',
+		        corner: 10,
+		        w: 300,
+		        content: {
+		        	marginT: 50, 
+		            color: '#000',
+		            size: 16
+		        },
+		        left: {
+		            marginB: 7,
+		            marginL: 20,
+		            w: 130,
+		            h: 35,
+		            corner: 2,
+		            bg: '#fff',
+		            color: '#fc531f',
+		            size: 14
+		        },
+		        right: {
+		            marginB: 7,
+		            marginL: 10,
+		            w: 130,
+		            h: 35,
+		            corner: 2,
+		            bg: '#fff',
+		            color: '#fc531f',
+		            size: 14
+		        }
+		    }
+		}, function(ret) {
+		    if (ret.eventType == 'right') {
+		    	api.ajax({
+					method : 'post',
+					cache : false,
+					dataType : 'json',
+					returnAll : false,
+					url : global.getRequestUri() + '/member/reauth',
+					headers : global.getRequestToken()
+				}, function(ret, err) {
+					if(ret && ret.code === "403"){
+						api.sendEvent({
+			                name:'tokenExpiredEvent',
+			                extra:{
+			                	msg : ret.message
+			                }
+		                });
+		                
+		                return;
+					}
+					
+					if(ret && ret.success){
+						var params = { "page" : "../my/auth", "title" : "商家认证（未认证）", "src" : 1 };
+						global.openWinName("reAuthWin", "../common/common_win", params);
+					}else{
+						global.setToast('提交失败');
+					}
+				});
+		    }
+		    dialogBox.close({
+		    	dialogName: 'alert'
+		    });
+		});
+    }
+</script>
+</html>

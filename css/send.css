@@ -1,0 +1,175 @@
+/**/
+.aui-list-item-media.user-red-avatar {  width: 1.5rem;  padding: 0.625rem 0;  margin: 0 0.75rem;  }
+.list-item-icon .list-img-icon{ width: 1.3rem; height: 1.3rem; margin-right: 0.25rem; margin-top: 0.15rem;  }
+.list-item-icon .aui-list-item-input{  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.note-box{ padding: 0.4rem 0.6rem 0.4rem 0.5rem; font-size:0.6rem; color: #9e9e9e; width: 100%; }
+@media(min-width: 360px) {
+    .note-box.note-box3 { position: absolute; bottom: 0; width: 100%;}
+} 
+.note-box.note-box2{ padding-bottom:0.6rem; }
+.note-box p{ font-size:0.6rem; color: #9e9e9e; padding-bottom: 0.25rem; }
+.aui-list-item.list-item-icon .aui-list-item-arrow:before{ right: 0.2rem;  }
+/*选择位置*/
+.aui-searchbar{ background-color: #ececec; }
+.aui-searchbar-input input{ width: 90%; text-align: center; }
+.aui-list-item.aui-list-item-middle.current-selected .aui-media-list-item-inner{ background:url(../image/send/selected.png) no-repeat right center; background-size: 0.7rem 0.525rem; }
+/*广告信息*/
+.add-top-box{height: 1.3rem; line-height: 1.3rem; background-color: #f7f7f7; padding: 0 0.6rem; font-size:0.6rem; color: #767a81; }
+.add-top-box div{  height: 1rem; line-height: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.add-top-box div:first-child{ width: 71%; }
+@media(min-width: 360px) {
+    .add-top-box div:first-child{ width: 74% !important; }
+}
+.add-top-box div i{  height: 1rem; line-height: 1rem; margin: 0.15rem 0.1rem 0.15rem 0rem; display: inline-block; float: left;  }
+.add-top-box div i img{ height: 1rem; line-height: 1rem; }
+.add-top-box div span{ line-height: 1.3rem; }
+.summary-textarea {  height: 4.5rem;  line-height: 1rem;  padding-top: 0.5rem; font-size:0.7rem; color: #464646;  }
+.summary-textarea textarea {  height: 4.5rem;  line-height: 1rem;  padding-top: 0.5rem;  }
+.auth-photo-box .ui-add-photo{ padding: 0 3.33% 0.5rem 3.33%;  }
+.auth-photo-box .ui-add-photo div {  margin: 0 1%;  width:22.38%; display: inline-block; }
+.auth-photo-box .ui-add-photo div:first-child { margin-left: 0; }
+.auth-photo-box .ui-add-photo div:nth-child(4n) { margin-right: 0; }
+.auth-photo-box .ui-add-photo div:nth-child(5n) { margin-left: 0; }
+.auth-photo-box .ui-add-photo div img{ /*width: 100%; */width:100vw; height:20.89vw; text-align: center; vertical-align: middle;  overflow: hidden; }
+.aui-tips-red{ position: absolute; background-color: rgba(0,0,0,.75); }
+.aui-tips-red p{ margin: 0 auto; color: #fff; }
+.review-by i{ width: 0.8rem; height: 0.8rem; display: inline-block; margin-right: 0.25rem; vertical-align:middle; margin-top: -0.1rem; }
+.review-by i img{ width: 0.8rem; height: 0.8rem;}
+/*设置红包金额*/
+.red-type-box { padding-bottom: 0.9rem; }
+.red-type-box h4 { font-size: 0.7rem; color: #464646; padding: 0.5rem 0.6rem 0.55rem 0.6rem; }
+.red-type-box .red-type-btn-row { padding: 0 0.6rem;  }
+.red-type-box .red-type-btn-row .red-type-btn { width: 5rem; height: 1.75rem; line-height: 1.75rem; text-align: center;  border: 0.05rem solid #fd8925;
+/*    border-image: -moz-linear-gradient( left,#fd8f26, #fc531f) 2 2;
+    border-image: -webkit-gradient( left,#fd8f26, #fc531f) 2 2;
+    border-image: -webkit-linear-gradient( left,#fd8f26, #fc531f) 2 2;
+    border-image: -o-linear-gradient( left,#fd8f26, #fc531f) 2 2;
+    border-image: linear-gradient( left,#fd8f26, #fc531f) 2 2;*/
+    margin-right: 1.1rem; color: #fd8925;  border-radius: 0.2rem; display: inline-block;
+}
+.red-type-box .red-type-btn-row .red-type-btn.red-active { background-color: #fd8925; color: #fff; }
+.red-definite-num{ text-align: center;   color: #464646; line-height: 1; padding-top: 0.95rem; position: relative; }
+.red-definite-num em{ font-size: 0.8rem; margin-top: 1rem; position: absolute; top: 0;  }
+.red-definite-num span{ font-size: 2rem; padding-left: 0.7rem;  }
+.aui-list .aui-list-item-media{ padding: 0.55rem 0; }
+.aui-list.aui-list-in .aui-list-item:last-child{ border-bottom: 0.05rem solid #ececec; }
+
+
+/*支付成功*/
+.pay_success-box{ padding: 1.1rem 0.6rem; }
+.pay_success-box .pay_success-l{ width: 49.5%; display: inline-block; border-right: 0.05rem dashed #fec192; text-align: center; margin: 0.5rem auto;  }
+.pay_success-box .pay_success-l i{ width: 1.25rem; height: 1.25rem; }
+.pay_success-box .pay_success-l i img{ width: 1.25rem; height: 1.25rem; margin:0 auto; }
+.pay_success-box .pay_success-l h4{ font-size: 0.8rem; color: #464646; padding-bottom: 0.3rem; padding-top: 0.3rem;  }
+.pay_success-box .pay_success-l P{ font-size: 0.6rem; color: #464646;  }
+.pay_success-box .pay_success-r{ display: inline-block; padding-left: 2.1rem; }
+.pay_success-box .pay_success-r img{ display: inline-block; width: 3.45rem; height: 3.45rem; border: 0.05rem solid #ececec; border-radius: 0.2rem; }
+.pay_success-c{ padding: 0.75rem 0 0.75rem 1.45rem; }
+.pay_success-c p{ padding: 0.15rem 0; }
+.aui-list .aui-list-item-media .apply-img-round{ width: 1.5rem; height: 1.5rem; }
+
+/*选择广告类型*/
+.ad-type-box h3{ padding: 1rem 0; font-size: 0.7rem; color: #333; text-align: center;  }
+.ad-type-box .ad-type-list{ margin: 0 0.5rem 0.7rem 0.5rem; padding: 0.75rem 0.75rem 0.75rem 0.75rem; border-radius: 0.35rem; background-color: #fff; border: 0.05rem solid #dcdcdc; }
+.ad-type-box .ad-type-list span{ height: 2.15rem; line-height: 2.15rem; font-size: 0.9rem; color: #333; display: block; margin-bottom: 0.6rem; font-weight: 500; }
+.ad-type-box .ad-type-list span img{ width: 2.15rem; height: 2.15rem; margin-right: 0.75rem; display: inline-block; float: left; }
+.ad-type-box .ad-type-list p{ line-height: 1.3; font-size: 0.7rem; color: #666; }
+.ad-type-box .ad-type-list.aui-active{ border: 0.1rem solid #fc531f; position: relative; padding: 0.7rem 0.7rem 0.7rem 0.7rem; }
+.ad-type-box .ad-type-list.aui-active:after{ width: 2.1rem; height: 1.775rem; position: absolute; content: ' ';  bottom:0; right: 0;  background:url(../image/send/ad-type-selected.png) no-repeat; background-size: 2.1rem 1.775rem;  }
+/*选择投放区域*/
+.ad-map-box .ad-map-step{ height: 4.85rem; padding:1.05rem 0.6rem 0 0.6rem; background-color: #fff; }
+.ad-map-box .ad-map-step li{ float: left; width: 33.333%; text-align: center; font-size: 0.65rem; color: #999; z-index: 1; position: relative;  }
+.ad-map-box .ad-map-step li:after{ content: ''; position: absolute; top: 0.725rem; left: 0; width: 100%; height: 0.05rem; background: #c9c9c9; z-index: -1;  }
+.ad-map-box .ad-map-step li:first-child:after{ width: 50%; left: 50%;}
+.ad-map-box .ad-map-step li:last-child:after{ width: 50%; right: 50%;}
+.ad-map-box .ad-map-step li i{ width: 1.45rem; height: 1.45rem; line-height: 1.45rem; border-radius: 50%; font-style: normal; display: block; margin: 0 auto 0.4rem auto; background-color: #c9c9c9; font-size: 0.8rem; color: #fff;  }
+.ad-map-box .ad-map-step li.aui-active{ color: #0eb025; }
+.ad-map-box .ad-map-step li.aui-active i{ background-color: #16c42f; }
+.aui-list.map-form-list .aui-list-item{ margin: 0; padding: 0 0.6rem; font-size: 0.75rem; color: #333; }
+.aui-list.map-form-list .aui-list-item-arrow:before{ border-color: #626262; }
+.aui-list.map-form-list .aui-list-item-inner{ min-height: 2.65rem; padding-right: 0; }
+.aui-list.map-form-list .list-item-icon .list-img-icon{ width: 9.2rem; height: 2.65rem; line-height: 2.65rem; margin:0; }
+.aui-list.map-form-list .list-item-icon .aui-list-item-input{ text-align: right; font-size: 0.7rem; color: #666; }
+.aui-list.map-form-list .list-item-icon .aui-list-item-input input{ text-align: right; font-size: 0.75rem; color: #333; }
+.user-tag{ height: 1rem; line-height: 1rem; display: inline-block; border-radius: 0.15rem; font-style: normal; color: #fff; background-color: #fc531f; font-size: 0.6rem; padding: 0 0.425rem; margin-left: 0.25rem; margin-right: 0.25rem; }
+
+.interest-btn-box{ position: absolute; bottom: 1rem; padding: 0 0.75rem; width: 100%; }
+.ad-content-textarea { background-color: #fff; padding: 0 0.6rem; position: relative;}
+.ad-content-textarea textarea { height: 5rem;  line-height: 1rem; padding-top: 0.5rem; color: #9e9e9e; }
+.ad-content-textarea .textarea{ height: 5rem;  line-height: 1rem; padding-top: 0.5rem; color: #333; font-size: 0.7rem; }
+.ad-content-textarea h4{ height: 1.7rem; line-height: 1.7rem; border-bottom: 0.05rem solid #ececec; font-size: 0.7rem; color: #464646; }
+.ad-content-textarea p{ text-align: right; color: #9e9e9e; font-size:0.6rem; line-height: 2; position: absolute; right: 0.5rem; bottom: 0.5rem; top:3.1rem; }
+.ad-photo-box{ background-color: #fff;}
+.ad-photo-box h4{ font-size:0.75rem; color:#333; padding: 0.55rem 0.6rem 0.55rem 0.6rem; }
+.ad-photo-box h4 em{ color:#9e9e9e; }
+.ad-photo-box .ui-feedback-photo{ padding: 0 3.33% 0.25rem 3.33%; background-color: #fff; }
+.ad-photo-box .ui-feedback-photo div {  margin: 0 0.86% 0.15rem 0.86%;  width:31.2%; display: inline-block;  }
+.ad-photo-box .ui-feedback-photo div:first-child { margin-left: 0; }
+.ad-photo-box .ui-feedback-photo div:nth-child(3n) { margin-right: 0; }
+.ad-photo-box .ui-feedback-photo div:nth-child(4n) { margin-left: 0; }
+.ad-photo-box .ui-feedback-photo div img{ width:100vw; height:20.6vw; text-align: center; vertical-align: middle;  overflow: hidden; }
+.aui-delete-icon{ position:absolute; right:0; top:0; width:1rem !important; height:1rem!important; max-width:1rem !important;}
+
+.ad-no-icon{ text-align: center; padding: 1.5rem 0;}
+.ad-no-icon img{ width: 3.4rem; height: 3.4rem; margin: 0 auto;}
+.ad-result-h{ font-size: 1.05rem; line-height: 1; text-align: center; padding-bottom: 1.6rem; }
+.ad-result-h.ad-result-no{ color: #ff3939; }
+.ad-result-h.ad-result-ok{ color: #16c42f; }
+.ad-result-ul{ margin: 0 0.5rem; }
+.ad-result-ul li{ height: 2.55rem; line-height: 2.55rem; border-bottom: 0.05rem solid #ececec; font-size: 0.75rem; color: #333; padding: 0 0.25rem 0 0.25rem }
+.ad-result-ul li span{ font-size: 0.7rem; color: #666; float: right; }
+.ad-result-reason{ font-size: 0.7rem; color: #fc531f; padding: 0.75rem 0.5rem; }
+.ad-result-reason p{ font-size: 0.7rem; color: #999; line-height: 1.75; }
+.ad-result-bottom{ position: fixed; bottom: 1rem; width: 100%;   }
+.adred-type-box { padding-bottom: 0.45rem; }
+.adred-type-box h4{ color: #333; }
+.note-box.note-ad-box{ margin-bottom: 0; padding-bottom: 0; padding-top: 1rem; line-height: 1; }
+/*付款*/
+.red-type-top{ background-color: #fff; padding: 0.8rem 0.6rem; font-size: 0.75rem; color: #666; line-height: 1; }
+.aui-list-item-input.ad-red-item{ color: #333; text-align: right; padding-right: 0.25rem;  }
+.red-definite-num.ad-red-num{ color: #333; line-height: 1; margin-top: 1.9rem; position: relative; }
+.select-paymode{ background-color: #fff; margin-top: 0.5rem; }
+.select-paymode .paymode-title{ font-size: 0.7rem; color: #333; padding:0.5rem 0.6rem 0.1rem 0.6rem; line-height: 1; }
+.select-paymode .aui-list .aui-list-item{ min-height: 2.8rem; margin: 0; padding: 0 0.6rem; position: relative;  }
+.select-paymode .aui-list.aui-list-in .aui-list-item-media{ width: 1.65rem; margin-left: 0; margin-right: 0.7rem; padding: 0.55rem 0; }
+.fixed-tips-info{ line-height: 1; font-size: 0.7rem; color: #666; margin: 0.8rem 0.6rem; text-align: center; }
+.select-paymode .aui-list .aui-list-item-title{ font-size: 0.75rem; color: #333; }
+.select-paymode .aui-list-item-inner .legend{ font-size: 0.7rem; }
+.select-paymode .aui-list-item .aui-radio{ position: absolute; right: 0.6rem; top: 0.8rem; width: 1.1rem; height: 1.1rem; border-radius:0.5rem; border: solid 0.05rem #ececec;}
+.select-paymode .aui-list-item .aui-radio:checked{ background-color: #fc531f; }
+.ad-pay-bottom{ bottom: 1rem; width: 100%; margin-top: 1.5rem; }
+.ad-pay-bottom .aui-btn-box2{ margin:0 0.75rem 1rem 0.75rem; padding: 0; }
+.ad-pay-bottom .btn-white{ display: block;  width: 100%; height: 2.2rem; line-height: 2.2rem; font-size: 0.8rem; color: #ff5800; border-radius: 1.1rem;  background-color: #fff; border: 0.05rem solid #ff5800; }
+
+/*广告详情*/
+.ad-detail-top{ padding:0.6rem; border-bottom: 0.05rem solid #efefef; margin-bottom: 0.75rem; }
+.ad-detail-top.collection-detail-top{ padding:0.6rem 0.6rem 3.25rem 0.6rem; border-bottom:none; margin-bottom: 0; background-color: #fff; }
+.ad-detail-top h4{ height: 2rem; line-height: 2rem; font-size: 0.75rem; color: #333; margin-bottom: 0.3rem; }
+.ad-detail-top i{ display: inline-block; margin-right: 0.5rem; float: left;}
+.ad-detail-top i img{ width: 2rem; height: 2rem; border: 0.05rem solid #dedede;  border-radius: 1rem }
+.ad-detail-top p{ font-size: 0.7rem; color: #333; line-height: 1.75; margin-bottom: 0.35rem; }
+
+/*红包集广告 - 编辑广告内容*/
+.ad-content-textarea.collection-content-textarea { background-color: #fff; padding: 0 0.6rem; position: relative;}
+.ad-content-textarea.collection-content-textarea textarea { height: 6.4rem;  line-height: 1rem; padding-top: 0.5rem; color: #9e9e9e; }
+.ad-content-textarea.collection-content-textarea .textarea { height: 6.4rem;  line-height: 1rem; padding-top: 1.15rem; color: #333; font-size: 0.7rem; }
+.ad-content-textarea.collection-content-textarea p{ top:5.05rem;}
+.ad-collection-bottom { position: fixed; width: 100%; bottom: 0; z-index: 6; }
+.ad-collection-bottom .aui-btn-box2{ margin: 0.45rem 0.75rem 0.45rem 0.75rem; padding: 0;  }
+/*选择兴趣标签*/
+.collection-interst { padding: 1.4rem 0 0.8rem 0; background-color: #fff; }
+.collection-interst h4{ font-size: 0.7rem; color: #333; line-height: 1; padding-bottom: 1.4rem; padding-left: 0.6rem; }
+.collection-interst ul{ margin-bottom: 0.2rem; background-color: #fff; padding: 0 0.45rem;  }
+.collection-interst ul li{ min-width: 3.85rem; padding:0 0.35rem; height: 1.5rem; text-align: center; line-height: 1.5rem; font-size:0.75rem; color: #999; border-radius: 0.2rem; border: 0.05rem solid #999;  margin: 0 0.125rem 0.5rem 0.125rem; display: inline-block; }
+.collection-interst ul li.aui-active{ background-color: #ff5800; border: 0.05rem solid #ff5800; color: #fff; display: inline-block;  }
+.ad-collection-interstb-ottom { position: fixed; width: 100%; bottom: 0; }
+.ad-collection-interstb-ottom .aui-btn-box2{ margin: 0.45rem 0.75rem 1rem 0.75rem; padding: 0;  }
+/*编辑联系方式*/
+.collection-contact .aui-list .aui-list-item-label{ margin-right: 0.25rem; }
+.collection-contact .input-close{ width: 1.15rem; height: 1.15rem;  display: block;  }
+.collection-contact .input-close img{ width:1.15rem; max-width: 1.15rem; height: 1.15rem; display: inline-block;  }
+
+.ad-map-box .aui-list .aui-list-item-input{ padding-right: 0.25rem; }
+.ad-map-box .aui-list.map-form-list.aui-margin-t-10 .aui-list-item-input{ padding-right: 0.7rem; }
+
+

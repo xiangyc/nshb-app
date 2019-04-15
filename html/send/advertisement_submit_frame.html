@@ -1,0 +1,236 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>填写红包广告信息</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<body>
+<div class="aui-content">
+    <div class="body-bg-white">
+        <div class="add-top-box border-bottom">
+            <div class="aui-float-left"><i><img src="../../image/send/position-icon.png"/></i><span id="locationSpan"></span></div>
+            <div class="aui-float-right"><i><img src="../../image/send/radius-icon.png"/></i><span id="radiusSpan"></span></div>
+        </div>
+        <div class="border-bottom">
+            <div id="content" class="summary-textarea aui-content-12"></div>
+            <div class="auth-photo-box">
+                <div id="images" class="ui-add-photo">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="passDiv" class="aui-btn-box aui-hide">
+        <div tapmode="" onclick="openSendRedPacketsWin();" class="aui-btn btn-gradient">去发红包</div>
+        <div class="review-by"><i><img src="../../image/send/review-by-icon.png"/></i>审核已通过</div>
+    </div>
+
+    <div id="applingDiv" class="aui-btn-box aui-hide">
+        <div class="aui-btn btn-gradient aui-disabled">审核中，请耐心等待...</div>
+    </div>
+
+    <div id="failDiv" class="aui-btn-box aui-hide">
+        <div class="aui-btn btn-gradient aui-disabled">审核不通过...</div>
+        <div id="auditNote" class="review-by"></div>
+    </div>
+
+    <div id="sendDiv" class="aui-btn-box aui-hide">
+        <div class="aui-btn btn-gradient aui-disabled">红包已发送成功</div>
+    </div>
+
+    <div class="aui-service-box aui-service-box2">
+        <p>派发广告红包需要审核，最多只可同时提交1次审核，审批通过系统会第一时间通您，或拨打<em tapmode onclick="callTel('15600688801');">15600688801</em>进行咨询！</p>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//红包ID
+	var id;
+	//经度
+	var longitude;
+	//纬度
+	var latitude;
+	//区域名
+	var regionName;
+	//半径
+	var radius;
+	
+	apiready = function (){
+		longitude = api.pageParam.lon;
+		latitude = api.pageParam.lat;
+		regionName = api.pageParam.regionName;
+		radius = api.pageParam.radius;
+		
+		if(regionName && radius){
+			updateRedPackets();
+		}else{
+			loadRedPackets();
+		}
+		initEvent();
+	}
+
+	/**
+	 *初始化事件
+	 */
+	function initEvent(){
+		api.addEventListener({
+	        name:'redpacketsSendEvent'
+        },function(ret,err){
+        	api.closeWin({
+        		name : 'redPacketSetWin'
+            });
+
+            var redpacketsInfo = $api.getStorage("redpacketsInfo");
+        	if(redpacketsInfo){
+        		redpacketsInfo.status = 2;
+        		$api.setStorage("redpacketsInfo", redpacketsInfo);
+        		$api.addCls($api.byId('passDiv'), 'aui-hide');
+        		$api.removeCls($api.byId('sendDiv'), 'aui-hide');
+        	}
+        });
+
+        api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+        	api.closeWin({ name : 'advertisementWin' });
+        	api.closeWin({ name : 'advertisementInfoAginWin' });
+
+        	$api.setStorage("advertisementInfoWin",1);
+        });
+        
+        api.addEventListener({
+	        name:'redpacketsApplyRefreshEvent'
+        },function(ret,err){
+        	loadRedPackets();
+        });
+	}
+
+	/**
+	 *更新红包数据 
+	 */
+	function updateRedPackets(){
+	
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/redpackets/redpackets-update',
+			headers : global.getRequestToken(),
+			data : {
+				values : {
+					longitude : longitude,
+					latitude : latitude,
+					regionName : regionName,
+					radius : radius
+				}
+			}
+		}, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				var redpacketsInfo = { id : ret.id, status: ret.status, longitude : ret.longitude, latitude : ret.latitude, regionName : ret.regionName, radius : ret.radius, content : ret.summary, file : ret.banners, auditNote : ret.auditNote };
+                $api.setStorage("redpacketsInfo", redpacketsInfo);
+			}
+			loadRedPackets();
+		});
+	}
+	
+	/**
+	 *加载红包信息
+	 */
+	function loadRedPackets(){
+		var redpacketsInfo = $api.getStorage("redpacketsInfo");
+    	if(redpacketsInfo && redpacketsInfo.id){
+    		bindData(redpacketsInfo);
+    	}else{
+			//加载服务端数据
+			api.ajax({
+				method : 'get',
+				cache : false,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/redpackets',
+				headers : global.getRequestToken()
+			}, function(ret, err) {
+				if (ret) {
+					var redpacketsInfo = { id : ret.id, status: ret.status, longitude : ret.longitude, latitude : ret.latitude, regionName : ret.regionName, radius : ret.radius, content : ret.summary, file : ret.banners, auditNote : ret.auditNote };
+	                $api.setStorage("redpacketsInfo", redpacketsInfo);
+					bindData(redpacketsInfo);
+				}
+			});
+		}
+	}
+
+	/**
+	 *加载数据
+	 */
+	function bindData(redpacketsInfo){
+		if(redpacketsInfo){
+			id = redpacketsInfo.id;
+			$api.html($api.byId('locationSpan'), redpacketsInfo.regionName);
+			$api.html($api.byId('radiusSpan'), '半径' + redpacketsInfo.radius + '米');
+			$api.html($api.byId('content'), redpacketsInfo.content);
+
+			$api.html($api.byId('images'), '');
+			if(redpacketsInfo.file && redpacketsInfo.file.length > 0){
+				for(var i=0; i<redpacketsInfo.file.length; i++){
+					$api.append($api.byId('images'), '<div><img src="' + global.getImgUri() + '/' + redpacketsInfo.file[i].banner + '"></div>');
+				}
+			}else{
+				$api.append($api.byId('images'), '<div><img src="../../image/receive/redpacket_d_2.png"></div>');
+			}
+
+			$api.addCls($api.byId('passDiv'), 'aui-hide');
+			$api.addCls($api.byId('applingDiv'), 'aui-hide');
+			$api.addCls($api.byId('failDiv'), 'aui-hide');
+			$api.addCls($api.byId('sendDiv'), 'aui-hide');
+			switch(redpacketsInfo.status){
+				case -1:
+					$api.removeCls($api.byId('failDiv'), 'aui-hide');
+					$api.html($api.byId('auditNote'), redpacketsInfo.auditNote);
+					break;
+				case 0:
+					$api.removeCls($api.byId('applingDiv'), 'aui-hide');
+					break;
+				case 1:
+					$api.removeCls($api.byId('passDiv'), 'aui-hide');
+					break;
+				case 2:
+					$api.removeCls($api.byId('sendDiv'), 'aui-hide');
+					break;
+			}
+		}
+	}
+
+	/**
+	 *打开红包设置
+	 */
+	function openSendRedPacketsWin(){
+		var params = { "id" : id };
+		global.openWin('./red_packet_set', params);
+	}
+
+	function callTel(tel){
+		api.call({
+            type : 'tel_prompt',
+            number : tel
+        });
+	}
+</script>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>我的广告</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+	<style>
+		html,body{
+			height: 100%;
+			width:100%;
+		}
+		#wrap{
+		    height: 100%;
+		    display: -webkit-box;
+		    display: -webkit-flex;
+		    display: flex;
+		    -webkit-box-orient: vertical;
+		    -webkit-flex-flow: column;
+		           flex-flow: column;
+		}
+		#header{
+		    text-align: center;
+		   	background-color: #fc531f;
+			color: #ffffff;
+		    width: 100%;
+		    position:relative;
+		    padding-top: 22px;
+			background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+			background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		}
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		}
+		#header h1{
+		    font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+		}
+	</style>
+</head>
+<body>
+	<div id="wrap">
+		<div id="header">
+			<a tapmode="" class="back-icon" onclick="api.closeWin();"></a>
+			<h1><span id="title">我的广告</span></h1>
+		</div>
+			<div class="aui-content">
+	    <ul class="my-ad-switch">
+	        <li tapmode onclick="switchStatus(0);" id="li0"><span>审核中</span></li>
+	        <li onclick="switchStatus(-1);" id="li-1" ><span>未通过</span></li>
+	        <li onclick="switchStatus(1);" id="li1" ><span>待付款</span></li>
+	        <li onclick="switchStatus(2);" id="li2" ><span>已发布</span></li>
+	    </ul>
+   	</div>
+	</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+	    var header = $api.byId('header');
+	    if(header){
+	        $api.fixIos7Bar(header);
+	    }
+	    var pos = $api.offset(header);
+
+		$api.addCls($api.byId('li' + api.pageParam.status), 'active');
+	    api.openFrame({
+	        name: 'advertisement_frame',
+	        url: './advertisement_frame.html',
+	        rect:{
+	            x: 0,
+	            y: pos.h + 45,
+	            w: 'auto',
+	            h: 'auto'
+	        },
+	        pageParam : api.pageParam,
+	        bounces: false,
+	        vScrollBarEnabled: false
+	    });
+	}
+	
+	function switchStatus(status){
+		$api.removeCls($api.byId('li0'), 'active');
+		$api.removeCls($api.byId('li-1'), 'active');
+		$api.removeCls($api.byId('li1'), 'active');
+		$api.removeCls($api.byId('li2'), 'active');
+		
+		$api.addCls($api.byId('li' + status), 'active');
+
+		api.execScript({
+				frameName: 'advertisement_frame',
+				script: 'list('+status+');'
+			}
+		);
+	}
+</script>
+</html>

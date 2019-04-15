@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>个人资料</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my.css" />
+</head>
+<body>
+<div class="aui-content">
+    <ul class="aui-list aui-list-in aui-margin-t-10">
+        <li class="aui-list-item" tapmode='' onclick="changeIcon();">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">更换头像</div>
+                <div class="aui-list-item-right">
+                    <div class="aui-list-item-media aui-margin-r-0" style="width:1.5rem;">
+                        <img id='headIconId' src="../../image/my/tx-img.jpg" onerror="this.src='../../image/icon150x150.png'" class="aui-img-round">
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item"  tapmode=''>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title" style="width: 1.8rem">昵称</div>
+                <input id='nickNameId' type='text' maxlength="10" value="" style="width: 100%; text-align: right; color: #9e9e9e; ">
+            </div>
+        </li>
+        <li class="aui-list-item"  tapmode='' onclick="changeSex();">
+            <div class="aui-list-item-inner aui-list-item-arrow" >
+                <div class="aui-list-item-title">性别</div>
+                <div id='sexId' class="aui-list-item-right"></div>
+            </div>
+        </li>
+
+        <li class="aui-list-item" tapmode='' onclick="changeMobile();" >
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">手机号</div>
+                <div  id='mobileId' class="aui-list-item-right"></div>
+            </div>
+        </li>
+    </ul>
+
+    <ul class="aui-list aui-list-in aui-margin-t-10">
+        <li class="aui-list-item"  tapmode='' onclick='editBirthday();'>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">出生年月</div>
+                <div  id='birthdayId'  class="aui-list-item-right"></div>
+            </div>
+        </li>
+        <li class="aui-list-item"  tapmode='' onclick="choiceCity();">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">所在城市</div>
+                <div id="cityId" class="aui-list-item-right"></div>
+            </div>
+        </li>
+        <li class="aui-list-item" tapmode='' onclick="changeTag();">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">标签</div>
+                <div id='interestId' class="aui-list-item-right inner-my-label"></div>
+            </div>
+        </li>
+    </ul>
+
+    <div class="summary-textarea aui-margin-t-10">
+        <h4>简介</h4>
+        <textarea id="content" class="mui-input-clear question" placeholder="请用一段话来形容你自己" maxlength="140"></textarea>
+       <!--  <P>140字</P> -->
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js" ></script>
+<script type="text/javascript" src="../../script/common/global.js" ></script>
+<script type="text/javascript" src="../../script/my/persion_data_frame.js" ></script>
+
+</html>

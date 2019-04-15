@@ -1,0 +1,517 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>提现</title>
+	<link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/common.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/my.css" />
+	<style>
+		#header{
+		    text-align: center; 
+		   	background-color: #fc531f;
+			color: #ffffff;
+		    width: 100%;
+		    position:relative;
+		    padding-top: 22px;
+			background: -moz-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -webkit-gradient(linear,0 50%,100% 50%,from(#fd8f26),to(#fc531f)) !important;
+			background: -webkit-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+			background: -o-linear-gradient(0deg, #fd8f26, #fc531f) !important;
+		}
+		#header .back-icon {
+		    background: rgba(0, 0, 0, 0) url("../../image/back.png") no-repeat 0 center;
+		    background-size: 10px auto;
+		    padding-left:17px;
+		    bottom: 0;
+		    display: inline-block;
+		    height: 44px;
+		    line-height:44px;
+		    left: 12px;
+		    position: absolute;
+		    font-size: 16px;
+		    color: #fff !important;
+		}
+		#header h1{
+		    font-size: 18px; height: 44px; line-height: 44px; margin: 0em; color: #ffffff; font-weight: normal;
+		}	
+		#header .right-text{
+	        background-size: 1.4rem auto;
+	        bottom: 0;
+	        display: block;
+	        height: 44px;
+	        right: 7px;
+	        position: absolute;
+	        line-height: 44px;
+	        font-size: 16px;
+			color: #fff !important;
+		}
+	</style>
+</head>
+<body>
+	<div class="aui-content">
+		<div id="header">
+			<a tapmode="" class="back-icon" onclick="api.closeWin();">返回</a>
+			<h1><span id="title">提现</span></h1>
+			<a tapmode="" class="right-text aui-hide" onclick="openProgressWin();" >提现进度</a>
+		</div>
+		
+		<!--<ul class="aui-list aui-list-in">
+			<li class="aui-list-item">
+				<div style="width: 1.3rem;" class="aui-list-item-media">
+					<img id="headIconImg" src="../../image/top/tx-img2.jpg">
+				</div>
+				<div class="aui-list-item-inner" id="nickName">
+					bear5317
+				</div>
+			</li>
+		</ul>-->
+		<ul class="aui-list withdraw-inner aui-margin-t-10">
+			<li class="aui-text" style="padding-left: 0.6rem;">
+				提现金额 (收取1% 服务费)
+			</li>
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-label">
+						¥
+					</div>
+					<div class="aui-list-item-input">
+						<input type="text" placeholder="" id="withdrawAmount" maxlength="9">
+					</div>
+				</div>
+			</li>
+			<li class="withdraw-list-aide">
+				<em onclick="submitAll();">全部提现</em> 可用余额<span id="accountBalance">0.00</span>元
+			</li>
+		</ul>
+		<div class="aui-btn-box">
+			<div class="aui-btn btn-gradient" id="confirmBtn" onclick="showPayWayDiv();">
+				确认
+			</div>
+		</div>
+		
+		<div class="aui-mask aui-mask-in aui-hide" id="modal-aui"></div>
+		<div class="fixed-box body-bg-f8 aui-hide" id="confimPassword">
+			<div class="fixed-title">
+				<i><img onclick="closeModal()" src="../../image/send/close-icon.png"/></i>输入密码
+			</div>
+			<div class="withdraw-password-tips password-tips">
+				<P>
+					提现金额<span id="withdrawMoney">0.00元</span>，服务费<span id="serviceFee">0.00元</span>
+				</P>
+				<li class="aui-list-item">
+					<div id="virbox1" class="virbox">
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					<input id="realbox1" type="password" class="realbox" maxlength="6">
+				</li>
+				<span class="color-fc531f" onclick="openPayPassworWin()">忘记密码？</span>
+			</div>
+		</div>
+		
+		<div class="aui-service-box" style="padding-top: 8.5rem;">
+		    <p>如有问题请联系客服<em class="color-fc531f" tapmode onclick="callTel('15600688801');">15600688801</em></p>
+		</div>
+		
+		 <div id="maskDiv" class="aui-mask aui-mask-in aui-hide"></div>
+		 <div id="selectPayDiv" class="fixed-box body-bg-white aui-hide">
+			    <div class="fixed-title"><i tapmode="aui-active" onclick="showPayWayDiv();"><img src="../../image/send/close-icon.png"/></i>收费提示</div>
+			     <ul id="payWayUl" class="aui-list aui-list-in">
+			        <li id="wxLi" tapmode="" class="aui-list-item">
+			            <div class="aui-list-item-inner">
+							<div class="aui-list-item-title">提现金额
+							</div>
+			            </div>
+			            <em style="width:300px; padding-top: 15px; text-align: right; margin-right: 10px; color:#fc531f;font-weight: bold;" id="money1">0.00元</em>
+			        </li>
+			         <li tapmode="" class="aui-list-item">
+			             <div class="aui-list-item-inner">
+			                 <div class="aui-list-item-title">本次服务费
+			                 </div>
+			             </div>
+			             <em style="width:300px; padding-top: 15px; text-align: right; margin-right: 10px;" id="money2">0.00元</em>
+			         </li>
+			    </ul>
+		        <div id="confirmDiv" tapmode="" onclick="showPasswordDialog();" class="aui-btn btn-gradient border-radius-0">继续提现</div>
+		   </div>
+
+	</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/common/validate.js"></script>
+<script type="text/javascript" src="../../script/library/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/library/base64.js"></script>
+<script type="text/javascript">
+	//初始化参数
+	var alipayName, imagePath, alipayNickName, alipayAccount;
+	var useBalance = 0;
+	var uiloading;
+	var status;
+	var id;
+	
+	apiready = function(){
+		uiloading = api.require('UILoading');
+		imagePath = api.pageParam.imagePath;
+		alipayName = api.pageParam.alipayName;
+		alipayNickName = api.pageParam.alipayNickName;
+		alipayAccount = api.pageParam.alipayAccount;
+		status = api.pageParam.status;
+		id = api.pageParam.id;
+		
+		if(id && id > 0){
+			status = 0;
+			$api.val($api.byId('withdrawAmount'), api.pageParam.withdrawAmount);
+			$api.html($api.byId('withdrawMoney'), global.formatCurrency(api.pageParam.withdrawAmount) + "元");
+		}else{
+			status = 0;
+		}
+		
+		//初始化事件
+		initEvent();
+		// 获取资产账户数据
+		getFinanceAccountResult();
+	}
+	
+	//初始化事件
+	function initEvent() {
+		//现金资产更新事件
+		api.addEventListener({
+			name : 'financeAccountRefreshSuccess'
+		}, function(ret, err) {
+			//现金资产方法
+			getFinanceAccountResult();
+		});
+		
+		api.addEventListener({
+            name:'payPasswordRefresh'
+        },function(ret,err){
+        	api.closeWin({
+        		name:'payPasswordWin'
+            });
+            
+            api.closeWin({
+        		name:'payPasswordNextWin'
+            }); 
+            
+            api.closeWin({
+            	name:'payPasswordFinalWin'
+            });      
+        });
+        
+        api.addEventListener({
+	        name:'viewappear'
+        },function(ret,err){
+        	if(api.pageParam.src === 1){
+        		api.closeWin({
+        			name : 'progressWin'
+                });
+        	}
+        });
+	}
+
+	function getFinanceAccountResult() {
+		// 获取资产账户数据
+		var financeAccountResult = $api.getStorage("financeAccountResult");
+		if (financeAccountResult) {
+			var ret = financeAccountResult;
+			useBalance = ret.accountBalance;
+			$api.html($api.byId('accountBalance'), global.formatCurrency(useBalance));
+		} else {
+			api.sendEvent({
+				name : 'financeAccountRefresh'
+			});
+		}
+
+		// 获取用户信息数据
+		var headIcon = global.getHeadIcon();
+		var nickName = global.getUserName();
+		if (nickName) {
+			$api.html($api.byId('nickName'), nickName);
+		} else {
+			$api.html($api.byId('nickName'), "未设置");
+		}
+		if (headIcon) {
+			$api.attr($api.byId('headIconImg'), 'src', global.getImgUri() + '/' + headIcon);
+		} else {
+			$api.attr($api.byId('headIconImg'), 'src', "../../image/top/tx-img2.jpg");
+		}
+	}
+
+	// 确认提现按钮进行校验
+	function confirm() {
+		
+	}
+
+	// 弹出交易密码输入框
+	function showPasswordDialog() {
+		
+		$api.addCls($api.byId('selectPayDiv'), 'aui-hide');
+		$api.addCls($api.byId('maskDiv'), 'aui-hide');
+	
+		var withdrawAmount = $api.val($api.byId('withdrawAmount'));
+		
+		$api.removeCls($api.byId('confimPassword'), 'aui-hide');
+		$api.removeCls($api.byId('modal-aui'), 'aui-hide');
+		$api.html($api.byId('withdrawMoney'), global.formatCurrency(withdrawAmount) + "元");
+		var fee = 0;
+		fee = withdrawAmount * 1 / 100.0;
+		if (fee < 0.01) {
+			fee = 0.01;
+		}
+		$api.html($api.byId('serviceFee'), global.formatCurrency(fee) + "元");
+		
+		setTimeout(function(){
+			$('#realbox1').focus();
+		    $('#virbox1 span').css('background','#FFFECF');
+		}, 300);
+	}
+
+	//输入正确密码确认提交
+	function withdrawApplyCommit(password) {
+		var withdrawAmount = $api.val($api.byId('withdrawAmount'));
+		uiloading.keyFrame({
+			rect: {
+		        w: 80,
+		        h: 80
+		    },
+		    styles: {
+		        bg: 'rgba(0,0,0,0.5)',
+		        corner: 5,
+		        interval: 50,
+		        frame: {
+		            w: 80,
+		            h: 80
+		        }
+		    },
+		    content : global.loadImage()
+		}, function(ret) {
+		});
+		if(!status || status == undefined){
+			status = 0;
+		}
+		if(!id){
+			id = 0;
+		}
+
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			headers : global.getRequestToken(),
+			data : {
+				values : {
+					'id' : id,
+					'money' : withdrawAmount,
+					'payPassword' : password,
+					'alipayName' : alipayName,
+					'alipayNickName' : alipayNickName,
+					'alipayAccount' : alipayAccount,
+					'source' : 1,
+					'status' : status
+				},
+				files : {
+					file : imagePath
+				}
+			},
+			url : global.getRequestUri() + '/withdraw/withdraw-apply'
+		}, function(ret, err) {
+			uiloading.closeKeyFrame();
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				if (ret.success) {
+					closeModal();
+					openProgressWin();
+					api.sendEvent({
+						name : 'financeAccountRefresh'
+					});
+				} else {
+					global.setToast(ret.message);
+				}
+			}
+		});
+	}
+
+	// 打开提现进度页面
+	function openProgressWin() {
+		var params = {"page" : "../my/withdraw_progress", "title" : "提现进度" };
+		api.openWin({
+			name : 'progressWin',
+			url : './withdraw_progress.html',
+			pageParam : params
+		});
+	}
+
+	// 全部提现
+	function submitAll() {
+		$api.val($api.byId('withdrawAmount'), global.formatNum(useBalance));
+	}
+
+	// 关闭密码输入框
+	function closeModal() {
+		$api.addCls($api.byId('confimPassword'), 'aui-hide');
+		$api.addCls($api.byId('modal-aui'), 'aui-hide');
+	}
+
+	// 密码框样式
+	var pwd1;
+	$('#virbox1').click(function() {
+		$('#realbox1').focus();
+		$('#virbox1 span').css('background', '#FFFECF');
+	});
+	$('#realbox1').blur(function() {
+		$('#virbox1 span').css('background', '#ffffff');
+	});
+	// 密码框keyup事件
+	$('#realbox1').keyup(function() {
+		$('#virbox1 span').html('');
+		var realboxLength = Number($('#realbox1').val().length);
+		for (var i = 0; i < realboxLength; i++) {
+			pwd1 = $('#realbox1').val();
+			$('#virbox1 span').eq(i).html('·');
+			if (i == 5) {
+				withdrawApplyCommit(pwd1);
+			}
+		}
+	});
+	
+	/**
+	 *设置支付密码
+	 */
+	function openPayPassworWin() {
+		var params = {"page" : "../my/pay_password_set", "title" : "验证手机号码"
+		};
+		api.openWin({
+			name : 'payPasswordWin',
+			url : '../common/common_win.html',
+			pageParam : params
+		});
+	}
+		
+	/**
+	 *打开提现进度 
+	 */
+	function openProgressWin(){
+		var params = { "page" : "../my/withdraw_progress", "title" : "提现进度"};
+		api.openWin({
+			name : 'progressWin',
+			url : './withdraw_progress.html',
+			pageParam : params
+		});
+	}
+	
+	function showPayWayDiv(){
+	
+		$('#virbox1 span').html('');
+		$('#realbox1').val('');
+		var withdrawAmount = $api.val($api.byId('withdrawAmount'));
+		
+		$api.html($api.byId('money1'), global.formatCurrency(withdrawAmount) + "元");
+		var fee = 0;
+		fee = withdrawAmount * 1 / 100.0;
+		if (fee < 0.01) {
+			fee = 0.01;
+		}
+		$api.html($api.byId('money2'), global.formatCurrency(fee) + "元");
+		
+		
+		if (validate.isEmpty(withdrawAmount)) {
+			global.setToast('金额不能为空');
+			return;
+		}
+		if (!validate.money(withdrawAmount)) {
+			global.setToast('请输入正确的金额');
+			return;
+		}
+		if (withdrawAmount < 0.1) {
+			global.setToast('提现金额最少为0.1元');
+			return;
+		}
+		if (eval(withdrawAmount > useBalance)) {
+			global.setToast('金额已超过可提现余额');
+			return;
+		}
+		$api.attr($api.byId('confirmBtn'), 'disabled', 'disabled');
+
+		uiloading.keyFrame({
+			rect: {
+		        w: 80,
+		        h: 80
+		    },
+		    styles: {
+		        bg: 'rgba(0,0,0,0.5)',
+		        corner: 5,
+		        interval: 50,
+		        frame: {
+		            w: 80,
+		            h: 80
+		        }
+		    },
+		    content : global.loadImage()
+		}, function(ret) {
+		});
+			
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			headers : global.getRequestToken(),
+			url : global.getRequestUri() + '/withdraw/last-withdraw-apply'
+		}, function(ret, err) {
+			uiloading.closeKeyFrame();
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				if (ret.status === 0) {
+					global.setToast('当前有一笔提现申请正在审核中，请稍候再试！');
+					return;
+				} else if (ret.status === 1) {
+					global.setToast('当前有一笔提现申请正在放款中，请稍候再试！');
+					return;
+				}
+				
+				if($api.hasCls($api.byId('selectPayDiv'), 'aui-hide')){
+					$api.removeCls($api.byId('selectPayDiv'), 'aui-hide');
+					$api.removeCls($api.byId('maskDiv'), 'aui-hide');
+				}else{
+					$api.addCls($api.byId('selectPayDiv'), 'aui-hide');
+					$api.addCls($api.byId('maskDiv'), 'aui-hide');
+				}
+			}
+		});	
+	}
+	
+	function callTel(tel){
+		api.call({
+	        type : 'tel_prompt',
+	        number : tel
+	    });
+	}
+</script>
+</html>

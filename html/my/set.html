@@ -1,0 +1,274 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>设置</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+</head>
+<body>
+<div class="aui-content">
+    <ul class="aui-list aui-list-in">
+        <li tapmode="aui-active" onclick="openPayPassworWin();" class="aui-list-item">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">支付设置</div>
+                 <div id='payPwdDivId' class="aui-list-item-right">未设置<em id='payPwdId' class="normal-dot"></em></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner aui-padded-r-0">
+                <div class="aui-list-item-title">消息通知</div>
+                <div class="aui-list-item-input width-auto aui-padded-r-0">
+                    <input id="notificationFlagId" name="notificationFlagId" type="checkbox" class="aui-switch aui-float-right" onchange="messageNotify();" >
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item" onclick="cleanCache();">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title" >清除缓存</div>
+                <div id='cacheSizeDivIs' class="aui-list-item-right"></div>
+            </div>
+        </li>
+    </ul>
+    <ul class="aui-list aui-list-in aui-margin-t-10">
+        <li tapmode="aui-active" onclick="openFeedbackWin();" class="aui-list-item">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">意见反馈</div>
+            </div>
+        </li>
+        <li tapmode="aui-active" onclick="openAboutWin();" class="aui-list-item">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">关于拿手红包</div>
+            </div>
+        </li>
+
+    </ul>
+    
+    <div tapmodel="" onclick="logOut();" class="aui-btn btn-dropout">退出登录</div>
+
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	apiready = function (){
+  
+		initEvent();
+		cacheSize();
+		init();
+		
+		if(!global.networkConnection()){
+			global.setToast('网络异常，请稍后再试！');
+  		}
+	}
+
+	function init(){
+		
+		if (global.getNotificationFlag() === '1') {
+			$api.attr($api.byId('notificationFlagId'), 'checked', 'checked');
+		}
+
+		if(global.getUserPayPassword() ==='1'){
+			$api.html($api.byId('payPwdDivId'), '已设置');
+			$api.addCls($api.byId('payPwdId'), 'aui-hide');
+		}
+	}
+	
+	/**
+	 *设置支付密码 
+	 */
+	function openPayPassworWin(){
+		var params = { "page" : "../my/pay_password_set", "title" : "验证手机号码" };
+		api.openWin({
+			name : 'payPasswordWin',
+			url : '../common/common_win.html',
+			pageParam : params
+		});
+	}
+	
+	/**
+	 *意见反馈 
+	 */
+	function openFeedbackWin(){
+		var params = { "page" : "../feedback_frame" };
+		api.openWin({
+			name : 'feedbackWin',
+			url : './feedback_win.html',
+			pageParam : params
+		});
+	}
+	
+	/**
+	 * 关于拿手红包
+	 */
+	function openAboutWin(){
+		var params = { "page" : "../my/about", "title" : "关于拿手红包" };
+		api.openWin({
+			name : 'aboutWin',
+			url : '../common/common_win.html',
+			pageParam : params
+		});
+	}
+	
+	/**
+	 *退出 
+	 */
+	function logOut(){
+		$api.clearStorage();
+
+		api.openWin({
+			name : "entranceWin",
+			url : '../entrance/login.html',
+			reload : true,
+			slidBackEnabled : false,
+			pageParam : { 
+				type : -1 
+			}
+		});
+	}
+
+	function initEvent(){
+		api.addEventListener({
+	        name: 'payPasswordRefresh'
+	    }, function(ret, err) {
+	        if (ret) {
+				$api.html($api.byId('payPwdDivId'), '已设置');
+				$api.addCls($api.byId('payPwdId'), 'aui-hide');
+		    }
+
+		    api.closeWin({
+				name : 'payPasswordWin'
+			});
+
+			api.closeWin({
+				name : 'payPasswordNextWin'
+			});
+			
+            api.closeWin({
+        		name:'payPasswordFinalWin'
+            });
+	    });
+    
+	}
+
+	function cacheSize(){
+		//异步返回结果：
+		api.getCacheSize(function(ret) {
+		    var size = ret.size;
+			$api.html($api.byId('cacheSizeDivIs'), (size/1024/1024).toFixed(2)+'M');
+		    
+		});
+	}
+
+	function cleanCache(){
+		
+		var dialogBox = api.require('dialogBox');
+		dialogBox.alert({
+		    texts: {
+		        content: '确定清除缓存？',
+		        leftBtnTitle: '取消',
+		        rightBtnTitle: '确认'
+		    },
+		    styles: {
+		        bg: '#fff',
+		        corner: 10,
+		        w: 300,
+		        content: {
+		        	marginT: 50, 
+		            color: '#000',
+		            size: 16
+		        },
+		        left: {
+		            marginB: 7,
+		            marginL: 20,
+		            w: 130,
+		            h: 35,
+		            corner: 2,
+		            bg: '#fff',
+		            color: '#fc531f',
+		            size: 14
+		        },
+		        right: {
+		            marginB: 7,
+		            marginL: 10,
+		            w: 130,
+		            h: 35,
+		            corner: 2,
+		            bg: '#fff',
+		            color: '#fc531f',
+		            size: 14
+		        }
+		    }
+		}, function(ret) {
+		    if (ret.eventType == 'right') {
+		    	api.clearCache(function(ret, err) {
+		            api.toast({
+		                    msg : '清除成功',
+		                    location : 'middle'
+		            });
+		            
+	            	$api.html($api.byId('cacheSizeDivIs'), '0.00M');
+		        });
+		    }
+		    dialogBox.close({
+		    	dialogName: 'alert'
+		    });
+		});
+
+	}
+
+
+	function messageNotify() {
+		var notify = $api.val($api.dom("input[name='notificationFlagId']:checked"));
+		var notifyValue = 0;
+		if (notify == 'on') {
+			notifyValue = 1;
+		} else {
+			notifyValue = 0;
+		}
+	
+		api.ajax({
+			method : 'post',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/member/message-notify',
+			headers : global.getRequestToken(),
+			data : {
+				values : {				
+					'notifyValue' : notifyValue
+				}
+			}
+		}, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				global.setNotificationFlag(notifyValue);
+				if(notifyValue === 0){
+					global.setToast('消息通知已关闭');
+					api.sendEvent({
+						name : 'userStopPushEvent'
+					});
+				}else{
+					global.setToast('消息通知已开启');
+					api.sendEvent({
+						name : 'userResumePushEvent'
+					});
+				}
+	
+			}
+		});
+	}
+</script>
+</html>

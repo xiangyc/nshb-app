@@ -1,0 +1,159 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>选择兴趣标签</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<body class="body-bg-ef">
+<div class="collection-interst">
+    <h4>请选择用户的兴趣标签（最多选择3项）</h4>
+    <script id="interest-template" type="text/x-dot-template">
+    {{ for(var i=0; i< it.length; i++) { }}
+    	{{if(it[i].select){ }}
+			<li id="{{=it[i].id}}" tapmode onclick="selectInterest(this);" class="aui-active">{{=it[i].name }}</li>
+		{{ }else{ }}
+			<li id="{{=it[i].id}}" tapmode onclick="selectInterest(this);">{{=it[i].name }}</li>
+		{{ } }}
+    {{ } }}
+    </script>
+    <ul id="interest-content" class="aui-clearfix">       
+    </ul>
+
+
+    <div class="ad-collection-interstb-ottom">
+        <div class="aui-btn-box2">
+            <div tapmode onclick="saveData();" class="aui-btn btn-gradient">确定</div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript" src="../../script/library/doT.min.js"></script>
+<script type="text/javascript">
+	var id="";
+	var ids="";
+	var names="";
+	var selectIds=[];
+	
+	apiready = function(){
+		id = api.pageParam.id;
+		ids = api.pageParam.ids;
+		names = api.pageParam.names;
+		
+		var choiceMemberInterests = ids.split(",");
+		for (var k = 0; k < choiceMemberInterests.length; k++) {
+			if(choiceMemberInterests[k].length > 0){
+				selectIds.push(choiceMemberInterests[k]);
+			}
+
+		}
+		loadData();
+	}
+
+	/**
+	 *加载兴趣数据
+	 */
+	function loadData(){
+		api.ajax({
+			method : 'get',
+			cache : false,
+			dataType : 'json',
+			returnAll : false,
+			url : global.getRequestUri() + '/member/info/interest',
+			headers : global.getRequestToken()
+		}, function(ret, err) {
+			if(ret && ret.code === "403"){
+				api.sendEvent({
+	                name:'tokenExpiredEvent',
+	                extra:{
+	                	msg : ret.message
+	                }
+                });
+                
+                return;
+			}
+			if (ret) {
+				var choiceMemberInterests = ids.split(",");
+				for (var j = 0; j < ret.length; j++) {
+					var searchId = ret[j].id;
+	
+					for (var k = 0; k < choiceMemberInterests.length; k++) {
+						var choiceId = choiceMemberInterests[k];
+						if(searchId == choiceId){
+							ret[j].select = true;
+							break;
+						}
+	
+					}
+				}
+					
+				var template = $api.byId('interest-template').text;
+                var tempFun = doT.template(template);
+                $api.html($api.byId('interest-content'), tempFun(ret));
+			}
+		});
+	}
+
+	/**
+	 *选择/取消选择兴趣
+	 */
+	function selectInterest(el){
+		if($api.hasCls(el, 'aui-active')){
+			$api.removeCls(el, 'aui-active');
+			
+			for(var i=0; i<selectIds.length; i++){
+				if(selectIds[i] == $api.attr(el, "id")){
+					selectIds.splice(i, 1);
+					break;
+				}
+			}
+		}else{
+			$api.addCls(el, 'aui-active');
+			
+			if(selectIds.length < 3){
+				selectIds.push($api.attr(el, "id"));
+			}else{
+				$api.removeCls($api.byId(selectIds[2]), 'aui-active');
+				selectIds.pop();
+				selectIds.push($api.attr(el, "id"));
+			}
+		}
+	}
+
+	/**
+	 * 保存数据
+	 */
+	function saveData(){
+		var interests = $api.byId('interest-content');
+		var activeInterests = $api.domAll('#interest-content .aui-active');
+		var interestsIds = [];
+		var interestsNames =[];
+
+		for (var i = 0; i < activeInterests.length; i++) {
+
+			var id = $api.attr(activeInterests[i], 'id');
+			var name = $api.html(activeInterests[i]);
+			
+			interestsIds.push(id);
+			interestsNames.push(name);
+		}
+
+		interestsIds = interestsIds.join(',');
+		interestsNames = interestsNames.join(',');
+
+		api.sendEvent({
+		    name:'collectionInterestSelectEvent',
+			extra: {
+	        	interestsIds: interestsIds,
+	        	interestsNames: interestsNames
+	   		}
+	    });
+	}
+</script>
+</html>

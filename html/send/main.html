@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>选择广告类型</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/send.css" />
+</head>
+<body class="body-bg-ef">
+<div class="ad-type-box">
+    <h3>“广告+回馈，赶快去发点福利吧”</h3>
+    <div id="mapDiv" onclick="switchAdvType(1);" class="ad-type-list aui-active">
+        <span><img src="../../image/send/map-red-icon.png"/>地图红包广告</span>
+        <p>广告红包将在地图上展示，用户可在地图上抢周边的红包</p>
+    </div>
+    <div id="collectDiv" onclick="switchAdvType(2);" class="ad-type-list">
+        <span><img src="../../image/send/collect-red-icon.png"/>红包集广告</span>
+        <p>广告红包以动态的形式发布，用户可快速浏览到广告内容并领取红包</p>
+    </div>
+
+    <div class="interest-btn-box">
+        <div tapmode onclick="next();" class="aui-btn btn-gradient">下一步</div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common/global.js"></script>
+<script type="text/javascript">
+	//1:地图红包广告;2:红包集广告
+	var type = 1;
+	
+	apiready = function(){
+		switchAdvType(api.pageParam.type);
+	}
+	
+	/**
+	 *切换类型 
+	 */
+	function switchAdvType(item){
+		$api.removeCls($api.byId('mapDiv'), 'aui-active');
+		$api.removeCls($api.byId('collectDiv'), 'aui-active');
+		type = item;
+		
+		if(type === 1){
+			$api.addCls($api.byId('mapDiv'), 'aui-active');
+			params = { page : '../send/map', title : '地图红包广告'};
+		}else{
+			$api.addCls($api.byId('collectDiv'), 'aui-active');
+			params = { page : '../send/collection_content', title : '红包集广告'};
+		}
+	}
+	
+	/**
+	 *下一步
+	 */
+	function next(){	
+		var params = ""
+		var winName = "advApplyWin";
+		if(type === 1){
+		 	params = { page : '../send/map', title : '选择投放区域', src: 1};
+			api.ajax({
+				method : 'get',
+				cache : false,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/redpackets',
+				headers : global.getRequestToken()
+			}, function(ret, err) {
+				if(ret && ret.code === "403"){
+					api.sendEvent({
+		                name:'tokenExpiredEvent',
+		                extra:{
+		                	msg : ret.message
+		                }
+	                });
+	                
+	                return;
+				}
+				if (ret) {
+					winName = "advertisementInfoSubmitWin";
+					params = { page : '../send/map_submit', title : '地图红包广告', src: 2};
+				}
+				
+				global.openWinName(winName, '../common/common_win', params);
+			});
+		}else{
+			params = { page : '../send/collection_content', title : '编辑广告内容', src: 1};
+			api.ajax({
+				method : 'get',
+				cache : false,
+				dataType : 'json',
+				returnAll : false,
+				url : global.getRequestUri() + '/collection',
+				headers : global.getRequestToken()
+			}, function(ret, err) {
+				if(ret && ret.code === "403"){
+					api.sendEvent({
+		                name:'tokenExpiredEvent',
+		                extra:{
+		                	msg : ret.message
+		                }
+	                });
+	                
+	                return;
+				}
+				if (ret) {
+					winName = "collectionInfoSubmitWin";
+					params = { page : '../send/collection_submit', title : '红包集广告红包', id: ret.id, src: 2};
+				}
+				
+				global.openWinName(winName, '../common/common_win', params);
+			});
+		}		
+	}
+</script>
+</html>
